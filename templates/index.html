@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Atatürk Digital Twin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="badge">Constitutional Intelligence for the AI Era</div>
+      <h1>Atatürk<br/>Digital Twin</h1>
+      <p>
+        A deployable MVP for constitutional cognition, ethical reasoning,
+        historical memory, and civilization-scale AI governance.
+      </p>
+      <div class="buttons">
+        <a href="#demo">Enter Demo</a>
+        <a class="secondary" href="/health">Health Check</a>
+        <a class="secondary" href="/docs">API Docs</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Execution Pipeline</h2>
+      <p>This prototype is designed as an operational seed for HOPEtensor, Vicdan, verification and observer nodes.</p>
+      <div class="pipeline">
+        <div class="step">User Query</div>
+        <div class="step">Historical Memory</div>
+        <div class="step">Constitutional Reasoning</div>
+        <div class="step">Vicdan Layer</div>
+        <div class="step">Verification</div>
+        <div class="step">Final Response</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Core Civilization Layers</h2>
+      <div class="grid">
+        <div class="card"><strong>Historical Memory</strong><br/><br/>Context-aware reasoning grounded in republican modernization, education, law, science and civic sovereignty.</div>
+        <div class="card"><strong>Vicdan Layer</strong><br/><br/>Ethics before scale. Responses are checked for domination, manipulation and dehumanization risks.</div>
+        <div class="card"><strong>HOPEtensor Ready</strong><br/><br/>Designed for decentralized reasoning, verification, multi-node consensus and observer audit.</div>
+        <div class="card"><strong>Civilization Interface</strong><br/><br/>A seed for public education, governance, contributor systems and human-centered AI infrastructure.</div>
+      </div>
+    </section>
+
+    <section id="demo">
+      <h2>Live MVP Demo v0.4</h2>
+      <p>Ask a civilization-level question and choose a reasoning mode.</p>
+
+      <label>Question</label>
+      <input id="q" value="Why does civilization need constitutional intelligence in the AI era?" />
+
+      <label>Reasoning Mode</label>
+      <select id="mode">
+        <option value="constitutional">Constitutional Cognition</option>
+        <option value="education">Education & Enlightenment</option>
+        <option value="ai_governance">AI Governance</option>
+        <option value="civilization">Civilization Strategy</option>
+      </select>
+
+      <br/><br/>
+      <button onclick="ask()">Run Constitutional Reasoning</button>
+      <button class="secondary" onclick="checkVicdan()">Run Vicdan Check</button>
+      <br/><br/>
+      <pre id="out">Response will appear here.</pre>
+    </section>
+
+    <footer>
+      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v0.4
+    </footer>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
