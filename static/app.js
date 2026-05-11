@@ -1,109 +1,75 @@
 let latestResponse = "";
 let speaking = false;
-let availableVoices = [];
+let generatingVoice = false;
 let currentAudio = null;
+let currentAudioUrl = null;
 
-function loadVoices() {
-  if ("speechSynthesis" in window) {
-    availableVoices = window.speechSynthesis.getVoices();
-  }
-}
-
-if ("speechSynthesis" in window) {
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
+function safeGet(id) {
+  return document.getElementById(id);
 }
 
 function setLoading(isLoading, message = "") {
-  const loader = document.getElementById("loader");
-  const status = document.getElementById("engineStatus");
+  const loader = safeGet("loader");
+  const status = safeGet("engineStatus");
 
   if (isLoading) {
-    loader.classList.remove("hidden");
-    status.textContent = message || "Running";
+    if (loader) loader.classList.remove("hidden");
+    if (status) status.textContent = message || "Running";
     setAvatarSpeaking(true);
   } else {
-    loader.classList.add("hidden");
-
-    if (!speaking) {
-      setAvatarSpeaking(false);
-    }
+    if (loader) loader.classList.add("hidden");
+    if (!speaking && !generatingVoice) setAvatarSpeaking(false);
   }
 }
 
 function setOutput(text) {
-  latestResponse = text;
-
-  const box = document.getElementById("responseBox");
-
-  if (box) {
-    box.textContent = text;
-  }
-
-  updateAvatarSpeech(text);
+  latestResponse = text || "";
+  const box = safeGet("responseBox");
+  if (box) box.textContent = latestResponse;
+  updateAvatarSpeech(latestResponse);
 }
 
 function appendOutput(text) {
-  latestResponse += text;
+  latestResponse += text || "";
+  const box = safeGet("responseBox");
+  if (box) box.textContent += text || "";
 
-  const box = document.getElementById("responseBox");
-
-  if (box) {
-    box.textContent += text;
-  }
-
-  if (latestResponse.length % 120 < text.length) {
+  if (latestResponse.length % 120 < (text || "").length) {
     updateAvatarSpeech(latestResponse.slice(-260));
   }
 }
 
 function setMeta({ status, mode, score }) {
-  const engineStatus = document.getElementById("engineStatus");
-  const modeBadge = document.getElementById("modeBadge");
-  const vicdanScore = document.getElementById("vicdanScore");
+  const engineStatus = safeGet("engineStatus");
+  const modeBadge = safeGet("modeBadge");
+  const vicdanScore = safeGet("vicdanScore");
 
-  if (status && engineStatus) {
-    engineStatus.textContent = status;
-  }
+  if (status && engineStatus) engineStatus.textContent = status;
+  if (mode && modeBadge) modeBadge.textContent = mode;
 
-  if (mode && modeBadge) {
-    modeBadge.textContent = mode;
-  }
-
-  if (
-    score !== undefined &&
-    score !== null &&
-    vicdanScore
-  ) {
+  if (score !== undefined && score !== null && vicdanScore) {
     vicdanScore.textContent = `${score}/100`;
   }
 }
 
 function updateAvatarSpeech(text) {
-  const speech = document.getElementById("avatarSpeech");
-
+  const speech = safeGet("avatarSpeech");
   if (!speech) return;
 
   if (!text || text.trim().length === 0) {
-    speech.textContent =
-      "Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.";
+    speech.textContent = "Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.";
     return;
   }
 
   const clean = text.replace(/\s+/g, " ").trim();
-
-  speech.textContent =
-    clean.length > 220
-      ? clean.slice(0, 220) + "..."
-      : clean;
+  speech.textContent = clean.length > 220 ? clean.slice(0, 220) + "..." : clean;
 }
 
 function setAvatarSpeaking(active) {
-  const mouth = document.getElementById("avatarMouth");
-
+  const mouth = safeGet("avatarMouth");
   if (!mouth) return;
 
-  if (active || speaking) {
+  if (active || speaking || generatingVoice) {
     mouth.classList.add("speaking");
   } else {
     mouth.classList.remove("speaking");
@@ -111,8 +77,8 @@ function setAvatarSpeaking(active) {
 }
 
 async function ask() {
-  const question = document.getElementById("q").value;
-  const mode = document.getElementById("mode").value;
+  const question = safeGet("q").value;
+  const mode = safeGet("mode").value;
 
   stopSpeaking();
 
@@ -125,7 +91,6 @@ async function ask() {
   });
 
   setOutput("");
-
   setLoading(true, "Streaming");
 
   try {
@@ -145,29 +110,22 @@ async function ask() {
     }
 
     const reader = res.body.getReader();
-
     const decoder = new TextDecoder("utf-8");
-
     let buffer = "";
 
     while (true) {
       const { value, done } = await reader.read();
-
       if (done) break;
 
-      buffer += decoder.decode(value, {
-        stream: true
-      });
+      buffer += decoder.decode(value, { stream: true });
 
       const events = buffer.split("\n\n");
-
       buffer = events.pop();
 
       for (const event of events) {
         if (!event.startsWith("data: ")) continue;
 
         const raw = event.replace("data: ", "").trim();
-
         if (!raw) continue;
 
         const data = JSON.parse(raw);
@@ -176,9 +134,7 @@ async function ask() {
           setMeta({
             status: "Streaming",
             mode: data.mode || mode,
-            score:
-              data.vicdan &&
-              data.vicdan.score
+            score: data.vicdan && data.vicdan.score
           });
         }
 
@@ -216,8 +172,8 @@ async function ask() {
 }
 
 async function checkVicdan() {
-  const question = document.getElementById("q").value;
-  const mode = document.getElementById("mode").value;
+  const question = safeGet("q").value;
+  const mode = safeGet("mode").value;
 
   stopSpeaking();
 
@@ -227,10 +183,7 @@ async function checkVicdan() {
     score: null
   });
 
-  setOutput(
-    "Running Vicdan ethical review..."
-  );
-
+  setOutput("Running Vicdan ethical review...");
   setLoading(true, "Reviewing");
 
   try {
@@ -250,23 +203,15 @@ async function checkVicdan() {
     }
 
     const data = await res.json();
-
-    const score =
-      data.review &&
-      data.review.score;
+    const score = data.review && data.review.score;
 
     setMeta({
-      status:
-        data.review
-          ? data.review.status
-          : "Completed",
+      status: data.review ? data.review.status : "Completed",
       mode,
       score
     });
 
-    setOutput(
-      JSON.stringify(data, null, 2)
-    );
+    setOutput(JSON.stringify(data, null, 2));
   } catch (error) {
     setMeta({
       status: "Error",
@@ -274,10 +219,7 @@ async function checkVicdan() {
       score: null
     });
 
-    setOutput(
-      "Vicdan check error.\n\n" +
-      error.message
-    );
+    setOutput("Vicdan check error.\n\n" + error.message);
   } finally {
     setLoading(false);
   }
@@ -286,63 +228,57 @@ async function checkVicdan() {
 async function clearMemory() {
   stopSpeaking();
 
+  const mode = safeGet("mode").value;
+
   setMeta({
     status: "Memory Reset",
-    mode:
-      document.getElementById("mode").value,
+    mode,
     score: null
   });
 
-  setOutput(
-    "Clearing constitutional conversation memory..."
-  );
+  setOutput("Clearing constitutional conversation memory...");
 
   try {
-    const res = await fetch(
-      "/memory/clear",
-      {
-        method: "POST"
-      }
-    );
+    const res = await fetch("/memory/clear", {
+      method: "POST"
+    });
 
     const data = await res.json();
-
-    setOutput(
-      JSON.stringify(data, null, 2)
-    );
+    setOutput(JSON.stringify(data, null, 2));
   } catch (error) {
-    setOutput(
-      "Memory clear error.\n\n" +
-      error.message
-    );
+    setOutput("Memory clear error.\n\n" + error.message);
   }
 }
 
 async function speakCurrentResponse() {
+  const mode = safeGet("mode").value;
+
+  if (generatingVoice || speaking || currentAudio) {
+    setMeta({
+      status: "Already Speaking",
+      mode
+    });
+    updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
+    return;
+  }
+
   let text =
     latestResponse ||
-    document.getElementById("responseBox")
-      .textContent ||
+    (safeGet("responseBox") ? safeGet("responseBox").textContent : "") ||
     "";
 
   text = text.trim();
 
-  if (
-    !text ||
-    text === "Live response will appear here."
-  ) {
-    setOutput(
-      "Seslendirilecek cevap yok. Önce cevap üret."
-    );
+  if (!text || text === "Live response will appear here.") {
+    setOutput("Seslendirilecek cevap yok. Önce cevap üret.");
     return;
   }
 
-  stopSpeaking();
+  generatingVoice = true;
 
   setMeta({
     status: "Generating AI Voice",
-    mode:
-      document.getElementById("mode").value
+    mode
   });
 
   setAvatarSpeaking(true);
@@ -360,82 +296,50 @@ async function speakCurrentResponse() {
     });
 
     if (!res.ok) {
-      throw new Error(
-        `TTS backend error: ${res.status}`
-      );
+      throw new Error(`TTS backend error: ${res.status}`);
     }
 
     const audioBlob = await res.blob();
 
-    const audioUrl =
-      URL.createObjectURL(audioBlob);
-
-    currentAudio = new Audio(audioUrl);
-
+    currentAudioUrl = URL.createObjectURL(audioBlob);
+    currentAudio = new Audio(currentAudioUrl);
     currentAudio.preload = "auto";
+    currentAudio.volume = 1;
 
     currentAudio.onplay = () => {
+      generatingVoice = false;
       speaking = true;
-
       setAvatarSpeaking(true);
-
       setMeta({
         status: "Speaking AI Narration",
-        mode:
-          document.getElementById("mode")
-            .value
+        mode
       });
     };
 
     currentAudio.onended = () => {
-      speaking = false;
-
-      setAvatarSpeaking(false);
-
+      cleanupAudio();
       setMeta({
         status: "Completed",
-        mode:
-          document.getElementById("mode")
-            .value
+        mode
       });
-
-      URL.revokeObjectURL(audioUrl);
-
-      currentAudio = null;
     };
 
     currentAudio.onerror = () => {
-      speaking = false;
-
-      setAvatarSpeaking(false);
-
+      cleanupAudio();
       setMeta({
         status: "Voice Error",
-        mode:
-          document.getElementById("mode")
-            .value
+        mode
       });
-
-      setOutput(
-        text +
-        "\n\n[Voice Error: Audio playback failed.]"
-      );
-
-      URL.revokeObjectURL(audioUrl);
-
-      currentAudio = null;
+      setOutput(text + "\n\n[Voice Error: Audio playback failed.]");
     };
 
     await currentAudio.play();
   } catch (error) {
-    speaking = false;
-
-    setAvatarSpeaking(false);
+    cleanupAudio();
 
     setMeta({
       status: "Voice Error",
-      mode:
-        document.getElementById("mode").value
+      mode
     });
 
     setOutput(
@@ -448,96 +352,115 @@ async function speakCurrentResponse() {
 }
 
 function playArchivalVoice() {
-  stopSpeaking();
+  const mode = safeGet("mode").value;
+
+  if (generatingVoice || speaking || currentAudio) {
+    setMeta({
+      status: "Already Speaking",
+      mode
+    });
+    updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
+    return;
+  }
 
   const audioUrl =
     "/static/ataturk-archival-voice.mp3?v=" +
     Date.now();
 
   setMeta({
-    status: "Playing Archival Voice",
-    mode:
-      document.getElementById("mode").value
+    status: "Starting Archival Voice",
+    mode
   });
 
-  updateAvatarSpeech(
-    "Gerçek tarihî arşiv kaydı oynatılıyor."
-  );
+  updateAvatarSpeech("Gerçek tarihî arşiv kaydı başlatılıyor.");
 
   currentAudio = new Audio(audioUrl);
-
   currentAudio.preload = "auto";
-
   currentAudio.volume = 1;
 
-  speaking = true;
-
-  setAvatarSpeaking(true);
-
-  currentAudio.play()
-    .then(() => {
-      setMeta({
-        status: "Playing Archival Voice",
-        mode:
-          document.getElementById("mode")
-            .value
-      });
-    })
-    .catch((err) => {
-      speaking = false;
-
-      setAvatarSpeaking(false);
-
-      updateAvatarSpeech(
-        "Arşiv sesi oynatılamadı: " +
-        err.message
-      );
-
-      setMeta({
-        status: "Archive Voice Error",
-        mode:
-          document.getElementById("mode")
-            .value
-      });
+  currentAudio.onplay = () => {
+    speaking = true;
+    setAvatarSpeaking(true);
+    updateAvatarSpeech("Gerçek tarihî arşiv kaydı oynatılıyor.");
+    setMeta({
+      status: "Playing Archival Voice",
+      mode
     });
+  };
 
   currentAudio.onended = () => {
-    speaking = false;
-
-    setAvatarSpeaking(false);
-
+    cleanupAudio();
     setMeta({
       status: "Completed",
-      mode:
-        document.getElementById("mode")
-          .value
+      mode
     });
-
-    currentAudio = null;
+    updateAvatarSpeech("Arşiv sesi tamamlandı.");
   };
+
+  currentAudio.onerror = () => {
+    cleanupAudio();
+    updateAvatarSpeech(
+      "Arşiv sesi oynatılamadı. Dosya yolu: /static/ataturk-archival-voice.mp3"
+    );
+    setMeta({
+      status: "Archive Voice Error",
+      mode
+    });
+  };
+
+  currentAudio.play().catch((err) => {
+    cleanupAudio();
+    updateAvatarSpeech("Arşiv sesi oynatılamadı: " + err.message);
+    setMeta({
+      status: "Archive Voice Error",
+      mode
+    });
+  });
 }
 
-function stopSpeaking() {
+function cleanupAudio() {
   if (currentAudio) {
     try {
       currentAudio.pause();
-
-      currentAudio.currentTime = 0;
+      currentAudio.src = "";
+      currentAudio.load();
     } catch (e) {
-      console.warn(
-        "Audio stop warning:",
-        e
-      );
+      console.warn("Audio cleanup warning:", e);
     }
-
-    currentAudio = null;
   }
+
+  if (currentAudioUrl) {
+    try {
+      URL.revokeObjectURL(currentAudioUrl);
+    } catch (e) {
+      console.warn("URL revoke warning:", e);
+    }
+  }
+
+  currentAudio = null;
+  currentAudioUrl = null;
+  speaking = false;
+  generatingVoice = false;
+  setAvatarSpeaking(false);
+}
+
+function stopSpeaking() {
+  cleanupAudio();
 
   if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {
+      console.warn("Speech synthesis cancel warning:", e);
+    }
   }
 
-  speaking = false;
+  const modeElement = safeGet("mode");
 
-  setAvatarSpeaking(false);
+  setMeta({
+    status: "Stopped",
+    mode: modeElement ? modeElement.value : "constitutional"
+  });
+
+  updateAvatarSpeech("Ses durduruldu.");
 }
