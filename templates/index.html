@@ -16,23 +16,17 @@
       --text:#ece4d8;
       --muted:#b8ab91;
       --green:#4cff88;
-      --blue:#8bbcff;
     }
 
     *{
       box-sizing:border-box;
     }
 
-    html{
-      scroll-behavior:smooth;
-    }
-
     body{
       margin:0;
       background:
         radial-gradient(circle at top, rgba(216,169,79,.08), transparent 30%),
-        radial-gradient(circle at 80% 20%, rgba(139,188,255,.05), transparent 28%),
-        var(--bg);
+        #050505;
       color:var(--text);
       font-family:Inter,Arial,sans-serif;
     }
@@ -56,8 +50,7 @@
       }
     }
 
-    .hero-badge,
-    .truth-label{
+    .hero-badge{
       display:inline-flex;
       align-items:center;
       gap:10px;
@@ -71,27 +64,21 @@
       font-weight:800;
       letter-spacing:.035em;
     }
-<div style="
-  margin-top:14px;
-  color:#b8ab91;
-  font-size:14px;
-  letter-spacing:.08em;
-  font-weight:700;
-">
-  Crafted by Erhan · HOPEverse Civilization Canon
-</div>
 
-    .truth-label{
-      margin-top:24px;
-    }
-
-    .hero-dot,
-    .status-dot{
+    .hero-dot{
       width:10px;
       height:10px;
       border-radius:50%;
       background:var(--green);
       box-shadow:0 0 12px var(--green);
+    }
+
+    .signature{
+      margin-top:14px;
+      color:#b8ab91;
+      font-size:14px;
+      letter-spacing:.08em;
+      font-weight:700;
     }
 
     .mega-title{
@@ -107,6 +94,21 @@
       line-height:1.65;
       color:var(--muted);
       max-width:760px;
+    }
+
+    .truth-label{
+      margin-top:24px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--panel-border);
+      border-radius:999px;
+      padding:12px 18px;
+      color:var(--gold-soft);
+      background:rgba(0,0,0,.26);
+      font-weight:700;
+      font-size:13px;
+      letter-spacing:.04em;
     }
 
     .buttons{
@@ -160,9 +162,6 @@
       overflow:hidden;
       border-radius:28px;
       border:1px solid rgba(216,169,79,.18);
-      background:
-        radial-gradient(circle at center, rgba(216,169,79,.12), transparent 40%),
-        rgba(255,255,255,.03);
     }
 
     .avatar-photo{
@@ -213,10 +212,7 @@
     }
 
     .dashboard-grid,
-    .grid,
-    .reform-map,
-    .contributors,
-    .roadmap{
+    .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
       gap:16px;
@@ -224,10 +220,7 @@
     }
 
     .metric,
-    .card,
-    .reform-node,
-    .contributor,
-    .roadmap-step{
+    .card{
       border:1px solid rgba(216,169,79,.18);
       border-radius:22px;
       padding:20px;
@@ -235,8 +228,7 @@
         linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
     }
 
-    .metric span,
-    .mini-label{
+    .metric span{
       display:block;
       color:var(--muted);
       font-size:12px;
@@ -245,86 +237,12 @@
       text-transform:uppercase;
     }
 
-    .metric strong{
+    .metric strong,
+    .card strong{
       color:var(--gold-soft);
-      font-size:26px;
-    }
-
-    .card strong,
-    .reform-node strong,
-    .contributor strong,
-    .roadmap-step strong{
-      color:var(--gold-soft);
-      font-size:20px;
+      font-size:22px;
       display:block;
       margin-bottom:12px;
-    }
-
-    .node-status{
-      display:grid;
-      gap:12px;
-      margin-top:24px;
-    }
-
-    .node-row{
-      display:grid;
-      grid-template-columns:28px 1fr 130px;
-      gap:12px;
-      align-items:center;
-      padding:14px 16px;
-      border:1px solid rgba(216,169,79,.16);
-      border-radius:16px;
-      background:rgba(255,255,255,.035);
-    }
-
-    .timeline{
-      margin-top:34px;
-      border-left:2px solid rgba(216,169,79,.22);
-      padding-left:24px;
-    }
-
-    .timeline-item{
-      margin-bottom:34px;
-      position:relative;
-    }
-
-    .timeline-item::before{
-      content:"";
-      position:absolute;
-      left:-31px;
-      top:4px;
-      width:14px;
-      height:14px;
-      border-radius:50%;
-      background:var(--gold);
-      box-shadow:0 0 14px rgba(216,169,79,.6);
-    }
-
-    .timeline-item h3{
-      margin:0;
-      color:var(--gold-soft);
-    }
-
-    .timeline-item span{
-      color:var(--muted);
-      line-height:1.6;
-      display:block;
-      margin-top:8px;
-    }
-
-    .flow{
-      margin-top:24px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      align-items:center;
-    }
-
-    .flow div{
-      border:1px solid var(--panel-border);
-      border-radius:16px;
-      padding:14px 18px;
-      background:rgba(255,255,255,.04);
     }
 
     .engine-topbar{
@@ -332,6 +250,14 @@
       flex-wrap:wrap;
       gap:22px;
       margin-bottom:22px;
+    }
+
+    .mini-label{
+      display:block;
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.08em;
+      margin-bottom:4px;
     }
 
     .response-box{
@@ -359,6 +285,8 @@
       padding-bottom:60px;
       color:var(--muted);
       text-align:center;
+      font-size:14px;
+      letter-spacing:.08em;
     }
 
     #loader.hidden{
@@ -377,7 +305,11 @@
 
       <div class="hero-badge">
         <div class="hero-dot"></div>
-        HOPEverse Civilization Interface · v2.3 Constitutional Platform
+        HOPEverse Civilization Interface · v2.4 Constitutional Platform
+      </div>
+
+      <div class="signature">
+        Crafted by Erhan · HOPEverse Civilization Canon
       </div>
 
       <h1 class="mega-title">
@@ -398,8 +330,6 @@
       <div class="buttons">
         <a href="#dashboard">Dashboard</a>
         <a class="secondary" href="#demo">Launch Demo</a>
-        <a class="secondary" href="#roadmap">Roadmap</a>
-        <a class="secondary" href="#api">API</a>
       </div>
 
     </div>
@@ -407,6 +337,7 @@
     <div class="avatar-card">
 
       <div class="avatar-frame">
+
         <div class="holo-ring"></div>
 
         <img
@@ -414,6 +345,7 @@
           src="/static/ataturk-avatar.jpg"
           alt="Ataturk Historical Portrait"
         />
+
       </div>
 
       <div class="avatar-speech" id="avatarSpeech">
@@ -456,224 +388,6 @@
           <strong>Ready</strong>
         </div>
 
-      </div>
-
-      <div class="node-status">
-
-        <div class="node-row">
-          <div class="status-dot"></div>
-          <strong>Coordinator Node</strong>
-          <span>Prototype Ready</span>
-        </div>
-
-        <div class="node-row">
-          <div class="status-dot"></div>
-          <strong>Vicdan Node</strong>
-          <span>Active</span>
-        </div>
-
-        <div class="node-row">
-          <div class="status-dot"></div>
-          <strong>Reasoning Node</strong>
-          <span>Live LLM</span>
-        </div>
-
-        <div class="node-row">
-          <div class="status-dot"></div>
-          <strong>Archive Node</strong>
-          <span>Operational</span>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="section">
-
-    <h2>HOPEtensor Constitutional Architecture</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <strong>Vicdan Node</strong>
-        İnsan onuru, etik sınırlar ve anayasal risk analizi yapar.
-      </div>
-
-      <div class="card">
-        <strong>Reasoning Node</strong>
-        Canlı LLM cognition ve stratejik cevap üretimi sağlar.
-      </div>
-
-      <div class="card">
-        <strong>Verification Node</strong>
-        Halüsinasyon ve manipülasyon kontrolü yapar.
-      </div>
-
-      <div class="card">
-        <strong>Archive Node</strong>
-        Tarihî içerik ve reform bağlamı yönetir.
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="section">
-
-    <h2>Civilization Reform Map</h2>
-
-    <div class="reform-map">
-
-      <div class="reform-node">
-        <strong>Education</strong>
-        Tevhid-i Tedrisat ve bilimsel eğitim.
-      </div>
-
-      <div class="reform-node">
-        <strong>Law</strong>
-        Modern hukuk ve anayasal düzen.
-      </div>
-
-      <div class="reform-node">
-        <strong>Science</strong>
-        Akıl, deney ve teknik ilerleme.
-      </div>
-
-      <div class="reform-node">
-        <strong>Women’s Rights</strong>
-        Eşit yurttaşlık ve temsil.
-      </div>
-
-      <div class="reform-node">
-        <strong>Language</strong>
-        Okuryazarlık ve düşünce erişimi.
-      </div>
-
-      <div class="reform-node">
-        <strong>Economy</strong>
-        Üretim ve bağımsız kalkınma.
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="section" id="roadmap">
-
-    <h2>Execution Roadmap</h2>
-
-    <div class="roadmap">
-
-      <div class="roadmap-step">
-        <strong>Archive Intelligence</strong>
-        Nutuk, konuşmalar ve reform veritabanı.
-      </div>
-
-      <div class="roadmap-step">
-        <strong>Verification Layer</strong>
-        Observer audit ve hallucination scoring.
-      </div>
-
-      <div class="roadmap-step">
-        <strong>HOPEtensor Nodes</strong>
-        Multi-node constitutional reasoning.
-      </div>
-
-      <div class="roadmap-step">
-        <strong>Public Contributor Launch</strong>
-        Açık civilization contributor ağı.
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="section">
-
-    <h2>Civilization Timeline</h2>
-
-    <div class="timeline">
-
-      <div class="timeline-item">
-        <h3>1919 · National Resistance</h3>
-        <span>Ulusal egemenlik organizasyonu.</span>
-      </div>
-
-      <div class="timeline-item">
-        <h3>1920 · Grand National Assembly</h3>
-        <span>Egemenliğin millete geçişi.</span>
-      </div>
-
-      <div class="timeline-item">
-        <h3>1923 · Republic</h3>
-        <span>Modern anayasal devletin kuruluşu.</span>
-      </div>
-
-      <div class="timeline-item">
-        <h3>2030+ · Constitutional AI Era</h3>
-        <span>Dijital vicdan ve civilization intelligence.</span>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="section" id="api">
-
-    <h2>Atatürk Digital Twin API</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <strong>POST /stream</strong>
-        Streaming constitutional cognition.
-      </div>
-
-      <div class="card">
-        <strong>POST /demo</strong>
-        Full reasoning endpoint.
-      </div>
-
-      <div class="card">
-        <strong>POST /vicdan</strong>
-        Ethical review and scoring.
-      </div>
-
-      <div class="card">
-        <strong>POST /tts</strong>
-        AI narration voice engine.
-      </div>
-
-    </div>
-
-  </section>
-
-  <section class="section">
-
-    <h2>Contributor Gateway</h2>
-
-    <div class="contributors">
-
-      <div class="contributor">
-        <strong>Developers</strong>
-        API, frontend and HOPEtensor integration.
-      </div>
-
-      <div class="contributor">
-        <strong>Historians</strong>
-        Nutuk, archives and reform context.
-      </div>
-
-      <div class="contributor">
-        <strong>Educators</strong>
-        Civic intelligence and youth modules.
-      </div>
-
-      <div class="contributor">
-        <strong>Ethics Reviewers</strong>
-        Vicdan layer and constitutional guardrails.
       </div>
 
     </div>
@@ -823,10 +537,10 @@
 
   </section>
 
-<footer>
-  Crafted by Erhan · HOPEverse Civilization Canon ·
-  Atatürk Digital Twin · Constitutional Intelligence Platform · v2.3
-</footer>
+  <footer>
+    Crafted by Erhan · HOPEverse Civilization Canon ·
+    Atatürk Digital Twin · Constitutional Intelligence Platform · v2.4
+  </footer>
 
 </main>
 
