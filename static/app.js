@@ -3,22 +3,9 @@ let speaking = false;
 let generatingVoice = false;
 let currentAudio = null;
 let currentAudioUrl = null;
-let currentUtterance = null;
-let availableVoices = [];
 
 function safeGet(id) {
   return document.getElementById(id);
-}
-
-function loadVoices() {
-  if ("speechSynthesis" in window) {
-    availableVoices = window.speechSynthesis.getVoices();
-  }
-}
-
-if ("speechSynthesis" in window) {
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
 function setLoading(isLoading, message = "") {
@@ -94,28 +81,17 @@ async function ask() {
   const mode = safeGet("mode").value;
 
   stopSpeaking();
-
   latestResponse = "";
 
-  setMeta({
-    status: "Initializing",
-    mode,
-    score: null
-  });
-
+  setMeta({ status: "Initializing", mode, score: null });
   setOutput("");
   setLoading(true, "Streaming");
 
   try {
     const res = await fetch("/stream", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        question,
-        mode
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, mode })
     });
 
     if (!res.ok) {
@@ -156,10 +132,7 @@ async function ask() {
         }
 
         if (data.type === "done") {
-          setMeta({
-            status: "Completed",
-            mode
-          });
+          setMeta({ status: "Completed", mode });
         }
 
         if (data.type === "error") {
@@ -168,11 +141,7 @@ async function ask() {
       }
     }
   } catch (error) {
-    setMeta({
-      status: "Error",
-      mode,
-      score: null
-    });
+    setMeta({ status: "Error", mode, score: null });
 
     setOutput(
       "Streaming engine error.\n\n" +
@@ -190,25 +159,15 @@ async function checkVicdan() {
 
   stopSpeaking();
 
-  setMeta({
-    status: "Vicdan Review",
-    mode,
-    score: null
-  });
-
+  setMeta({ status: "Vicdan Review", mode, score: null });
   setOutput("Running Vicdan ethical review...");
   setLoading(true, "Reviewing");
 
   try {
     const res = await fetch("/vicdan", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        question,
-        mode
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, mode })
     });
 
     if (!res.ok) {
@@ -226,61 +185,19 @@ async function checkVicdan() {
 
     setOutput(JSON.stringify(data, null, 2));
   } catch (error) {
-    setMeta({
-      status: "Error",
-      mode,
-      score: null
-    });
-
+    setMeta({ status: "Error", mode, score: null });
     setOutput("Vicdan check error.\n\n" + error.message);
   } finally {
     setLoading(false);
   }
 }
 
-async function clearMemory() {
-  stopSpeaking();
-
+async function speakCurrentResponse() {
   const mode = safeGet("mode").value;
 
-  setMeta({
-    status: "Memory Reset",
-    mode,
-    score: null
-  });
-
-  setOutput("Clearing constitutional conversation memory...");
-
-  try {
-    const res = await fetch("/memory/clear", {
-      method: "POST"
-    });
-
-    const data = await res.json();
-    setOutput(JSON.stringify(data, null, 2));
-  } catch (error) {
-    setOutput("Memory clear error.\n\n" + error.message);
-  }
-}
-
-function speakCurrentResponse() {
-  const mode = safeGet("mode").value;
-
-  if (generatingVoice || speaking || currentAudio || currentUtterance) {
-    setMeta({
-      status: "Already Speaking",
-      mode
-    });
+  if (generatingVoice || speaking || currentAudio) {
+    setMeta({ status: "Already Speaking", mode });
     updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
-    return;
-  }
-
-  if (!("speechSynthesis" in window)) {
-    setMeta({
-      status: "Local Voice Unsupported",
-      mode
-    });
-    updateAvatarSpeech("Bu tarayıcı local seslendirmeyi desteklemiyor.");
     return;
   }
 
@@ -296,75 +213,80 @@ function speakCurrentResponse() {
     return;
   }
 
-  loadVoices();
+  generatingVoice = true;
 
-  const voices = availableVoices.length
-    ? availableVoices
-    : window.speechSynthesis.getVoices();
+  setMeta({
+    status: "Generating Premium AI Voice",
+    mode
+  });
 
-  const trVoice =
-    voices.find(v => v.lang === "tr-TR") ||
-    voices.find(v => v.lang && v.lang.toLowerCase().startsWith("tr")) ||
-    voices.find(v => v.name && v.name.toLowerCase().includes("turkish")) ||
-    voices.find(v => v.name && v.name.toLowerCase().includes("tolga")) ||
-    voices.find(v => v.name && v.name.toLowerCase().includes("yelda")) ||
-    voices[0];
+  setAvatarSpeaking(true);
+  updateAvatarSpeech("Premium AI anlatıcı sesi hazırlanıyor...");
 
-  currentUtterance = new SpeechSynthesisUtterance(text);
-  currentUtterance.lang = "tr-TR";
-  currentUtterance.rate = 0.88;
-  currentUtterance.pitch = 0.78;
-  currentUtterance.volume = 1;
+  try {
+    const res = await fetch("/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        voice: "onyx"
+      })
+    });
 
-  if (trVoice) {
-    currentUtterance.voice = trVoice;
+    if (!res.ok) {
+      throw new Error(`TTS backend error: ${res.status}`);
+    }
+
+    const audioBlob = await res.blob();
+
+    currentAudioUrl = URL.createObjectURL(audioBlob);
+    currentAudio = new Audio(currentAudioUrl);
+    currentAudio.preload = "auto";
+    currentAudio.volume = 1;
+
+    currentAudio.onplay = () => {
+      generatingVoice = false;
+      speaking = true;
+      setAvatarSpeaking(true);
+      setMeta({
+        status: "Speaking Premium AI Narration",
+        mode
+      });
+      updateAvatarSpeech("Premium AI anlatıcı sesi oynatılıyor.");
+    };
+
+    currentAudio.onended = () => {
+      cleanupAudio();
+      setMeta({ status: "Completed", mode });
+      updateAvatarSpeech("Seslendirme tamamlandı.");
+    };
+
+    currentAudio.onerror = () => {
+      cleanupAudio();
+      setMeta({ status: "Voice Error", mode });
+      setOutput(text + "\n\n[Voice Error: Audio playback failed.]");
+    };
+
+    await currentAudio.play();
+  } catch (error) {
+    cleanupAudio();
+
+    setMeta({ status: "Voice Error", mode });
+
+    setOutput(
+      text +
+      "\n\n[Voice Error: " +
+      error.message +
+      "]\n\nCheck OPENAI_API_KEY, /tts endpoint and Render logs."
+    );
   }
-
-  currentUtterance.onstart = () => {
-    speaking = true;
-    setAvatarSpeaking(true);
-    setMeta({
-      status: "Speaking Local Voice",
-      mode
-    });
-  };
-
-  currentUtterance.onend = () => {
-    currentUtterance = null;
-    speaking = false;
-    setAvatarSpeaking(false);
-    setMeta({
-      status: "Completed",
-      mode
-    });
-  };
-
-  currentUtterance.onerror = (event) => {
-    currentUtterance = null;
-    speaking = false;
-    setAvatarSpeaking(false);
-    setMeta({
-      status: "Local Voice Error",
-      mode
-    });
-    updateAvatarSpeech("Local seslendirme hatası: " + (event.error || "unknown"));
-  };
-
-  window.speechSynthesis.cancel();
-
-  setTimeout(() => {
-    window.speechSynthesis.speak(currentUtterance);
-  }, 120);
 }
 
 function playArchivalVoice() {
   const mode = safeGet("mode").value;
 
-  if (generatingVoice || speaking || currentAudio || currentUtterance) {
-    setMeta({
-      status: "Already Speaking",
-      mode
-    });
+  if (generatingVoice || speaking || currentAudio) {
+    setMeta({ status: "Already Speaking", mode });
     updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
     return;
   }
@@ -396,10 +318,7 @@ function playArchivalVoice() {
 
   currentAudio.onended = () => {
     cleanupAudio();
-    setMeta({
-      status: "Completed",
-      mode
-    });
+    setMeta({ status: "Completed", mode });
     updateAvatarSpeech("Arşiv sesi tamamlandı.");
   };
 
@@ -460,11 +379,6 @@ function stopSpeaking() {
       console.warn("Speech synthesis cancel warning:", e);
     }
   }
-
-  currentUtterance = null;
-  speaking = false;
-  generatingVoice = false;
-  setAvatarSpeaking(false);
 
   const modeElement = safeGet("mode");
 

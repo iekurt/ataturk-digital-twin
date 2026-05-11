@@ -42,16 +42,17 @@ Teknoloji, insan onuruna ve toplum yararına hizmet etmelidir.
         "topic": "gençlik",
         "keywords": ["gençlik", "genç", "gelecek", "nesil", "çocuk", "umut"],
         "memory": """
-Cumhuriyetin sürekliliği genç kuşakların aklına, ahlakına,
-eğitimine ve sorumluluk bilincine bağlıdır.
+Cumhuriyetin sürekliliği genç kuşakların aklına,
+ahlakına, eğitimine ve sorumluluk bilincine bağlıdır.
 Gençlik yalnızca mirasçı değil, aynı zamanda kurucu enerjidir.
 """
     },
     {
         "topic": "bağımsızlık",
-        "keywords": ["bağımsızlık", "istiklal", "özgürlük", "tam bağımsızlık", "mandat", "manda"],
+        "keywords": ["bağımsızlık", "istiklal", "özgürlük", "tam bağımsızlık", "manda", "mandat"],
         "memory": """
-Tam bağımsızlık; siyasi, ekonomik, kültürel, askerî ve fikrî bağımsızlıkla mümkündür.
+Tam bağımsızlık; siyasi, ekonomik, kültürel,
+askerî ve fikrî bağımsızlıkla mümkündür.
 Bağımsız olmayan akıl, bağımsız devlet kuramaz.
 """
     },
@@ -60,7 +61,7 @@ Bağımsız olmayan akıl, bağımsız devlet kuramaz.
         "keywords": ["medeniyet", "uygarlık", "çağdaşlık", "ilerleme", "modernleşme"],
         "memory": """
 Cumhuriyetin hedefi çağdaş uygarlık seviyesinin üzerine çıkmaktır.
-Medeniyet, yalnızca teknik ilerleme değil; hukuk, eğitim, bilim,
+Medeniyet yalnızca teknik ilerleme değil; hukuk, eğitim, bilim,
 kadın hakları, üretim ve toplumsal sorumluluk bütünüdür.
 """
     },
@@ -189,6 +190,13 @@ def retrieve_constitutional_memory(question: str, mode: str = "constitutional") 
             NUTUK_MEMORY[6]["memory"].strip()
         ])
 
+    if "hopeverse" in mode_text or "hopetensor" in mode_text or "hope" in q:
+        matched.extend([
+            NUTUK_MEMORY[1]["memory"].strip(),
+            NUTUK_MEMORY[7]["memory"].strip(),
+            NUTUK_MEMORY[4]["memory"].strip()
+        ])
+
     unique = []
     for m in matched:
         if m not in unique:
@@ -309,7 +317,7 @@ def stream_llm(question: str, mode: str):
     add_memory(DEFAULT_SESSION, "assistant", full_text)
 
 
-def text_to_speech(text: str, voice: str = "cedar") -> bytes:
+def text_to_speech(text: str, voice: str = "onyx") -> bytes:
     clean_text = (text or "").strip()
 
     if not clean_text:
@@ -318,33 +326,34 @@ def text_to_speech(text: str, voice: str = "cedar") -> bytes:
     if len(clean_text) > 4000:
         clean_text = clean_text[:4000]
 
-    allowed_voices = {
-        "alloy",
-        "ash",
-        "ballad",
-        "coral",
-        "echo",
-        "fable",
-        "nova",
-        "onyx",
-        "sage",
-        "shimmer",
-        "verse",
-        "marin",
-        "cedar"
-    }
-
-    selected_voice = voice if voice in allowed_voices else "cedar"
-
     speech = client.audio.speech.create(
         model="gpt-4o-mini-tts",
-        voice=selected_voice,
+        voice="onyx",
         input=clean_text,
         instructions="""
-Speak in Turkish with a calm, dignified, mature, statesmanlike tone.
-Do not imitate Mustafa Kemal Atatürk's real voice.
-This is a synthetic educational narration inspired by constitutional seriousness,
-clarity, civic responsibility, science, reason and peace.
+Türkçe konuş.
+
+Ton:
+- ciddi
+- ağırbaşlı
+- devlet adamı gibi
+- sakin ama güçlü
+- hitabet ritmi taşıyan
+- net artikülasyonlu
+- karizmatik
+- tarihî konuşma hissi veren
+
+Konuşma biçimi:
+- cümle sonlarında hafif durakla
+- acele etme
+- vurgu noktalarını belirgin oku
+- kelimeleri yuvarlama
+- tok ve kontrollü ton kullan
+- nutuk verir gibi değil, kontrollü devlet konuşması gibi konuş
+
+ÖNEMLİ:
+Bu ses Mustafa Kemal Atatürk'ün gerçek sesi değildir.
+Tarihsel ciddiyet taşıyan sentetik bir anlatıcıdır.
 """,
         response_format="mp3"
     )
