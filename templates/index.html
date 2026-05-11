@@ -19,8 +19,13 @@
       --blue:#8bbcff;
     }
 
-    *{ box-sizing:border-box; }
-    html{ scroll-behavior:smooth; }
+    *{
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
 
     body{
       margin:0;
@@ -46,7 +51,9 @@
     }
 
     @media(max-width:980px){
-      .hero-grid{ grid-template-columns:1fr; }
+      .hero-grid{
+        grid-template-columns:1fr;
+      }
     }
 
     .hero-badge,
@@ -65,7 +72,9 @@
       letter-spacing:.035em;
     }
 
-    .truth-label{ margin-top:24px; }
+    .truth-label{
+      margin-top:24px;
+    }
 
     .hero-dot,
     .status-dot{
@@ -82,6 +91,33 @@
       font-size:14px;
       letter-spacing:.08em;
       font-weight:700;
+    }
+
+    .doctrine{
+      margin-top:24px;
+      margin-bottom:28px;
+      border-left:3px solid var(--gold);
+      padding-left:20px;
+    }
+
+    .doctrine-title{
+      color:var(--gold-soft);
+      font-size:13px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+      font-weight:900;
+    }
+
+    .doctrine-line{
+      font-size:22px;
+      line-height:1.7;
+      color:var(--text);
+      font-weight:700;
+    }
+
+    .doctrine-line:last-child{
+      color:var(--gold-soft);
     }
 
     .mega-title{
@@ -187,7 +223,9 @@
       min-height:92px;
     }
 
-    .section{ margin-top:90px; }
+    .section{
+      margin-top:90px;
+    }
 
     .section h2{
       font-size:42px;
@@ -247,26 +285,6 @@
       display:block;
       margin-bottom:12px;
     }
-
-    .node-status{
-      display:grid;
-      gap:12px;
-      margin-top:24px;
-    }
-
-    .node-row{
-      display:grid;
-      grid-template-columns:28px 1fr 130px;
-      gap:12px;
-      align-items:center;
-      padding:14px 16px;
-      border:1px solid rgba(216,169,79,.16);
-      border-radius:16px;
-      background:rgba(255,255,255,.035);
-    }
-
-    .node-row strong{ color:var(--text); }
-    .node-row span{ color:var(--muted); font-size:13px; }
 
     .timeline{
       margin-top:34px;
@@ -332,7 +350,9 @@
       border-bottom:1px solid rgba(216,169,79,.12);
     }
 
-    .api-row:last-child{ border-bottom:none; }
+    .api-row:last-child{
+      border-bottom:none;
+    }
 
     .api-method{
       padding:16px;
@@ -388,7 +408,9 @@
       letter-spacing:.08em;
     }
 
-    #loader.hidden{ display:none; }
+    #loader.hidden{
+      display:none;
+    }
   </style>
 </head>
 
@@ -397,14 +419,36 @@
 <main class="wrap">
 
   <section class="hero-grid">
+
     <div>
+
       <div class="hero-badge">
         <div class="hero-dot"></div>
-        HOPEverse Civilization Interface · v2.5 Full Platform Restore
+        HOPEverse Civilization Interface · v2.6
       </div>
 
       <div class="signature">
         Crafted by Erhan · HOPEverse Civilization Canon
+      </div>
+
+      <div class="doctrine">
+
+        <div class="doctrine-title">
+          Central Doctrine
+        </div>
+
+        <div class="doctrine-line">
+          Peace at home.
+        </div>
+
+        <div class="doctrine-line">
+          Peace in the world.
+        </div>
+
+        <div class="doctrine-line">
+          Peace in the universe and HOPEverse.
+        </div>
+
       </div>
 
       <h1 class="mega-title">
@@ -422,187 +466,29 @@
         HISTORICAL ARCHIVE ≠ AI GENERATED RESPONSE
       </div>
 
-      <div class="buttons">
-        <a href="#dashboard">Dashboard</a>
-        <a class="secondary" href="#architecture">Architecture</a>
-        <a class="secondary" href="#reforms">Reform Map</a>
-        <a class="secondary" href="#timeline">Timeline</a>
-        <a class="secondary" href="#roadmap">Roadmap</a>
-        <a class="secondary" href="#demo">Launch Demo</a>
-      </div>
     </div>
 
     <div class="avatar-card">
+
       <div class="avatar-frame">
+
         <div class="holo-ring"></div>
-        <img class="avatar-photo" src="/static/ataturk-avatar.jpg" alt="Atatürk" />
+
+        <img
+          class="avatar-photo"
+          src="/static/ataturk-avatar.jpg"
+          alt="Atatürk"
+        />
+
       </div>
 
       <div class="avatar-speech" id="avatarSpeech">
-        Hazırım. Sorunuzu Cumhuriyet aklı, bilim, egemenlik ve vicdan süzgecinden geçireceğim.
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="dashboard">
-    <h2>Live Platform Dashboard</h2>
-    <p>Constitutional intelligence platform operational status.</p>
-
-    <div class="dashboard-panel">
-      <div class="dashboard-grid">
-        <div class="metric"><span>Engine</span><strong>Online</strong></div>
-        <div class="metric"><span>Reasoning</span><strong>Streaming</strong></div>
-        <div class="metric"><span>Vicdan Layer</span><strong>Active</strong></div>
-        <div class="metric"><span>Archive Mode</span><strong>Ready</strong></div>
+        Hazırım. Sorunuzu Cumhuriyet aklı ve vicdan süzgecinden geçireceğim.
       </div>
 
-      <div class="node-status">
-        <div class="node-row"><div class="status-dot"></div><strong>Coordinator Node</strong><span>Prototype Ready</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Vicdan Node</strong><span>Active</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Reasoning Node</strong><span>Live LLM</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Archive Node</strong><span>Operational</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Observer Node</strong><span>Next Build</span></div>
-      </div>
     </div>
+
   </section>
-
-  <section class="section" id="architecture">
-    <h2>HOPEtensor Constitutional Architecture</h2>
-    <p>Sistem klasik chatbot değildir. Çok katmanlı civilization cognition mimarisi olarak tasarlanmıştır.</p>
-
-    <div class="grid">
-      <div class="card"><strong>Vicdan Node</strong>İnsan onuru, etik sınırlar ve anayasal risk analizi yapar.</div>
-      <div class="card"><strong>Reasoning Node</strong>Canlı LLM cognition ve stratejik cevap üretimi sağlar.</div>
-      <div class="card"><strong>Verification Node</strong>Halüsinasyon, çelişki ve manipülasyon kontrolü yapar.</div>
-      <div class="card"><strong>Archive Node</strong>Tarihî içerik, Nutuk, reformlar ve arşiv bağlamını yönetir.</div>
-    </div>
-  </section>
-
-  <section class="section" id="reforms">
-    <h2>Civilization Reform Map</h2>
-    <p>Cumhuriyet devrimleri, modern devlet, bilimsel toplum ve yurttaş egemenliği için medeniyet modülleridir.</p>
-
-    <div class="reform-map">
-      <div class="reform-node"><strong>Education</strong>Tevhid-i Tedrisat, bilimsel eğitim, ortak yurttaşlık bilinci.</div>
-      <div class="reform-node"><strong>Law</strong>Modern hukuk, eşit yurttaşlık, laik yargı ve kurumsal düzen.</div>
-      <div class="reform-node"><strong>Science</strong>Akıl, deney, teknik ilerleme ve çağdaş bilgi üretimi.</div>
-      <div class="reform-node"><strong>Women’s Rights</strong>Siyasal temsil, eğitim, hukuk önünde eşitlik ve toplumsal katılım.</div>
-      <div class="reform-node"><strong>Language</strong>Ulusal bilinç, okuryazarlık ve düşünce erişilebilirliği.</div>
-      <div class="reform-node"><strong>Economy</strong>Üretim, bağımsızlık, kurumsal kapasite ve kalkınma disiplini.</div>
-    </div>
-  </section>
-
-  <section class="section" id="timeline">
-    <h2>Civilization Timeline</h2>
-
-    <div class="timeline">
-      <div class="timeline-item"><h3>1919 · National Resistance</h3><span>Ulusal egemenlik fikrinin yeniden inşası ve bağımsızlık organizasyonu.</span></div>
-      <div class="timeline-item"><h3>1920 · Grand National Assembly</h3><span>Egemenliğin saraydan millete geçişi.</span></div>
-      <div class="timeline-item"><h3>1923 · Republic</h3><span>Modern anayasal devlet mimarisinin kuruluşu.</span></div>
-      <div class="timeline-item"><h3>1924–1937 · Civilization Reforms</h3><span>Eğitim, hukuk, bilim, kadın hakları, ekonomi ve laik devlet reformları.</span></div>
-      <div class="timeline-item"><h3>2030+ · Constitutional AI Era</h3><span>Dijital vicdan, anayasal yapay zekâ ve civilization intelligence sistemleri.</span></div>
-    </div>
-  </section>
-
-  <section class="section" id="statecraft">
-    <h2>Statecraft Simulation</h2>
-    <p>Sistem gelecekte anayasal kriz simülasyonu, stratejik devlet aklı ve civilization-scale governance modelleri için kullanılabilir.</p>
-
-    <div class="flow">
-      <div>Economic Crisis</div>
-      <span>→</span>
-      <div>Ethical Review</div>
-      <span>→</span>
-      <div>Constitutional Analysis</div>
-      <span>→</span>
-      <div>Strategic Response</div>
-      <span>→</span>
-      <div>Public Stability</div>
-    </div>
-  </section>
-
-  <section class="section" id="roadmap">
-    <h2>Execution Roadmap</h2>
-    <p>Bu roadmap, MVP’nin platforma dönüşmesi için sıradaki build aşamalarını gösterir.</p>
-
-    <div class="roadmap">
-      <div class="roadmap-step"><strong>Archive Intelligence</strong>Nutuk, konuşmalar, tarihsel belgeler ve reform veritabanı.</div>
-      <div class="roadmap-step"><strong>Verification Layer</strong>Kaynak kontrolü, hallucination scoring ve observer audit.</div>
-      <div class="roadmap-step"><strong>HOPEtensor Nodes</strong>Reasoning, Vicdan, Archive ve Strategy node ayrıştırması.</div>
-      <div class="roadmap-step"><strong>Public Contributor Launch</strong>Geliştirici, tarihçi, eğitimci ve etik reviewer onboarding.</div>
-    </div>
-  </section>
-
-  <section class="section" id="api">
-    <h2>Atatürk Digital Twin API</h2>
-    <p>Bu MVP dış sistemlere bağlanabilecek bir constitutional intelligence API çekirdeğidir.</p>
-
-    <div class="api-box">
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/stream · canlı streaming constitutional cognition</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/demo · tam yanıtlı reasoning endpoint</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/vicdan · etik ön kontrol ve risk skoru</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/tts · AI narrator voice generation</div></div>
-      <div class="api-row"><div class="api-method">GET</div><div class="api-path">/timeline · tarihsel civilization context</div></div>
-    </div>
-  </section>
-
-  <section class="section" id="contributors">
-    <h2>Contributor Gateway</h2>
-    <p>Bu proje geliştirici, tarihçi, eğitimci, etik denetçi ve altyapı katkıcıları için açık bir civilization build alanıdır.</p>
-
-    <div class="contributors">
-      <div class="contributor"><strong>Developers</strong>API, frontend, streaming, memory, routing ve HOPEtensor node entegrasyonu.</div>
-      <div class="contributor"><strong>Historians</strong>Nutuk, arşivler, konuşmalar, reformlar ve kaynaklı tarihsel bağlam.</div>
-      <div class="contributor"><strong>Educators</strong>Cumhuriyet eğitimi, civic intelligence ve gençlik modülleri.</div>
-      <div class="contributor"><strong>Ethics Reviewers</strong>Vicdan layer, güvenlik, manipülasyon önleme ve anayasal guardrails.</div>
-    </div>
-  </section>
-
-  <section class="section" id="demo">
-    <h2>Live Constitutional Cognition Demo</h2>
-    <p>Sorunuzu yazın. Sistem canlı reasoning ile cevap üretsin.</p>
-
-    <label>Question</label>
-    <input id="q" value="Yapay zekâ çağında anayasal bilinç neden gereklidir?" />
-
-    <label>Reasoning Mode</label>
-    <select id="mode">
-      <option value="constitutional">Constitutional Cognition</option>
-      <option value="atatürk_principles">Atatürk Principles</option>
-      <option value="republican_statecraft">Republican Statecraft</option>
-      <option value="education">Education & Enlightenment</option>
-      <option value="ai_governance">AI Governance</option>
-      <option value="civilization">Civilization Strategy</option>
-      <option value="crisis_response">Crisis Response</option>
-      <option value="youth_address">Address to Youth</option>
-      <option value="archive_context">Historical Archive Context</option>
-      <option value="hopeverse">HOPEverse / HOPEtensor Strategy</option>
-    </select>
-
-    <div class="buttons">
-      <button onclick="ask()">Run Live Engine</button>
-      <button class="secondary" onclick="speakCurrentResponse()">Speak AI Response</button>
-      <button class="secondary" onclick="playArchivalVoice()">Play Archive Voice</button>
-      <button class="secondary" onclick="stopSpeaking()">Stop Voice</button>
-      <button class="secondary" onclick="checkVicdan()">Vicdan Check</button>
-    </div>
-
-    <div class="engine-panel">
-      <div class="engine-topbar">
-        <div><span class="mini-label">ENGINE STATUS</span><strong id="engineStatus">Idle</strong></div>
-        <div><span class="mini-label">MODE</span><strong id="modeBadge">constitutional</strong></div>
-        <div><span class="mini-label">VICDAN SCORE</span><strong id="vicdanScore">—</strong></div>
-      </div>
-
-      <div id="loader" class="hidden">Constitutional cognition pipeline running...</div>
-      <div class="response-box" id="responseBox">Live response will appear here.</div>
-    </div>
-  </section>
-
-  <footer>
-    Crafted by Erhan · HOPEverse Civilization Canon ·
-    Atatürk Digital Twin · Constitutional Intelligence Platform · v2.5
-  </footer>
 
 </main>
 

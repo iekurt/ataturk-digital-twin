@@ -8,6 +8,29 @@ function safeGet(id) {
   return document.getElementById(id);
 }
 
+function escapeHTML(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderResponseWithCursor(text) {
+  const box = safeGet("responseBox");
+  if (!box) return;
+
+  const safeText = escapeHTML(text || "").replace(/\n/g, "<br>");
+
+  box.innerHTML =
+    safeText +
+    `<span class="stream-cursor"></span>`;
+}
+
+function setThinkingState(text) {
+  const thinking = safeGet("thinkingState");
+  if (thinking) thinking.textContent = text;
+}
+
 function setLoading(isLoading, message = "") {
   const loader = safeGet("loader");
   const status = safeGet("engineStatus");
@@ -24,19 +47,28 @@ function setLoading(isLoading, message = "") {
 
 function setOutput(text) {
   latestResponse = text || "";
-  const box = safeGet("responseBox");
-  if (box) box.textContent = latestResponse;
+  renderResponseWithCursor(latestResponse);
   updateAvatarSpeech(latestResponse);
 }
 
 function appendOutput(text) {
   latestResponse += text || "";
-  const box = safeGet("responseBox");
-  if (box) box.textContent += text || "";
+  renderResponseWithCursor(latestResponse);
 
-  if (latestResponse.length % 120 < (text || "").length) {
-    updateAvatarSpeech(latestResponse.slice(-260));
-  }
+  const states = [
+    "Analyzing constitutional context...",
+    "Consulting civilization memory...",
+    "Evaluating ethical implications...",
+    "Running Vicdan layer...",
+    "Building strategic response...",
+    "Streaming cognition..."
+  ];
+
+  setThinkingState(
+    states[Math.floor(Math.random() * states.length)]
+  );
+
+  updateAvatarSpeech(latestResponse.slice(-260));
 }
 
 function setMeta({ status, mode, score }) {
@@ -57,12 +89,16 @@ function updateAvatarSpeech(text) {
   if (!speech) return;
 
   if (!text || text.trim().length === 0) {
-    speech.textContent = "Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.";
+    speech.textContent =
+      "Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.";
     return;
   }
 
   const clean = text.replace(/\s+/g, " ").trim();
-  speech.textContent = clean.length > 220 ? clean.slice(0, 220) + "..." : clean;
+  speech.textContent =
+    clean.length > 220
+      ? clean.slice(0, 220) + "..."
+      : clean;
 }
 
 function setAvatarSpeaking(active) {
@@ -77,21 +113,41 @@ function setAvatarSpeaking(active) {
 }
 
 async function ask() {
-  const question = safeGet("q").value;
-  const mode = safeGet("mode").value;
+  const questionInput = safeGet("q");
+  const modeInput = safeGet("mode");
+
+  if (!questionInput || !modeInput) {
+    console.warn("Demo input elements not found.");
+    return;
+  }
+
+  const question = questionInput.value;
+  const mode = modeInput.value;
 
   stopSpeaking();
+
   latestResponse = "";
 
-  setMeta({ status: "Initializing", mode, score: null });
+  setMeta({
+    status: "Initializing",
+    mode,
+    score: null
+  });
+
   setOutput("");
+  setThinkingState("Preparing constitutional cognition...");
   setLoading(true, "Streaming");
 
   try {
     const res = await fetch("/stream", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, mode })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        question,
+        mode
+      })
     });
 
     if (!res.ok) {
@@ -104,6 +160,7 @@ async function ask() {
 
     while (true) {
       const { value, done } = await reader.read();
+
       if (done) break;
 
       buffer += decoder.decode(value, { stream: true });
@@ -125,6 +182,8 @@ async function ask() {
             mode: data.mode || mode,
             score: data.vicdan && data.vicdan.score
           });
+
+          setThinkingState("Vicdan layer active...");
         }
 
         if (data.type === "token") {
@@ -132,7 +191,12 @@ async function ask() {
         }
 
         if (data.type === "done") {
-          setMeta({ status: "Completed", mode });
+          setMeta({
+            status: "Completed",
+            mode
+          });
+
+          setThinkingState("Cognition completed.");
         }
 
         if (data.type === "error") {
@@ -141,7 +205,13 @@ async function ask() {
       }
     }
   } catch (error) {
-    setMeta({ status: "Error", mode, score: null });
+    setMeta({
+      status: "Error",
+      mode,
+      score: null
+    });
+
+    setThinkingState("Engine error.");
 
     setOutput(
       "Streaming engine error.\n\n" +
@@ -154,20 +224,39 @@ async function ask() {
 }
 
 async function checkVicdan() {
-  const question = safeGet("q").value;
-  const mode = safeGet("mode").value;
+  const questionInput = safeGet("q");
+  const modeInput = safeGet("mode");
+
+  if (!questionInput || !modeInput) {
+    console.warn("Demo input elements not found.");
+    return;
+  }
+
+  const question = questionInput.value;
+  const mode = modeInput.value;
 
   stopSpeaking();
 
-  setMeta({ status: "Vicdan Review", mode, score: null });
+  setMeta({
+    status: "Vicdan Review",
+    mode,
+    score: null
+  });
+
   setOutput("Running Vicdan ethical review...");
+  setThinkingState("Reviewing ethical constraints...");
   setLoading(true, "Reviewing");
 
   try {
     const res = await fetch("/vicdan", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, mode })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        question,
+        mode
+      })
     });
 
     if (!res.ok) {
@@ -183,20 +272,62 @@ async function checkVicdan() {
       score
     });
 
+    setThinkingState("Vicdan review completed.");
     setOutput(JSON.stringify(data, null, 2));
   } catch (error) {
-    setMeta({ status: "Error", mode, score: null });
+    setMeta({
+      status: "Error",
+      mode,
+      score: null
+    });
+
+    setThinkingState("Vicdan review error.");
     setOutput("Vicdan check error.\n\n" + error.message);
   } finally {
     setLoading(false);
   }
 }
 
+async function clearMemory() {
+  stopSpeaking();
+
+  const modeInput = safeGet("mode");
+  const mode = modeInput ? modeInput.value : "constitutional";
+
+  setMeta({
+    status: "Memory Reset",
+    mode,
+    score: null
+  });
+
+  setThinkingState("Clearing memory...");
+  setOutput("Clearing constitutional conversation memory...");
+
+  try {
+    const res = await fetch("/memory/clear", {
+      method: "POST"
+    });
+
+    const data = await res.json();
+
+    setThinkingState("Memory cleared.");
+    setOutput(JSON.stringify(data, null, 2));
+  } catch (error) {
+    setThinkingState("Memory clear error.");
+    setOutput("Memory clear error.\n\n" + error.message);
+  }
+}
+
 async function speakCurrentResponse() {
-  const mode = safeGet("mode").value;
+  const modeInput = safeGet("mode");
+  const mode = modeInput ? modeInput.value : "constitutional";
 
   if (generatingVoice || speaking || currentAudio) {
-    setMeta({ status: "Already Speaking", mode });
+    setMeta({
+      status: "Already Speaking",
+      mode
+    });
+
     updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
     return;
   }
@@ -220,13 +351,16 @@ async function speakCurrentResponse() {
     mode
   });
 
+  setThinkingState("Generating premium voice...");
   setAvatarSpeaking(true);
   updateAvatarSpeech("Premium AI anlatıcı sesi hazırlanıyor...");
 
   try {
     const res = await fetch("/tts", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         text,
         voice: "onyx"
@@ -239,6 +373,14 @@ async function speakCurrentResponse() {
 
     const audioBlob = await res.blob();
 
+    if (!audioBlob || audioBlob.size < 1000) {
+      throw new Error(
+        `Invalid or tiny audio blob: ${
+          audioBlob ? audioBlob.size : 0
+        } bytes`
+      );
+    }
+
     currentAudioUrl = URL.createObjectURL(audioBlob);
     currentAudio = new Audio(currentAudioUrl);
     currentAudio.preload = "auto";
@@ -248,22 +390,37 @@ async function speakCurrentResponse() {
       generatingVoice = false;
       speaking = true;
       setAvatarSpeaking(true);
+
       setMeta({
-        status: "Speaking Premium AI Narration",
+        status: `OpenAI TTS Playing · ${Math.round(audioBlob.size / 1024)} KB`,
         mode
       });
-      updateAvatarSpeech("Premium AI anlatıcı sesi oynatılıyor.");
+
+      setThinkingState("Premium narration playing.");
+      updateAvatarSpeech("OpenAI premium anlatıcı sesi oynatılıyor.");
     };
 
     currentAudio.onended = () => {
       cleanupAudio();
-      setMeta({ status: "Completed", mode });
+
+      setMeta({
+        status: "Completed",
+        mode
+      });
+
+      setThinkingState("Voice completed.");
       updateAvatarSpeech("Seslendirme tamamlandı.");
     };
 
     currentAudio.onerror = () => {
       cleanupAudio();
-      setMeta({ status: "Voice Error", mode });
+
+      setMeta({
+        status: "Voice Error",
+        mode
+      });
+
+      setThinkingState("Voice playback error.");
       setOutput(text + "\n\n[Voice Error: Audio playback failed.]");
     };
 
@@ -271,7 +428,12 @@ async function speakCurrentResponse() {
   } catch (error) {
     cleanupAudio();
 
-    setMeta({ status: "Voice Error", mode });
+    setMeta({
+      status: "Voice Error",
+      mode
+    });
+
+    setThinkingState("Voice generation error.");
 
     setOutput(
       text +
@@ -283,10 +445,15 @@ async function speakCurrentResponse() {
 }
 
 function playArchivalVoice() {
-  const mode = safeGet("mode").value;
+  const modeInput = safeGet("mode");
+  const mode = modeInput ? modeInput.value : "constitutional";
 
   if (generatingVoice || speaking || currentAudio) {
-    setMeta({ status: "Already Speaking", mode });
+    setMeta({
+      status: "Already Speaking",
+      mode
+    });
+
     updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
     return;
   }
@@ -300,6 +467,7 @@ function playArchivalVoice() {
     mode
   });
 
+  setThinkingState("Starting archive voice.");
   updateAvatarSpeech("Gerçek tarihî arşiv kaydı başlatılıyor.");
 
   currentAudio = new Audio(audioUrl);
@@ -309,37 +477,55 @@ function playArchivalVoice() {
   currentAudio.onplay = () => {
     speaking = true;
     setAvatarSpeaking(true);
+
     updateAvatarSpeech("Gerçek tarihî arşiv kaydı oynatılıyor.");
+
     setMeta({
       status: "Playing Archival Voice",
       mode
     });
+
+    setThinkingState("Archive voice playing.");
   };
 
   currentAudio.onended = () => {
     cleanupAudio();
-    setMeta({ status: "Completed", mode });
+
+    setMeta({
+      status: "Completed",
+      mode
+    });
+
+    setThinkingState("Archive voice completed.");
     updateAvatarSpeech("Arşiv sesi tamamlandı.");
   };
 
   currentAudio.onerror = () => {
     cleanupAudio();
+
     updateAvatarSpeech(
       "Arşiv sesi oynatılamadı. Dosya yolu: /static/ataturk-archival-voice.mp3"
     );
+
     setMeta({
       status: "Archive Voice Error",
       mode
     });
+
+    setThinkingState("Archive voice error.");
   };
 
   currentAudio.play().catch((err) => {
     cleanupAudio();
+
     updateAvatarSpeech("Arşiv sesi oynatılamadı: " + err.message);
+
     setMeta({
       status: "Archive Voice Error",
       mode
     });
+
+    setThinkingState("Archive voice error.");
   });
 }
 
@@ -387,5 +573,6 @@ function stopSpeaking() {
     mode: modeElement ? modeElement.value : "constitutional"
   });
 
+  setThinkingState("Stopped.");
   updateAvatarSpeech("Ses durduruldu.");
 }
