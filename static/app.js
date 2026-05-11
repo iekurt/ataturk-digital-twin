@@ -41,6 +41,38 @@ const HOPE = {
     health: "/health",
     task: "/v1/tasks"
   },
+  reasoningModes: {
+    balanced: {
+      label: "Balanced",
+      instruction:
+        "Answer with a balanced, clear and practical tone. Preserve doctrine, civic dignity and project identity."
+    },
+    constitutional: {
+      label: "Constitutional",
+      instruction:
+        "Prioritize constitutional principles, civic responsibility, secular republican values, rule of law, public reason and institutional integrity."
+    },
+    historical: {
+      label: "Historical",
+      instruction:
+        "Frame the answer through historical continuity, reform memory, Atatürk's modernization logic, institutions, education, sovereignty and national development."
+    },
+    visionary: {
+      label: "Visionary",
+      instruction:
+        "Answer with a future-facing HOPEverse vision: peace, AI ethics, civilization-scale coordination, decentralized trust and human dignity."
+    },
+    technical: {
+      label: "Technical",
+      instruction:
+        "Answer as a technical architecture advisor. Emphasize FastAPI, streaming SSE, OpenAI, TTS, HOPEtensor nodes, verification, deployment and implementation details."
+    },
+    critical: {
+      label: "Critical",
+      instruction:
+        "Answer critically and rigorously. Identify weaknesses, risks, contradictions, missing safeguards and concrete improvements without weakening the doctrine."
+    }
+  },
   ui: {
     isStreaming: false,
     currentController: null,
@@ -48,7 +80,8 @@ const HOPE = {
     selectedVoice: "alloy",
     ttsEnabled: true,
     archiveVoiceEnabled: true,
-    typingSpeed: 12
+    typingSpeed: 12,
+    reasoningMode: "balanced"
   },
   metrics: {
     sessions: 1,
@@ -105,6 +138,7 @@ function sleep(ms) {
 document.addEventListener("DOMContentLoaded", () => {
   renderDoctrine();
   bindNavigation();
+  bindReasoningMode();
   bindDemo();
   bindTTSControls();
   bindApiPlayground();
@@ -116,6 +150,122 @@ document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
   console.log(`${HOPE.project} initialized — ${HOPE.author}`);
 });
+
+/* ============================================================
+   REASONING MODE
+   ============================================================ */
+
+function bindReasoningMode() {
+  const select = byId("reasoningMode");
+
+  if (!select) return;
+
+  select.value = HOPE.ui.reasoningMode;
+
+  select.addEventListener("change", () => {
+    const value = select.value || "balanced";
+    HOPE.ui.reasoningMode = HOPE.reasoningModes[value] ? value : "balanced";
+
+    updateReasoningModeUI();
+    showToast(`Reasoning mode: ${getReasoningModeLabel()}`);
+  });
+
+  updateReasoningModeUI();
+}
+
+function getReasoningMode() {
+  const select = byId("reasoningMode");
+  const value = select ? select.value : HOPE.ui.reasoningMode;
+
+  if (value && HOPE.reasoningModes[value]) {
+    HOPE.ui.reasoningMode = value;
+    return value;
+  }
+
+  HOPE.ui.reasoningMode = "balanced";
+  return "balanced";
+}
+
+function getReasoningModeLabel() {
+  const mode = getReasoningMode();
+  return HOPE.reasoningModes[mode].label;
+}
+
+function getReasoningModeInstruction() {
+  const mode = getReasoningMode();
+  return HOPE.reasoningModes[mode].instruction;
+}
+
+function updateReasoningModeUI() {
+  const label = byId("reasoningModeLabel");
+  const description = byId("reasoningModeDescription");
+
+  safeText(label, getReasoningModeLabel());
+  safeText(description, getReasoningModeInstruction());
+}
+
+/* ============================================================
+   PAYLOAD BUILDER
+   ============================================================ */
+
+function buildCognitionPayload(prompt, transportMode) {
+  const reasoningMode = getReasoningMode();
+
+  return {
+    prompt,
+    question: prompt,
+    task: prompt,
+
+    project: HOPE.project,
+    doctrine: HOPE.doctrine,
+
+    reasoning_mode: reasoningMode,
+    reasoningMode: reasoningMode,
+    mode: reasoningMode,
+
+    transport_mode: transportMode,
+    frontend_mode: transportMode,
+
+    mode_label: getReasoningModeLabel(),
+    mode_instruction: getReasoningModeInstruction(),
+
+    layer: "vicdan",
+    architecture: "HOPEtensor",
+
+    system_context: {
+      project: HOPE.project,
+      doctrine: HOPE.doctrine,
+      reasoning_mode: reasoningMode,
+      reasoning_mode_label: getReasoningModeLabel(),
+      reasoning_mode_instruction: getReasoningModeInstruction(),
+      stack: [
+        "FastAPI",
+        "OpenAI",
+        "Streaming SSE",
+        "OpenAI premium TTS",
+        "Constitutional cognition engine",
+        "HOPEtensor architecture",
+        "Vicdan layer",
+        "Render deployment"
+      ],
+      ui: [
+        "Hero",
+        "Dashboard",
+        "Architecture",
+        "Reform Map",
+        "Timeline",
+        "Roadmap",
+        "API",
+        "Contributor Gateway",
+        "Live Demo",
+        "Streaming cognition UI",
+        "OpenAI TTS",
+        "Archive voice",
+        "Crafted by Erhan branding"
+      ]
+    }
+  };
+}
 
 /* ============================================================
    DOCTRINE
@@ -182,6 +332,7 @@ function startHeroAnimation() {
 
 function createParticles(container, count) {
   container.innerHTML = "";
+
   for (let i = 0; i < count; i++) {
     const p = document.createElement("span");
     p.className = "hope-particle";
@@ -206,8 +357,12 @@ function updateDashboard() {
   safeText(byId("metricNodeChecks"), HOPE.metrics.nodeChecks);
 
   const status = byId("systemStatus");
+
   if (status) {
-    status.textContent = HOPE.ui.isStreaming ? "COGNITION STREAMING" : "READY";
+    status.textContent = HOPE.ui.isStreaming
+      ? `COGNITION STREAMING / ${getReasoningModeLabel().toUpperCase()}`
+      : `READY / ${getReasoningModeLabel().toUpperCase()}`;
+
     status.className = HOPE.ui.isStreaming ? "status live" : "status ready";
   }
 }
@@ -218,14 +373,20 @@ function updateDashboard() {
 
 async function checkHealth() {
   const el = byId("healthStatus");
+
   try {
     const res = await fetch(HOPE.api.health, { method: "GET" });
+
     if (!res.ok) throw new Error("Health endpoint unavailable");
+
     const data = await res.json().catch(() => ({}));
+
     safeText(el, data.status || "online");
+
     if (el) el.className = "health online";
   } catch (err) {
     safeText(el, "local / fallback mode");
+
     if (el) el.className = "health fallback";
   }
 }
@@ -269,6 +430,7 @@ async function runCognition() {
   const trace = byId("cognitionTrace");
 
   const prompt = input ? input.value.trim() : "";
+  const reasoningMode = getReasoningMode();
 
   if (!prompt) {
     showToast("Enter a prompt for the Vicdan cognition layer.");
@@ -284,7 +446,9 @@ async function runCognition() {
   setStreamingUI(true);
 
   safeText(output, "");
+
   addTrace("Input received", "The prompt entered the constitutional cognition pipeline.");
+  addTrace("Reasoning mode selected", `${getReasoningModeLabel()} — ${getReasoningModeInstruction()}`);
   addTrace("Vicdan layer active", "Ethical and historical framing initialized.");
   addTrace("HOPEtensor routing", "Reasoning path prepared across cognition nodes.");
 
@@ -296,8 +460,9 @@ async function runCognition() {
     }
 
     HOPE.metrics.safetyPasses += 1;
+
     addTrace("Constitutional check", "Response passed the doctrine and safety layer.");
-    addTrace("Cognition completed", "Final answer delivered to interface.");
+    addTrace("Cognition completed", `Final answer delivered in ${HOPE.reasoningModes[reasoningMode].label} mode.`);
 
     if (HOPE.ui.ttsEnabled && HOPE.ui.archiveVoiceEnabled && HOPE.ui.lastAnswer) {
       await speakText(HOPE.ui.lastAnswer);
@@ -323,20 +488,15 @@ async function runCognition() {
 
 async function tryStreamingRequest(prompt, output) {
   try {
+    const payload = buildCognitionPayload(prompt, "stream");
+
     const res = await fetch(HOPE.api.stream, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "text/event-stream"
       },
-      body: JSON.stringify({
-        prompt,
-        project: HOPE.project,
-        doctrine: HOPE.doctrine,
-        mode: "constitutional_stream",
-        layer: "vicdan",
-        architecture: "HOPEtensor"
-      }),
+      body: JSON.stringify(payload),
       signal: HOPE.ui.currentController.signal
     });
 
@@ -347,6 +507,7 @@ async function tryStreamingRequest(prompt, output) {
 
     while (true) {
       const { value, done } = await reader.read();
+
       if (done) break;
 
       const chunk = decoder.decode(value, { stream: true });
@@ -361,6 +522,7 @@ async function tryStreamingRequest(prompt, output) {
     return true;
   } catch (err) {
     if (err.name === "AbortError") throw err;
+
     console.warn("Streaming endpoint failed, falling back to /reason:", err);
     return false;
   }
@@ -382,6 +544,7 @@ function parseSSEChunk(chunk) {
 
       try {
         const json = JSON.parse(data);
+
         tokens.push(
           json.token ||
           json.delta ||
@@ -404,20 +567,14 @@ function parseSSEChunk(chunk) {
 async function fallbackReasonRequest(prompt, output) {
   addTrace("Fallback reason endpoint", "Streaming unavailable. Using /reason endpoint.");
 
+  const payload = buildCognitionPayload(prompt, "reason");
+
   const res = await fetch(HOPE.api.reason, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      prompt,
-      question: prompt,
-      project: HOPE.project,
-      doctrine: HOPE.doctrine,
-      mode: "constitutional_reason",
-      layer: "vicdan",
-      architecture: "HOPEtensor"
-    }),
+    body: JSON.stringify(payload),
     signal: HOPE.ui.currentController.signal
   });
 
@@ -470,6 +627,7 @@ function clearDemo() {
   safeText(output, "");
   safeHTML(trace, "");
   HOPE.ui.lastAnswer = "";
+
   showToast("Demo cleared.");
 }
 
@@ -482,7 +640,10 @@ function setStreamingUI(active) {
   if (stopBtn) stopBtn.disabled = !active;
 
   if (indicator) {
-    indicator.textContent = active ? "Streaming cognition..." : "Ready";
+    indicator.textContent = active
+      ? `Streaming cognition / ${getReasoningModeLabel()}`
+      : `Ready / ${getReasoningModeLabel()}`;
+
     indicator.className = active ? "indicator live" : "indicator ready";
   }
 
@@ -495,6 +656,7 @@ function setStreamingUI(active) {
 
 function addTrace(title, detail) {
   const trace = byId("cognitionTrace");
+
   if (!trace) return;
 
   const item = document.createElement("div");
@@ -521,6 +683,7 @@ function bindTTSControls() {
 
   if (voiceSelect) {
     voiceSelect.value = HOPE.ui.selectedVoice;
+
     voiceSelect.addEventListener("change", () => {
       HOPE.ui.selectedVoice = voiceSelect.value;
       showToast(`Voice selected: ${HOPE.ui.selectedVoice}`);
@@ -529,6 +692,7 @@ function bindTTSControls() {
 
   if (ttsToggle) {
     ttsToggle.checked = HOPE.ui.ttsEnabled;
+
     ttsToggle.addEventListener("change", () => {
       HOPE.ui.ttsEnabled = ttsToggle.checked;
     });
@@ -536,6 +700,7 @@ function bindTTSControls() {
 
   if (archiveToggle) {
     archiveToggle.checked = HOPE.ui.archiveVoiceEnabled;
+
     archiveToggle.addEventListener("change", () => {
       HOPE.ui.archiveVoiceEnabled = archiveToggle.checked;
     });
@@ -567,7 +732,10 @@ async function speakText(text) {
         voice: HOPE.ui.selectedVoice,
         format: "mp3",
         project: HOPE.project,
-        mode: "archive_voice"
+        mode: "archive_voice",
+        reasoning_mode: getReasoningMode(),
+        reasoningMode: getReasoningMode(),
+        mode_instruction: getReasoningModeInstruction()
       })
     });
 
@@ -580,6 +748,7 @@ async function speakText(text) {
     audio.controls = true;
 
     const holder = byId("ttsPlayer");
+
     if (holder && !holder.contains(audio)) {
       holder.innerHTML = "";
       holder.appendChild(audio);
@@ -617,6 +786,17 @@ function bindApiPlayground() {
       safeText(output, "Invalid JSON payload.");
       return;
     }
+
+    const reasoningMode = getReasoningMode();
+
+    payload.reasoning_mode = payload.reasoning_mode || reasoningMode;
+    payload.reasoningMode = payload.reasoningMode || reasoningMode;
+    payload.mode = payload.mode || reasoningMode;
+    payload.mode_instruction = payload.mode_instruction || getReasoningModeInstruction();
+    payload.project = payload.project || HOPE.project;
+    payload.doctrine = payload.doctrine || HOPE.doctrine;
+    payload.layer = payload.layer || "vicdan";
+    payload.architecture = payload.architecture || "HOPEtensor";
 
     safeText(output, "Running API request...");
 
@@ -661,6 +841,8 @@ function bindContributorGateway() {
       name,
       role,
       focus,
+      reasoning_mode: getReasoningMode(),
+      reasoning_mode_label: getReasoningModeLabel(),
       doctrine: HOPE.doctrine,
       next_step:
         "Contributor profile prepared for HOPEtensor execution, identity, and trust layer alignment."
@@ -677,6 +859,7 @@ function bindContributorGateway() {
 
 function startNodePulse() {
   const nodes = $$(".hope-node, .architecture-node, [data-node]");
+
   if (!nodes.length) return;
 
   let index = 0;
@@ -698,13 +881,17 @@ function startNodePulse() {
 
 function activateTimelineItem(id) {
   $$(".timeline-item").forEach((item) => item.classList.remove("active"));
+
   const el = byId(id);
+
   if (el) el.classList.add("active");
 }
 
 function activateReformCard(id) {
   $$(".reform-card").forEach((item) => item.classList.remove("active"));
+
   const el = byId(id);
+
   if (el) el.classList.add("active");
 }
 
@@ -720,7 +907,9 @@ function bindKeyboardShortcuts() {
 
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
+
       const input = byId("promptInput") || byId("demoPrompt");
+
       if (input) input.focus();
     }
   });
@@ -744,6 +933,7 @@ function showToast(message) {
   toast.classList.add("show");
 
   clearTimeout(showToast._timer);
+
   showToast._timer = setTimeout(() => {
     toast.classList.remove("show");
   }, 2600);
@@ -764,6 +954,7 @@ function escapeHTML(value) {
 
 function estimateTokens(text) {
   if (!text) return 0;
+
   return Math.max(1, Math.ceil(text.length / 4));
 }
 
@@ -776,3 +967,5 @@ window.runCognition = runCognition;
 window.stopStreaming = stopStreaming;
 window.clearDemo = clearDemo;
 window.speakText = speakText;
+window.getReasoningMode = getReasoningMode;
+window.getReasoningModeInstruction = getReasoningModeInstruction;

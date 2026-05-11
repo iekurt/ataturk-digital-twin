@@ -1143,14 +1143,112 @@
 
     <section id="demo">
       <div class="shell">
-        <div class="section-head">
-          <div class="kicker">Live Demo</div>
-          <h2>Streaming Vicdan cognition UI</h2>
-          <p class="section-lead">
-            Ask the digital twin. The frontend first tries the streaming SSE endpoint,
-            then falls back to the standard reasoning endpoint if streaming is unavailable.
-          </p>
-        </div>
+       <!-- =========================================================
+     REASONING MODE PANEL
+     ATATÜRK DIGITAL TWIN / HOPEVERSE
+     Add inside LIVE DEMO section
+     ========================================================= -->
+
+<div class="card" style="margin-bottom:18px;">
+  <h3>Reasoning Mode</h3>
+
+  <p
+    style="
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 8px;
+      margin-bottom: 18px;
+    "
+  >
+    Select the cognition strategy used by the constitutional reasoning engine,
+    Vicdan layer and HOPEtensor routing system.
+  </p>
+
+  <div
+    style="
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    "
+  >
+    <div>
+      <label
+        for="reasoningMode"
+        class="metric-label"
+        style="margin-bottom:10px;display:block;"
+      >
+        Active Reasoning Mode
+      </label>
+
+      <select id="reasoningMode">
+        <option value="balanced">
+          Balanced
+        </option>
+
+        <option value="constitutional">
+          Constitutional
+        </option>
+
+        <option value="historical">
+          Historical
+        </option>
+
+        <option value="visionary">
+          Visionary
+        </option>
+
+        <option value="technical">
+          Technical
+        </option>
+
+        <option value="critical">
+          Critical
+        </option>
+      </select>
+    </div>
+
+    <div
+      style="
+        border-radius:20px;
+        border:1px solid var(--line);
+        background:rgba(255,255,255,0.05);
+        padding:18px;
+      "
+    >
+      <div
+        class="metric-label"
+        style="
+          margin-bottom:10px;
+        "
+      >
+        Current Mode
+      </div>
+
+      <div
+        id="reasoningModeLabel"
+        style="
+          font-size:22px;
+          font-weight:900;
+          color:var(--gold);
+          margin-bottom:10px;
+        "
+      >
+        Balanced
+      </div>
+
+      <div
+        id="reasoningModeDescription"
+        style="
+          color:var(--muted);
+          line-height:1.7;
+        "
+      >
+        Answer with a balanced, clear and practical tone.
+        Preserve doctrine, civic dignity and project identity.
+      </div>
+    </div>
+  </div>
+</div>
 
         <div class="demo-layout">
           <div class="card">
