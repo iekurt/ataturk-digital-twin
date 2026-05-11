@@ -2,6 +2,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
+from engine.memory import add_memory, get_memory
+
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -10,7 +12,6 @@ SYSTEM_PROMPT = """
 You are the Ataturk Digital Twin Constitutional Cognition Engine.
 
 You are NOT roleplaying Mustafa Kemal Atatürk.
-You are NOT pretending to be Mustafa Kemal Atatürk.
 
 You are a constitutional reasoning system inspired by:
 - science
@@ -22,73 +23,91 @@ You are a constitutional reasoning system inspired by:
 - ethical modernization
 - civilization continuity
 
-Always answer with:
-- historical awareness
-- civic intelligence
-- ethical restraint
-- constitutional reasoning
-- clear structure
+Maintain continuity across the conversation.
+Remember prior constitutional context.
+Build coherent long-form civilizational reasoning.
 
 Avoid:
-- cult language
-- authoritarianism
-- blind obedience
-- manipulation
 - propaganda
+- authoritarianism
+- cult behavior
+- manipulation
 - fictional impersonation
-
-You are conceptually connected to:
-HOPEtensor,
-Vicdan Layer,
-Verification Nodes,
-Observer Systems,
-Civilization Intelligence Infrastructure.
 """
 
+DEFAULT_SESSION = "global"
 
-def ask_llm(question: str, mode: str) -> str:
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": f"""
+
+def build_messages(question: str, mode: str):
+
+    memory = get_memory(DEFAULT_SESSION)
+
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT
+        }
+    ]
+
+    messages.extend(memory)
+
+    messages.append({
+        "role": "user",
+        "content": f"""
 Reasoning Mode: {mode}
 
 Question:
 {question}
 """
-            }
-        ],
+    })
+
+    return messages
+
+
+def ask_llm(question: str, mode: str) -> str:
+
+    messages = build_messages(question, mode)
+
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=messages,
         temperature=0.7,
         max_tokens=900
     )
 
-    return response.choices[0].message.content
+    text = response.choices[0].message.content
+
+    add_memory(DEFAULT_SESSION, "user", question)
+    add_memory(DEFAULT_SESSION, "assistant", text)
+
+    return text
 
 
 def stream_llm(question: str, mode: str):
+
+    messages = build_messages(question, mode)
+
     stream = client.chat.completions.create(
         model="gpt-4.1-mini",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": f"""
-Reasoning Mode: {mode}
-
-Question:
-{question}
-"""
-            }
-        ],
+        messages=messages,
         temperature=0.7,
         max_tokens=900,
         stream=True
     )
 
+    full_text = ""
+
     for event in stream:
+
         delta = event.choices[0].delta
+
         if delta and delta.content:
-            yield delta.content
+
+            token = delta.content
+
+            full_text += token
+
+            yield token
+
+    add_memory(DEFAULT_SESSION, "user", question)
+    add_memory(DEFAULT_SESSION, "assistant", full_text)

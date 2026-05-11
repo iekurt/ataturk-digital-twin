@@ -140,3 +140,28 @@ async function checkVicdan() {
     setLoading(false);
   }
 }
+async function clearMemory() {
+
+  setMeta({
+    status: "Memory Reset",
+    mode: document.getElementById("mode").value,
+    score: null
+  });
+
+  setOutput("Clearing constitutional conversation memory...");
+
+  try {
+
+    const res = await fetch("/memory/clear", {
+      method: "POST"
+    });
+
+    const data = await res.json();
+
+    setOutput(JSON.stringify(data, null, 2));
+
+  } catch (error) {
+
+    setOutput("Memory clear error.\n\n" + error.message);
+  }
+}

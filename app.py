@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from datetime import datetime
 import json
+from engine.memory import get_memory, clear_memory
+
 
 from engine.cognition import (
     PRINCIPLES,
@@ -59,6 +61,23 @@ def principles():
         "principles": PRINCIPLES
     }
 
+@app.get("/memory")
+def memory():
+    return {
+        "session": "global",
+        "memory": get_memory("global")
+    }
+
+
+@app.post("/memory/clear")
+def memory_clear():
+
+    clear_memory("global")
+
+    return {
+        "success": True,
+        "message": "Conversation memory cleared."
+    }
 
 @app.post("/demo")
 def demo(data: Question):
