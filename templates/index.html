@@ -9,41 +9,69 @@
 <body>
   <main class="wrap">
 
-    <section class="hero">
-      <div class="badge">HOPEverse Civilization Interface · MVP v0.7</div>
-      <h1>Atatürk<br/>Digital Twin</h1>
+    <section class="hero avatar-hero">
+      <div class="hero-copy">
+        <div class="badge">HOPEverse Civilization Interface · MVP v1.0 Avatar</div>
+        <h1>Atatürk<br/>Digital Twin</h1>
 
-      <p class="lead">
-        Constitutional intelligence for the AI era — combining historical memory,
-        ethical reasoning, civic sovereignty, education, live LLM cognition,
-        and HOPEtensor-ready execution.
-      </p>
+        <p class="lead">
+          Cumhuriyet ilkelerinden ilham alan canlı anayasal düşünme motoru:
+          Türkçe cevap, Vicdan katmanı, streaming cognition ve sesli avatar arayüzü.
+        </p>
 
-      <div class="live-engine">
-        <div class="live-dot"></div>
-        LIVE ENGINE ACTIVE · GPT-4.1 Constitutional Cognition · Vicdan Layer Online
+        <div class="live-engine">
+          <div class="live-dot"></div>
+          LIVE ENGINE ACTIVE · Turkish Constitutional Cognition · Avatar Voice Online
+        </div>
+
+        <div class="buttons">
+          <a href="#demo">Enter Demo</a>
+          <a class="secondary" href="/docs">API Docs</a>
+          <a class="secondary" href="/health">Health</a>
+        </div>
       </div>
 
-      <div class="buttons">
-        <a href="#demo">Enter Demo</a>
-        <a class="secondary" href="/docs">API Docs</a>
-        <a class="secondary" href="/health">Health</a>
+      <div class="avatar-stage">
+        <div class="avatar-card">
+          <div class="avatar-frame">
+            <div class="hologram-ring"></div>
+            <div class="avatar-face">
+              <div class="avatar-cap"></div>
+              <div class="avatar-head"></div>
+              <div class="avatar-brow"></div>
+              <div class="avatar-eyes">
+                <span></span><span></span>
+              </div>
+              <div id="avatarMouth" class="avatar-mouth"></div>
+              <div class="avatar-suit"></div>
+            </div>
+          </div>
+
+          <div class="avatar-caption">
+            <strong>Constitutional Avatar</strong>
+            <span>Historically inspired · Not impersonation · Educational interface</span>
+          </div>
+
+          <div id="avatarSpeech" class="avatar-speech">
+            Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.
+          </div>
+        </div>
       </div>
     </section>
 
     <section>
       <h2>Live Operational Cognition</h2>
       <p>
-        This is no longer a static mock response. The interface now connects to a real
-        LLM-powered constitutional cognition engine, filtered through the Vicdan layer
-        and structured for future HOPEtensor node routing.
+        Bu sistem tarihsel bir kişiyi birebir taklit etmez. Cumhuriyet’in akıl,
+        bilim, eğitim, egemenlik, barış ve vicdan ilkelerinden ilham alan
+        anayasal düşünme arayüzüdür.
       </p>
 
       <div class="grid">
-        <div class="card"><strong>Live LLM Reasoning</strong><br/><br/>Questions are processed dynamically through a constitutional system prompt.</div>
-        <div class="card"><strong>Vicdan Layer Online</strong><br/><br/>Inputs are reviewed for manipulation, domination and dehumanization risks.</div>
-        <div class="card"><strong>HOPEtensor Ready</strong><br/><br/>The engine is designed for future multi-node reasoning, verification and observer audit.</div>
-        <div class="card"><strong>Constitutional Cognition</strong><br/><br/>Responses are grounded in science, education, sovereignty, dignity and peace.</div>
+        <div class="card"><strong>Live LLM Reasoning</strong><br/><br/>Sorular anayasal sistem prompt’u üzerinden dinamik olarak işlenir.</div>
+        <div class="card"><strong>Vicdan Layer Online</strong><br/><br/>Manipülasyon, tahakküm ve insan onuruna aykırı niyetler kontrol edilir.</div>
+        <div class="card"><strong>Avatar Voice</strong><br/><br/>Cevaplar tarayıcı TTS motoruyla Türkçe sesli okunabilir.</div>
+        <div class="card"><strong>HOPEtensor Ready</strong><br/><br/>Gelecekte çoklu node reasoning, verification ve observer audit için hazırdır.</div>
       </div>
     </section>
 
@@ -58,21 +86,20 @@
         <span>→</span>
         <div>Constitutional Prompt</div>
         <span>→</span>
-        <div>Verification Ready</div>
+        <div>Avatar Voice</div>
         <span>→</span>
         <div>Response</div>
       </div>
     </section>
 
     <section id="demo">
-      <h2>Live Constitutional Cognition Demo</h2>
+      <h2>Live Constitutional Avatar Demo</h2>
       <p>
-        Ask a civilization-level question. The backend runs real LLM reasoning through
-        the Atatürk Digital Twin constitutional cognition prompt.
+        Sorunuzu yazın. Cevap streaming olarak gelsin; isterseniz avatar cevabı Türkçe sesli okusun.
       </p>
 
       <label>Question</label>
-      <input id="q" value="Why does civilization need constitutional intelligence in the AI era?" />
+      <input id="q" value="Yapay zekâ çağında anayasal bilinç neden gereklidir?" />
 
       <label>Reasoning Mode</label>
       <select id="mode">
@@ -83,11 +110,11 @@
       </select>
 
       <br/><br/>
-      <button onclick="ask()">Run Live Cognition Engine</button>
+      <button onclick="ask()">Run Live Avatar Engine</button>
+      <button class="secondary" onclick="speakCurrentResponse()">Speak Response</button>
+      <button class="secondary" onclick="stopSpeaking()">Stop Voice</button>
       <button class="secondary" onclick="checkVicdan()">Run Vicdan Check</button>
-<button class="secondary" onclick="clearMemory()">
-  Clear Memory
-</button>
+      <button class="secondary" onclick="clearMemory()">Clear Memory</button>
 
       <div class="engine-panel">
         <div class="engine-topbar">
@@ -119,24 +146,13 @@
     <section class="manifesto">
       <h2>Manifesto Seed</h2>
       <p>
-        “Yurtta sulh, cihanda sulh” becomes a technological design principle:
-        peace requires truthful systems, educated citizens, sovereign institutions,
-        ethical intelligence, and resilient civilization infrastructure.
+        “Yurtta sulh, cihanda sulh” artık yalnızca diplomatik bir ilke değil;
+        yapay zekâ çağında teknolojik medeniyet tasarımının temel prensibidir.
       </p>
     </section>
 
-    <section>
-      <h2>Contributor Portal</h2>
-      <div class="grid">
-        <div class="card"><strong>Developers</strong><br/><br/>Build routing, verification, UI, APIs and HOPEtensor integration.</div>
-        <div class="card"><strong>Historians</strong><br/><br/>Curate verified historical memory and constitutional context.</div>
-        <div class="card"><strong>Educators</strong><br/><br/>Transform the engine into public learning and civic intelligence tools.</div>
-        <div class="card"><strong>Ethics Reviewers</strong><br/><br/>Strengthen Vicdan logic and civilizational safeguards.</div>
-      </div>
-    </section>
-
     <footer>
-      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v0.7 · Live Engine Active
+      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v1.0 · Avatar Voice Active
     </footer>
   </main>
 

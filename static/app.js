@@ -1,3 +1,6 @@
+let latestResponse = "";
+let speaking = false;
+
 function setLoading(isLoading, message = "") {
   const loader = document.getElementById("loader");
   const status = document.getElementById("engineStatus");
@@ -5,18 +8,27 @@ function setLoading(isLoading, message = "") {
   if (isLoading) {
     loader.classList.remove("hidden");
     status.textContent = message || "Running";
+    setAvatarSpeaking(true);
   } else {
     loader.classList.add("hidden");
+    setAvatarSpeaking(false);
   }
 }
 
 function setOutput(text) {
+  latestResponse = text;
   document.getElementById("responseBox").textContent = text;
+  updateAvatarSpeech(text);
 }
 
 function appendOutput(text) {
+  latestResponse += text;
   const box = document.getElementById("responseBox");
   box.textContent += text;
+
+  if (latestResponse.length % 120 < text.length) {
+    updateAvatarSpeech(latestResponse.slice(-260));
+  }
 }
 
 function setMeta({status, mode, score}) {
@@ -27,10 +39,37 @@ function setMeta({status, mode, score}) {
   }
 }
 
+function updateAvatarSpeech(text) {
+  const speech = document.getElementById("avatarSpeech");
+  if (!speech) return;
+
+  if (!text || text.trim().length === 0) {
+    speech.textContent = "Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.";
+    return;
+  }
+
+  const clean = text.replace(/\s+/g, " ").trim();
+  speech.textContent = clean.length > 220 ? clean.slice(0, 220) + "..." : clean;
+}
+
+function setAvatarSpeaking(active) {
+  const mouth = document.getElementById("avatarMouth");
+  if (!mouth) return;
+
+  if (active || speaking) {
+    mouth.classList.add("speaking");
+  } else {
+    mouth.classList.remove("speaking");
+  }
+}
+
 async function ask() {
   const question = document.getElementById("q").value;
   const mode = document.getElementById("mode").value;
 
+  stopSpeaking();
+
+  latestResponse = "";
   setMeta({status: "Initializing", mode, score: null});
   setOutput("");
   setLoading(true, "Streaming");
@@ -108,6 +147,8 @@ async function checkVicdan() {
   const question = document.getElementById("q").value;
   const mode = document.getElementById("mode").value;
 
+  stopSpeaking();
+
   setMeta({status: "Vicdan Review", mode, score: null});
   setOutput("Running Vicdan ethical review...");
   setLoading(true, "Reviewing");
@@ -140,7 +181,9 @@ async function checkVicdan() {
     setLoading(false);
   }
 }
+
 async function clearMemory() {
+  stopSpeaking();
 
   setMeta({
     status: "Memory Reset",
@@ -151,17 +194,78 @@ async function clearMemory() {
   setOutput("Clearing constitutional conversation memory...");
 
   try {
-
     const res = await fetch("/memory/clear", {
       method: "POST"
     });
 
     const data = await res.json();
-
     setOutput(JSON.stringify(data, null, 2));
-
   } catch (error) {
-
     setOutput("Memory clear error.\n\n" + error.message);
   }
+}
+
+function speakCurrentResponse() {
+  if (!latestResponse || latestResponse.trim().length === 0) {
+    latestResponse = document.getElementById("responseBox").textContent || "";
+  }
+
+  if (!latestResponse || latestResponse.trim().length === 0) {
+    setOutput("Seslendirilecek cevap yok.");
+    return;
+  }
+
+  stopSpeaking();
+
+  const utterance = new SpeechSynthesisUtterance(latestResponse);
+  utterance.lang = "tr-TR";
+  utterance.rate = 0.92;
+  utterance.pitch = 0.82;
+  utterance.volume = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+  const trVoice =
+    voices.find(v => v.lang === "tr-TR") ||
+    voices.find(v => v.lang && v.lang.toLowerCase().startsWith("tr")) ||
+    voices[0];
+
+  if (trVoice) utterance.voice = trVoice;
+
+  utterance.onstart = () => {
+    speaking = true;
+    setAvatarSpeaking(true);
+    setMeta({
+      status: "Speaking",
+      mode: document.getElementById("mode").value
+    });
+  };
+
+  utterance.onend = () => {
+    speaking = false;
+    setAvatarSpeaking(false);
+    setMeta({
+      status: "Completed",
+      mode: document.getElementById("mode").value
+    });
+  };
+
+  utterance.onerror = () => {
+    speaking = false;
+    setAvatarSpeaking(false);
+    setMeta({
+      status: "Voice Error",
+      mode: document.getElementById("mode").value
+    });
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopSpeaking() {
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+
+  speaking = false;
+  setAvatarSpeaking(false);
 }
