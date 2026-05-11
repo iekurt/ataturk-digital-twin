@@ -3,9 +3,22 @@ let speaking = false;
 let generatingVoice = false;
 let currentAudio = null;
 let currentAudioUrl = null;
+let currentUtterance = null;
+let availableVoices = [];
 
 function safeGet(id) {
   return document.getElementById(id);
+}
+
+function loadVoices() {
+  if ("speechSynthesis" in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
+
+if ("speechSynthesis" in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
 function setLoading(isLoading, message = "") {
@@ -250,15 +263,24 @@ async function clearMemory() {
   }
 }
 
-async function speakCurrentResponse() {
+function speakCurrentResponse() {
   const mode = safeGet("mode").value;
 
-  if (generatingVoice || speaking || currentAudio) {
+  if (generatingVoice || speaking || currentAudio || currentUtterance) {
     setMeta({
       status: "Already Speaking",
       mode
     });
     updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    setMeta({
+      status: "Local Voice Unsupported",
+      mode
+    });
+    updateAvatarSpeech("Bu tarayıcı local seslendirmeyi desteklemiyor.");
     return;
   }
 
@@ -274,87 +296,71 @@ async function speakCurrentResponse() {
     return;
   }
 
-  generatingVoice = true;
+  loadVoices();
 
-  setMeta({
-    status: "Generating AI Voice",
-    mode
-  });
+  const voices = availableVoices.length
+    ? availableVoices
+    : window.speechSynthesis.getVoices();
 
-  setAvatarSpeaking(true);
+  const trVoice =
+    voices.find(v => v.lang === "tr-TR") ||
+    voices.find(v => v.lang && v.lang.toLowerCase().startsWith("tr")) ||
+    voices.find(v => v.name && v.name.toLowerCase().includes("turkish")) ||
+    voices.find(v => v.name && v.name.toLowerCase().includes("tolga")) ||
+    voices.find(v => v.name && v.name.toLowerCase().includes("yelda")) ||
+    voices[0];
 
-  try {
-    const res = await fetch("/tts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        text,
-        voice: "cedar"
-      })
-    });
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.lang = "tr-TR";
+  currentUtterance.rate = 0.88;
+  currentUtterance.pitch = 0.78;
+  currentUtterance.volume = 1;
 
-    if (!res.ok) {
-      throw new Error(`TTS backend error: ${res.status}`);
-    }
+  if (trVoice) {
+    currentUtterance.voice = trVoice;
+  }
 
-    const audioBlob = await res.blob();
-
-    currentAudioUrl = URL.createObjectURL(audioBlob);
-    currentAudio = new Audio(currentAudioUrl);
-    currentAudio.preload = "auto";
-    currentAudio.volume = 1;
-
-    currentAudio.onplay = () => {
-      generatingVoice = false;
-      speaking = true;
-      setAvatarSpeaking(true);
-      setMeta({
-        status: "Speaking AI Narration",
-        mode
-      });
-    };
-
-    currentAudio.onended = () => {
-      cleanupAudio();
-      setMeta({
-        status: "Completed",
-        mode
-      });
-    };
-
-    currentAudio.onerror = () => {
-      cleanupAudio();
-      setMeta({
-        status: "Voice Error",
-        mode
-      });
-      setOutput(text + "\n\n[Voice Error: Audio playback failed.]");
-    };
-
-    await currentAudio.play();
-  } catch (error) {
-    cleanupAudio();
-
+  currentUtterance.onstart = () => {
+    speaking = true;
+    setAvatarSpeaking(true);
     setMeta({
-      status: "Voice Error",
+      status: "Speaking Local Voice",
       mode
     });
+  };
 
-    setOutput(
-      text +
-      "\n\n[Voice Error: " +
-      error.message +
-      "]"
-    );
-  }
+  currentUtterance.onend = () => {
+    currentUtterance = null;
+    speaking = false;
+    setAvatarSpeaking(false);
+    setMeta({
+      status: "Completed",
+      mode
+    });
+  };
+
+  currentUtterance.onerror = (event) => {
+    currentUtterance = null;
+    speaking = false;
+    setAvatarSpeaking(false);
+    setMeta({
+      status: "Local Voice Error",
+      mode
+    });
+    updateAvatarSpeech("Local seslendirme hatası: " + (event.error || "unknown"));
+  };
+
+  window.speechSynthesis.cancel();
+
+  setTimeout(() => {
+    window.speechSynthesis.speak(currentUtterance);
+  }, 120);
 }
 
 function playArchivalVoice() {
   const mode = safeGet("mode").value;
 
-  if (generatingVoice || speaking || currentAudio) {
+  if (generatingVoice || speaking || currentAudio || currentUtterance) {
     setMeta({
       status: "Already Speaking",
       mode
@@ -454,6 +460,11 @@ function stopSpeaking() {
       console.warn("Speech synthesis cancel warning:", e);
     }
   }
+
+  currentUtterance = null;
+  speaking = false;
+  generatingVoice = false;
+  setAvatarSpeaking(false);
 
   const modeElement = safeGet("mode");
 
