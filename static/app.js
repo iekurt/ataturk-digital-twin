@@ -1,5 +1,17 @@
 let latestResponse = "";
 let speaking = false;
+let availableVoices = [];
+
+function loadVoices() {
+  if ("speechSynthesis" in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
+
+if ("speechSynthesis" in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
 
 function setLoading(isLoading, message = "") {
   const loader = document.getElementById("loader");
@@ -11,7 +23,7 @@ function setLoading(isLoading, message = "") {
     setAvatarSpeaking(true);
   } else {
     loader.classList.add("hidden");
-    setAvatarSpeaking(false);
+    if (!speaking) setAvatarSpeaking(false);
   }
 }
 
@@ -91,7 +103,6 @@ async function ask() {
 
     while (true) {
       const {value, done} = await reader.read();
-
       if (done) break;
 
       buffer += decoder.decode(value, {stream: true});
@@ -120,10 +131,7 @@ async function ask() {
         }
 
         if (data.type === "done") {
-          setMeta({
-            status: "Completed",
-            mode
-          });
+          setMeta({status: "Completed", mode});
         }
 
         if (data.type === "error") {
@@ -206,63 +214,92 @@ async function clearMemory() {
 }
 
 function speakCurrentResponse() {
-  if (!latestResponse || latestResponse.trim().length === 0) {
-    latestResponse = document.getElementById("responseBox").textContent || "";
+  if (!("speechSynthesis" in window)) {
+    setOutput("Bu tarayıcı Speech Synthesis desteklemiyor.");
+    return;
   }
 
-  if (!latestResponse || latestResponse.trim().length === 0) {
-    setOutput("Seslendirilecek cevap yok.");
+  loadVoices();
+
+  let text =
+    latestResponse ||
+    document.getElementById("responseBox").textContent ||
+    "";
+
+  text = text.trim();
+
+  if (!text || text === "Live response will appear here.") {
+    setOutput("Seslendirilecek cevap yok. Önce Run Live Avatar Engine ile cevap üret.");
     return;
   }
 
   stopSpeaking();
 
-  const utterance = new SpeechSynthesisUtterance(latestResponse);
-  utterance.lang = "tr-TR";
-  utterance.rate = 0.92;
-  utterance.pitch = 0.82;
-  utterance.volume = 1;
+  setTimeout(() => {
+    const utterance = new SpeechSynthesisUtterance(text);
 
-  const voices = window.speechSynthesis.getVoices();
-  const trVoice =
-    voices.find(v => v.lang === "tr-TR") ||
-    voices.find(v => v.lang && v.lang.toLowerCase().startsWith("tr")) ||
-    voices[0];
+    utterance.lang = "tr-TR";
+    utterance.rate = 0.88;
+    utterance.pitch = 0.78;
+    utterance.volume = 1;
 
-  if (trVoice) utterance.voice = trVoice;
+    const voices = availableVoices.length
+      ? availableVoices
+      : window.speechSynthesis.getVoices();
 
-  utterance.onstart = () => {
-    speaking = true;
-    setAvatarSpeaking(true);
-    setMeta({
-      status: "Speaking",
-      mode: document.getElementById("mode").value
-    });
-  };
+    const trVoice =
+      voices.find(v => v.lang === "tr-TR") ||
+      voices.find(v => v.lang && v.lang.toLowerCase().startsWith("tr")) ||
+      voices.find(v => v.name && v.name.toLowerCase().includes("turkish")) ||
+      voices.find(v => v.name && v.name.toLowerCase().includes("tolga")) ||
+      voices.find(v => v.name && v.name.toLowerCase().includes("yelda")) ||
+      voices[0];
 
-  utterance.onend = () => {
-    speaking = false;
-    setAvatarSpeaking(false);
-    setMeta({
-      status: "Completed",
-      mode: document.getElementById("mode").value
-    });
-  };
+    if (trVoice) {
+      utterance.voice = trVoice;
+    }
 
-  utterance.onerror = () => {
-    speaking = false;
-    setAvatarSpeaking(false);
-    setMeta({
-      status: "Voice Error",
-      mode: document.getElementById("mode").value
-    });
-  };
+    utterance.onstart = () => {
+      speaking = true;
+      setAvatarSpeaking(true);
+      setMeta({
+        status: "Speaking",
+        mode: document.getElementById("mode").value
+      });
+    };
 
-  window.speechSynthesis.speak(utterance);
+    utterance.onend = () => {
+      speaking = false;
+      setAvatarSpeaking(false);
+      setMeta({
+        status: "Completed",
+        mode: document.getElementById("mode").value
+      });
+    };
+
+    utterance.onerror = (event) => {
+      speaking = false;
+      setAvatarSpeaking(false);
+      setMeta({
+        status: "Voice Error",
+        mode: document.getElementById("mode").value
+      });
+
+      const originalText = text;
+      setOutput(
+        originalText +
+        "\n\n[Voice Error: " +
+        (event.error || "unknown") +
+        "]"
+      );
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }, 250);
 }
 
 function stopSpeaking() {
-  if (window.speechSynthesis) {
+  if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
   }
 
