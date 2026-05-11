@@ -34,6 +34,36 @@
       font-size: 12px;
       line-height: 1.45;
     }
+
+    .archive-panel {
+      margin-top: 28px;
+      max-width: 980px;
+      border: 1px solid rgba(216,179,106,.22);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at top left, rgba(216,169,79,.10), transparent 35%),
+        rgba(0,0,0,.28);
+      padding: 24px;
+    }
+
+    .archive-panel h3 {
+      color: #f3cc7a;
+      margin: 0 0 12px;
+      font-size: 24px;
+    }
+
+    .archive-panel p {
+      margin-top: 0;
+      font-size: 16px;
+    }
+
+    .archive-note {
+      margin-top: 14px;
+      color: #b8ab91;
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 760px;
+    }
   </style>
 </head>
 <body>
@@ -41,21 +71,22 @@
 
     <section class="hero avatar-hero">
       <div class="hero-copy">
-        <div class="badge">HOPEverse Civilization Interface · MVP v1.1 Historical Avatar</div>
+        <div class="badge">HOPEverse Civilization Interface · MVP v1.3 Archive Mode</div>
         <h1>Atatürk<br/>Digital Twin</h1>
 
         <p class="lead">
           Cumhuriyet ilkelerinden ilham alan canlı anayasal düşünme motoru:
-          Türkçe cevap, Vicdan katmanı, streaming cognition ve tarihsel avatar arayüzü.
+          Türkçe cevap, Vicdan katmanı, streaming cognition, tarihsel avatar ve arşiv sesi.
         </p>
 
         <div class="live-engine">
           <div class="live-dot"></div>
-          LIVE ENGINE ACTIVE · Turkish Constitutional Cognition · Historical Avatar Online
+          LIVE ENGINE ACTIVE · Turkish Constitutional Cognition · Archive Mode Online
         </div>
 
         <div class="buttons">
           <a href="#demo">Enter Demo</a>
+          <a class="secondary" href="#archive">Archive Voice</a>
           <a class="secondary" href="/docs">API Docs</a>
           <a class="secondary" href="/health">Health</a>
         </div>
@@ -71,12 +102,12 @@
           </div>
 
           <div class="avatar-caption">
-            <strong>Mustafa Kemal Atatürk Inspired Constitutional Avatar</strong>
-            <span>Educational interface · Constitutional cognition · Not literal impersonation</span>
+            <strong>Mustafa Kemal Atatürk Historical Interface</strong>
+            <span>Archive mode · Constitutional cognition · Educational system</span>
           </div>
 
           <div class="avatar-voice-note">
-            Seslendirme şu anda tarayıcı Türkçe TTS motoru ile yapılır. Gerçek Atatürk sesi olduğu iddia edilmez.
+            Gerçek arşiv sesi yalnızca tarihî kayıt olarak çalınır. Yeni AI cevapları ayrı sentetik anlatıcı sesiyle okunur.
           </div>
 
           <div id="avatarSpeech" class="avatar-speech">
@@ -97,7 +128,7 @@
       <div class="grid">
         <div class="card"><strong>Live LLM Reasoning</strong><br/><br/>Sorular anayasal sistem prompt’u üzerinden dinamik olarak işlenir.</div>
         <div class="card"><strong>Vicdan Layer Online</strong><br/><br/>Manipülasyon, tahakküm ve insan onuruna aykırı niyetler kontrol edilir.</div>
-        <div class="card"><strong>Historical Avatar</strong><br/><br/>Arayüz Atatürk fotoğrafı ile tarihsel bağlamı görünür kılar.</div>
+        <div class="card"><strong>Archive Mode</strong><br/><br/>Gerçek Atatürk arşiv sesi ayrı bir tarihî kayıt olarak sunulur.</div>
         <div class="card"><strong>HOPEtensor Ready</strong><br/><br/>Gelecekte çoklu node reasoning, verification ve observer audit için hazırdır.</div>
       </div>
     </section>
@@ -113,16 +144,34 @@
         <span>→</span>
         <div>Constitutional Prompt</div>
         <span>→</span>
-        <div>Turkish Voice</div>
+        <div>AI Narration</div>
         <span>→</span>
-        <div>Response</div>
+        <div>Archive Context</div>
+      </div>
+    </section>
+
+    <section id="archive">
+      <h2>Archive Voice Mode</h2>
+
+      <div class="archive-panel">
+        <h3>Real Historical Archival Recording</h3>
+        <p>
+          Bu bölümdeki ses, yeni üretilmiş AI cevabı değildir. Yalnızca tarihî arşiv kaydı olarak oynatılır.
+        </p>
+
+        <button onclick="playArchivalVoice()">Play Real Archival Voice</button>
+        <button class="secondary" onclick="stopSpeaking()">Stop Archive Voice</button>
+
+        <div class="archive-note">
+          Not: Bu kayıt, canlı AI cevapları için kullanılmaz. Canlı cevaplar anayasal düşünme motorundan üretilir ve ayrı bir sentetik anlatıcı sesiyle okunur.
+        </div>
       </div>
     </section>
 
     <section id="demo">
       <h2>Live Constitutional Avatar Demo</h2>
       <p>
-        Sorunuzu yazın. Cevap streaming olarak gelsin; isterseniz sistem cevabı Türkçe sesli okusun.
+        Sorunuzu yazın. Cevap streaming olarak gelsin; isterseniz sistem cevabı Türkçe sentetik anlatıcı sesiyle okusun.
       </p>
 
       <label>Question</label>
@@ -138,7 +187,7 @@
 
       <br/><br/>
       <button onclick="ask()">Run Live Avatar Engine</button>
-      <button class="secondary" onclick="speakCurrentResponse()">Speak Response</button>
+      <button class="secondary" onclick="speakCurrentResponse()">Speak AI Response</button>
       <button class="secondary" onclick="stopSpeaking()">Stop Voice</button>
       <button class="secondary" onclick="checkVicdan()">Run Vicdan Check</button>
       <button class="secondary" onclick="clearMemory()">Clear Memory</button>
@@ -179,7 +228,7 @@
     </section>
 
     <footer>
-      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v1.1 · Historical Avatar Active
+      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v1.3 · Archive Mode Active
     </footer>
   </main>
 
