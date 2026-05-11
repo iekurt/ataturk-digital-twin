@@ -2,7 +2,15 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
-from engine.memory import add_memory, get_memory
+try:
+    from engine.memory import add_memory, get_memory
+except Exception:
+    def add_memory(session_id: str, role: str, content: str):
+        return None
+
+    def get_memory(session_id: str):
+        return []
+
 
 load_dotenv()
 
@@ -71,7 +79,6 @@ DEFAULT_SESSION = "global"
 
 
 def build_messages(question: str, mode: str):
-
     memory = get_memory(DEFAULT_SESSION)
 
     messages = [
@@ -97,7 +104,6 @@ Question:
 
 
 def ask_llm(question: str, mode: str) -> str:
-
     messages = build_messages(question, mode)
 
     response = client.chat.completions.create(
@@ -107,7 +113,7 @@ def ask_llm(question: str, mode: str) -> str:
         max_tokens=900
     )
 
-    text = response.choices[0].message.content
+    text = response.choices[0].message.content or ""
 
     add_memory(DEFAULT_SESSION, "user", question)
     add_memory(DEFAULT_SESSION, "assistant", text)
@@ -116,7 +122,6 @@ def ask_llm(question: str, mode: str) -> str:
 
 
 def stream_llm(question: str, mode: str):
-
     messages = build_messages(question, mode)
 
     stream = client.chat.completions.create(
@@ -130,16 +135,55 @@ def stream_llm(question: str, mode: str):
     full_text = ""
 
     for event in stream:
-
         delta = event.choices[0].delta
 
         if delta and delta.content:
-
             token = delta.content
-
             full_text += token
-
             yield token
 
     add_memory(DEFAULT_SESSION, "user", question)
     add_memory(DEFAULT_SESSION, "assistant", full_text)
+
+
+def text_to_speech(text: str, voice: str = "cedar") -> bytes:
+    clean_text = (text or "").strip()
+
+    if not clean_text:
+        clean_text = "Seslendirilecek metin bulunamadı."
+
+    if len(clean_text) > 4000:
+        clean_text = clean_text[:4000]
+
+    allowed_voices = {
+        "alloy",
+        "ash",
+        "ballad",
+        "coral",
+        "echo",
+        "fable",
+        "nova",
+        "onyx",
+        "sage",
+        "shimmer",
+        "verse",
+        "marin",
+        "cedar"
+    }
+
+    selected_voice = voice if voice in allowed_voices else "cedar"
+
+    speech = client.audio.speech.create(
+        model="gpt-4o-mini-tts",
+        voice=selected_voice,
+        input=clean_text,
+        instructions="""
+Speak in Turkish with a calm, dignified, mature, statesmanlike tone.
+Do not imitate Mustafa Kemal Atatürk's real voice.
+This is a synthetic educational narration inspired by constitutional seriousness,
+clarity, civic responsibility, science, reason and peace.
+""",
+        response_format="mp3"
+    )
+
+    return speech.content
