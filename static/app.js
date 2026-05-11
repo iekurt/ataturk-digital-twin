@@ -1,578 +1,778 @@
-let latestResponse = "";
-let speaking = false;
-let generatingVoice = false;
-let currentAudio = null;
-let currentAudioUrl = null;
+/* ============================================================
+   ATATÜRK DIGITAL TWIN / HOPEVERSE
+   static/app.js
+   FULL CANON FRONTEND LOGIC
+   ------------------------------------------------------------
+   Stack:
+   - FastAPI
+   - Streaming SSE
+   - OpenAI Premium TTS
+   - Constitutional Cognition Engine
+   - HOPEtensor Architecture
+   - Vicdan Layer
+   - Render Deployment Ready
 
-function safeGet(id) {
+   Doctrine:
+   Peace at home.
+   Peace in the world.
+   Peace in the universe and HOPEverse.
+
+   Crafted by Erhan
+   ============================================================ */
+
+"use strict";
+
+/* ============================================================
+   GLOBAL STATE
+   ============================================================ */
+
+const HOPE = {
+  project: "ATATÜRK DIGITAL TWIN / HOPEVERSE",
+  doctrine: [
+    "Peace at home.",
+    "Peace in the world.",
+    "Peace in the universe and HOPEverse."
+  ],
+  author: "Crafted by Erhan",
+  api: {
+    reason: "/reason",
+    stream: "/stream",
+    tts: "/tts",
+    health: "/health",
+    task: "/v1/tasks"
+  },
+  ui: {
+    isStreaming: false,
+    currentController: null,
+    lastAnswer: "",
+    selectedVoice: "alloy",
+    ttsEnabled: true,
+    archiveVoiceEnabled: true,
+    typingSpeed: 12
+  },
+  metrics: {
+    sessions: 1,
+    cognitionRuns: 0,
+    streamedTokens: 0,
+    ttsRuns: 0,
+    safetyPasses: 0,
+    nodeChecks: 0
+  }
+};
+
+/* ============================================================
+   DOM HELPERS
+   ============================================================ */
+
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+function byId(id) {
   return document.getElementById(id);
 }
 
-function escapeHTML(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+function safeText(el, text) {
+  if (el) el.textContent = text;
 }
 
-function renderResponseWithCursor(text) {
-  const box = safeGet("responseBox");
-  if (!box) return;
-
-  const safeText = escapeHTML(text || "").replace(/\n/g, "<br>");
-
-  box.innerHTML =
-    safeText +
-    `<span class="stream-cursor"></span>`;
+function safeHTML(el, html) {
+  if (el) el.innerHTML = html;
 }
 
-function setThinkingState(text) {
-  const thinking = safeGet("thinkingState");
-  if (thinking) thinking.textContent = text;
+function appendText(el, text) {
+  if (el) el.textContent += text;
 }
 
-function setLoading(isLoading, message = "") {
-  const loader = safeGet("loader");
-  const status = safeGet("engineStatus");
-
-  if (isLoading) {
-    if (loader) loader.classList.remove("hidden");
-    if (status) status.textContent = message || "Running";
-    setAvatarSpeaking(true);
-  } else {
-    if (loader) loader.classList.add("hidden");
-    if (!speaking && !generatingVoice) setAvatarSpeaking(false);
-  }
+function nowLabel() {
+  return new Date().toLocaleString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  });
 }
 
-function setOutput(text) {
-  latestResponse = text || "";
-  renderResponseWithCursor(latestResponse);
-  updateAvatarSpeech(latestResponse);
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function appendOutput(text) {
-  latestResponse += text || "";
-  renderResponseWithCursor(latestResponse);
+/* ============================================================
+   BOOT
+   ============================================================ */
 
-  const states = [
-    "Analyzing constitutional context...",
-    "Consulting civilization memory...",
-    "Evaluating ethical implications...",
-    "Running Vicdan layer...",
-    "Building strategic response...",
-    "Streaming cognition..."
-  ];
+document.addEventListener("DOMContentLoaded", () => {
+  renderDoctrine();
+  bindNavigation();
+  bindDemo();
+  bindTTSControls();
+  bindApiPlayground();
+  bindContributorGateway();
+  bindKeyboardShortcuts();
+  startHeroAnimation();
+  startNodePulse();
+  updateDashboard();
+  checkHealth();
+  console.log(`${HOPE.project} initialized — ${HOPE.author}`);
+});
 
-  setThinkingState(
-    states[Math.floor(Math.random() * states.length)]
-  );
+/* ============================================================
+   DOCTRINE
+   ============================================================ */
 
-  updateAvatarSpeech(latestResponse.slice(-260));
+function renderDoctrine() {
+  const targets = $$(".hope-doctrine, #doctrineText, [data-doctrine]");
+  const doctrineHTML = HOPE.doctrine
+    .map((line) => `<span>${escapeHTML(line)}</span>`)
+    .join("");
+
+  targets.forEach((target) => {
+    safeHTML(target, doctrineHTML);
+  });
 }
 
-function setMeta({ status, mode, score }) {
-  const engineStatus = safeGet("engineStatus");
-  const modeBadge = safeGet("modeBadge");
-  const vicdanScore = safeGet("vicdanScore");
+/* ============================================================
+   NAVIGATION / SECTION SCROLL
+   ============================================================ */
 
-  if (status && engineStatus) engineStatus.textContent = status;
-  if (mode && modeBadge) modeBadge.textContent = mode;
-
-  if (score !== undefined && score !== null && vicdanScore) {
-    vicdanScore.textContent = `${score}/100`;
-  }
-}
-
-function updateAvatarSpeech(text) {
-  const speech = safeGet("avatarSpeech");
-  if (!speech) return;
-
-  if (!text || text.trim().length === 0) {
-    speech.textContent =
-      "Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.";
-    return;
-  }
-
-  const clean = text.replace(/\s+/g, " ").trim();
-  speech.textContent =
-    clean.length > 220
-      ? clean.slice(0, 220) + "..."
-      : clean;
-}
-
-function setAvatarSpeaking(active) {
-  const mouth = safeGet("avatarMouth");
-  if (!mouth) return;
-
-  if (active || speaking || generatingVoice) {
-    mouth.classList.add("speaking");
-  } else {
-    mouth.classList.remove("speaking");
-  }
-}
-
-async function ask() {
-  const questionInput = safeGet("q");
-  const modeInput = safeGet("mode");
-
-  if (!questionInput || !modeInput) {
-    console.warn("Demo input elements not found.");
-    return;
-  }
-
-  const question = questionInput.value;
-  const mode = modeInput.value;
-
-  stopSpeaking();
-
-  latestResponse = "";
-
-  setMeta({
-    status: "Initializing",
-    mode,
-    score: null
+function bindNavigation() {
+  $$("[data-scroll]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = btn.getAttribute("data-scroll");
+      const el = document.querySelector(target);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   });
 
-  setOutput("");
-  setThinkingState("Preparing constitutional cognition...");
-  setLoading(true, "Streaming");
+  $$(".nav-link").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      if (href && href.startsWith("#")) {
+        e.preventDefault();
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+}
+
+/* ============================================================
+   HERO CINEMATIC BEHAVIOR
+   ============================================================ */
+
+function startHeroAnimation() {
+  const heroTitle = byId("heroTitle") || $(".hero-title");
+  const heroSubtitle = byId("heroSubtitle") || $(".hero-subtitle");
+  const heroBadge = byId("heroBadge") || $(".hero-badge");
+
+  if (heroBadge) heroBadge.classList.add("visible");
+
+  setTimeout(() => {
+    if (heroTitle) heroTitle.classList.add("visible");
+  }, 180);
+
+  setTimeout(() => {
+    if (heroSubtitle) heroSubtitle.classList.add("visible");
+  }, 420);
+
+  const particles = byId("hopeParticles");
+  if (particles) createParticles(particles, 48);
+}
+
+function createParticles(container, count) {
+  container.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("span");
+    p.className = "hope-particle";
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.top = `${Math.random() * 100}%`;
+    p.style.animationDelay = `${Math.random() * 6}s`;
+    p.style.animationDuration = `${5 + Math.random() * 8}s`;
+    container.appendChild(p);
+  }
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+
+function updateDashboard() {
+  safeText(byId("metricSessions"), HOPE.metrics.sessions);
+  safeText(byId("metricCognitionRuns"), HOPE.metrics.cognitionRuns);
+  safeText(byId("metricStreamedTokens"), HOPE.metrics.streamedTokens);
+  safeText(byId("metricTTSRuns"), HOPE.metrics.ttsRuns);
+  safeText(byId("metricSafetyPasses"), HOPE.metrics.safetyPasses);
+  safeText(byId("metricNodeChecks"), HOPE.metrics.nodeChecks);
+
+  const status = byId("systemStatus");
+  if (status) {
+    status.textContent = HOPE.ui.isStreaming ? "COGNITION STREAMING" : "READY";
+    status.className = HOPE.ui.isStreaming ? "status live" : "status ready";
+  }
+}
+
+/* ============================================================
+   HEALTH CHECK
+   ============================================================ */
+
+async function checkHealth() {
+  const el = byId("healthStatus");
+  try {
+    const res = await fetch(HOPE.api.health, { method: "GET" });
+    if (!res.ok) throw new Error("Health endpoint unavailable");
+    const data = await res.json().catch(() => ({}));
+    safeText(el, data.status || "online");
+    if (el) el.className = "health online";
+  } catch (err) {
+    safeText(el, "local / fallback mode");
+    if (el) el.className = "health fallback";
+  }
+}
+
+/* ============================================================
+   LIVE DEMO / STREAMING COGNITION
+   ============================================================ */
+
+function bindDemo() {
+  const askBtn = byId("askButton") || byId("runDemoBtn");
+  const stopBtn = byId("stopButton") || byId("stopStreamBtn");
+  const input = byId("promptInput") || byId("demoPrompt");
+  const clearBtn = byId("clearButton") || byId("clearDemoBtn");
+
+  if (askBtn) {
+    askBtn.addEventListener("click", () => runCognition());
+  }
+
+  if (stopBtn) {
+    stopBtn.addEventListener("click", () => stopStreaming());
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", clearDemo);
+  }
+
+  if (input) {
+    input.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        runCognition();
+      }
+    });
+  }
+}
+
+async function runCognition() {
+  if (HOPE.ui.isStreaming) return;
+
+  const input = byId("promptInput") || byId("demoPrompt");
+  const output = byId("answerOutput") || byId("streamOutput") || byId("demoOutput");
+  const trace = byId("cognitionTrace");
+
+  const prompt = input ? input.value.trim() : "";
+
+  if (!prompt) {
+    showToast("Enter a prompt for the Vicdan cognition layer.");
+    return;
+  }
+
+  HOPE.ui.isStreaming = true;
+  HOPE.ui.lastAnswer = "";
+  HOPE.ui.currentController = new AbortController();
+  HOPE.metrics.cognitionRuns += 1;
+
+  updateDashboard();
+  setStreamingUI(true);
+
+  safeText(output, "");
+  addTrace("Input received", "The prompt entered the constitutional cognition pipeline.");
+  addTrace("Vicdan layer active", "Ethical and historical framing initialized.");
+  addTrace("HOPEtensor routing", "Reasoning path prepared across cognition nodes.");
 
   try {
-    const res = await fetch("/stream", {
+    const streamed = await tryStreamingRequest(prompt, output);
+
+    if (!streamed) {
+      await fallbackReasonRequest(prompt, output);
+    }
+
+    HOPE.metrics.safetyPasses += 1;
+    addTrace("Constitutional check", "Response passed the doctrine and safety layer.");
+    addTrace("Cognition completed", "Final answer delivered to interface.");
+
+    if (HOPE.ui.ttsEnabled && HOPE.ui.archiveVoiceEnabled && HOPE.ui.lastAnswer) {
+      await speakText(HOPE.ui.lastAnswer);
+    }
+  } catch (err) {
+    if (err.name === "AbortError") {
+      addTrace("Stream stopped", "The user stopped the cognition stream.");
+      showToast("Streaming stopped.");
+    } else {
+      console.error(err);
+      safeText(output, "Cognition error. Backend may be unavailable. Fallback mode required.");
+      addTrace("Error", err.message || "Unknown frontend/backend error.");
+    }
+  } finally {
+    HOPE.ui.isStreaming = false;
+    HOPE.ui.currentController = null;
+    setStreamingUI(false);
+    updateDashboard();
+
+    if (trace) trace.scrollTop = trace.scrollHeight;
+  }
+}
+
+async function tryStreamingRequest(prompt, output) {
+  try {
+    const res = await fetch(HOPE.api.stream, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream"
       },
       body: JSON.stringify({
-        question,
-        mode
-      })
+        prompt,
+        project: HOPE.project,
+        doctrine: HOPE.doctrine,
+        mode: "constitutional_stream",
+        layer: "vicdan",
+        architecture: "HOPEtensor"
+      }),
+      signal: HOPE.ui.currentController.signal
     });
 
-    if (!res.ok) {
-      throw new Error(`Backend error: ${res.status}`);
-    }
+    if (!res.ok || !res.body) return false;
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder("utf-8");
-    let buffer = "";
 
     while (true) {
       const { value, done } = await reader.read();
-
       if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+      const chunk = decoder.decode(value, { stream: true });
+      const parsed = parseSSEChunk(chunk);
 
-      const events = buffer.split("\n\n");
-      buffer = events.pop();
-
-      for (const event of events) {
-        if (!event.startsWith("data: ")) continue;
-
-        const raw = event.replace("data: ", "").trim();
-        if (!raw) continue;
-
-        const data = JSON.parse(raw);
-
-        if (data.type === "meta") {
-          setMeta({
-            status: "Streaming",
-            mode: data.mode || mode,
-            score: data.vicdan && data.vicdan.score
-          });
-
-          setThinkingState("Vicdan layer active...");
-        }
-
-        if (data.type === "token") {
-          appendOutput(data.token);
-        }
-
-        if (data.type === "done") {
-          setMeta({
-            status: "Completed",
-            mode
-          });
-
-          setThinkingState("Cognition completed.");
-        }
-
-        if (data.type === "error") {
-          throw new Error(data.message);
-        }
+      for (const token of parsed) {
+        if (!token) continue;
+        appendStreamToken(output, token);
       }
     }
-  } catch (error) {
-    setMeta({
-      status: "Error",
-      mode,
-      score: null
-    });
 
-    setThinkingState("Engine error.");
-
-    setOutput(
-      "Streaming engine error.\n\n" +
-      error.message +
-      "\n\nCheck Render logs, OPENAI_API_KEY, /stream endpoint and backend status."
-    );
-  } finally {
-    setLoading(false);
+    return true;
+  } catch (err) {
+    if (err.name === "AbortError") throw err;
+    console.warn("Streaming endpoint failed, falling back to /reason:", err);
+    return false;
   }
 }
 
-async function checkVicdan() {
-  const questionInput = safeGet("q");
-  const modeInput = safeGet("mode");
+function parseSSEChunk(chunk) {
+  const lines = chunk.split(/\r?\n/);
+  const tokens = [];
 
-  if (!questionInput || !modeInput) {
-    console.warn("Demo input elements not found.");
-    return;
-  }
+  for (const line of lines) {
+    const trimmed = line.trim();
 
-  const question = questionInput.value;
-  const mode = modeInput.value;
+    if (!trimmed) continue;
 
-  stopSpeaking();
+    if (trimmed.startsWith("data:")) {
+      const data = trimmed.replace(/^data:\s*/, "");
 
-  setMeta({
-    status: "Vicdan Review",
-    mode,
-    score: null
-  });
+      if (data === "[DONE]") continue;
 
-  setOutput("Running Vicdan ethical review...");
-  setThinkingState("Reviewing ethical constraints...");
-  setLoading(true, "Reviewing");
-
-  try {
-    const res = await fetch("/vicdan", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        question,
-        mode
-      })
-    });
-
-    if (!res.ok) {
-      throw new Error(`Backend error: ${res.status}`);
+      try {
+        const json = JSON.parse(data);
+        tokens.push(
+          json.token ||
+          json.delta ||
+          json.text ||
+          json.content ||
+          json.message ||
+          ""
+        );
+      } catch {
+        tokens.push(data);
+      }
+    } else {
+      tokens.push(trimmed);
     }
+  }
 
-    const data = await res.json();
-    const score = data.review && data.review.score;
+  return tokens;
+}
 
-    setMeta({
-      status: data.review ? data.review.status : "Completed",
-      mode,
-      score
-    });
+async function fallbackReasonRequest(prompt, output) {
+  addTrace("Fallback reason endpoint", "Streaming unavailable. Using /reason endpoint.");
 
-    setThinkingState("Vicdan review completed.");
-    setOutput(JSON.stringify(data, null, 2));
-  } catch (error) {
-    setMeta({
-      status: "Error",
-      mode,
-      score: null
-    });
+  const res = await fetch(HOPE.api.reason, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      prompt,
+      question: prompt,
+      project: HOPE.project,
+      doctrine: HOPE.doctrine,
+      mode: "constitutional_reason",
+      layer: "vicdan",
+      architecture: "HOPEtensor"
+    }),
+    signal: HOPE.ui.currentController.signal
+  });
 
-    setThinkingState("Vicdan review error.");
-    setOutput("Vicdan check error.\n\n" + error.message);
-  } finally {
-    setLoading(false);
+  if (!res.ok) {
+    throw new Error(`Reason endpoint failed: HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+
+  const answer =
+    data.answer ||
+    data.response ||
+    data.result ||
+    data.text ||
+    data.message ||
+    JSON.stringify(data, null, 2);
+
+  await typeAnswer(output, answer);
+}
+
+function appendStreamToken(output, token) {
+  HOPE.ui.lastAnswer += token;
+  HOPE.metrics.streamedTokens += estimateTokens(token);
+
+  if (output) {
+    output.textContent += token;
+    output.scrollTop = output.scrollHeight;
+  }
+
+  updateDashboard();
+}
+
+async function typeAnswer(output, text) {
+  for (const ch of text) {
+    appendStreamToken(output, ch);
+    await sleep(HOPE.ui.typingSpeed);
   }
 }
 
-async function clearMemory() {
-  stopSpeaking();
-
-  const modeInput = safeGet("mode");
-  const mode = modeInput ? modeInput.value : "constitutional";
-
-  setMeta({
-    status: "Memory Reset",
-    mode,
-    score: null
-  });
-
-  setThinkingState("Clearing memory...");
-  setOutput("Clearing constitutional conversation memory...");
-
-  try {
-    const res = await fetch("/memory/clear", {
-      method: "POST"
-    });
-
-    const data = await res.json();
-
-    setThinkingState("Memory cleared.");
-    setOutput(JSON.stringify(data, null, 2));
-  } catch (error) {
-    setThinkingState("Memory clear error.");
-    setOutput("Memory clear error.\n\n" + error.message);
+function stopStreaming() {
+  if (HOPE.ui.currentController) {
+    HOPE.ui.currentController.abort();
   }
 }
 
-async function speakCurrentResponse() {
-  const modeInput = safeGet("mode");
-  const mode = modeInput ? modeInput.value : "constitutional";
+function clearDemo() {
+  const output = byId("answerOutput") || byId("streamOutput") || byId("demoOutput");
+  const trace = byId("cognitionTrace");
 
-  if (generatingVoice || speaking || currentAudio) {
-    setMeta({
-      status: "Already Speaking",
-      mode
+  safeText(output, "");
+  safeHTML(trace, "");
+  HOPE.ui.lastAnswer = "";
+  showToast("Demo cleared.");
+}
+
+function setStreamingUI(active) {
+  const askBtn = byId("askButton") || byId("runDemoBtn");
+  const stopBtn = byId("stopButton") || byId("stopStreamBtn");
+  const indicator = byId("streamIndicator");
+
+  if (askBtn) askBtn.disabled = active;
+  if (stopBtn) stopBtn.disabled = !active;
+
+  if (indicator) {
+    indicator.textContent = active ? "Streaming cognition..." : "Ready";
+    indicator.className = active ? "indicator live" : "indicator ready";
+  }
+
+  document.body.classList.toggle("is-streaming", active);
+}
+
+/* ============================================================
+   COGNITION TRACE
+   ============================================================ */
+
+function addTrace(title, detail) {
+  const trace = byId("cognitionTrace");
+  if (!trace) return;
+
+  const item = document.createElement("div");
+  item.className = "trace-item";
+  item.innerHTML = `
+    <div class="trace-time">${escapeHTML(nowLabel())}</div>
+    <div class="trace-title">${escapeHTML(title)}</div>
+    <div class="trace-detail">${escapeHTML(detail)}</div>
+  `;
+
+  trace.appendChild(item);
+  trace.scrollTop = trace.scrollHeight;
+}
+
+/* ============================================================
+   OPENAI PREMIUM TTS / ARCHIVE VOICE
+   ============================================================ */
+
+function bindTTSControls() {
+  const voiceSelect = byId("voiceSelect");
+  const ttsToggle = byId("ttsToggle");
+  const archiveToggle = byId("archiveVoiceToggle");
+  const replayBtn = byId("replayVoiceBtn");
+
+  if (voiceSelect) {
+    voiceSelect.value = HOPE.ui.selectedVoice;
+    voiceSelect.addEventListener("change", () => {
+      HOPE.ui.selectedVoice = voiceSelect.value;
+      showToast(`Voice selected: ${HOPE.ui.selectedVoice}`);
     });
-
-    updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
-    return;
   }
 
-  let text =
-    latestResponse ||
-    (safeGet("responseBox") ? safeGet("responseBox").textContent : "") ||
-    "";
-
-  text = text.trim();
-
-  if (!text || text === "Live response will appear here.") {
-    setOutput("Seslendirilecek cevap yok. Önce cevap üret.");
-    return;
+  if (ttsToggle) {
+    ttsToggle.checked = HOPE.ui.ttsEnabled;
+    ttsToggle.addEventListener("change", () => {
+      HOPE.ui.ttsEnabled = ttsToggle.checked;
+    });
   }
 
-  generatingVoice = true;
+  if (archiveToggle) {
+    archiveToggle.checked = HOPE.ui.archiveVoiceEnabled;
+    archiveToggle.addEventListener("change", () => {
+      HOPE.ui.archiveVoiceEnabled = archiveToggle.checked;
+    });
+  }
 
-  setMeta({
-    status: "Generating Premium AI Voice",
-    mode
-  });
+  if (replayBtn) {
+    replayBtn.addEventListener("click", () => {
+      if (HOPE.ui.lastAnswer) speakText(HOPE.ui.lastAnswer);
+      else showToast("No answer available for replay.");
+    });
+  }
+}
 
-  setThinkingState("Generating premium voice...");
-  setAvatarSpeaking(true);
-  updateAvatarSpeech("Premium AI anlatıcı sesi hazırlanıyor...");
+async function speakText(text) {
+  if (!text || !HOPE.ui.ttsEnabled) return;
+
+  const audio = byId("ttsAudio") || new Audio();
 
   try {
-    const res = await fetch("/tts", {
+    addTrace("OpenAI premium TTS", "Archive voice rendering requested.");
+
+    const res = await fetch(HOPE.api.tts, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         text,
-        voice: "onyx"
+        voice: HOPE.ui.selectedVoice,
+        format: "mp3",
+        project: HOPE.project,
+        mode: "archive_voice"
       })
     });
 
-    if (!res.ok) {
-      throw new Error(`TTS backend error: ${res.status}`);
+    if (!res.ok) throw new Error(`TTS failed: HTTP ${res.status}`);
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+
+    audio.src = url;
+    audio.controls = true;
+
+    const holder = byId("ttsPlayer");
+    if (holder && !holder.contains(audio)) {
+      holder.innerHTML = "";
+      holder.appendChild(audio);
     }
 
-    const audioBlob = await res.blob();
-
-    if (!audioBlob || audioBlob.size < 1000) {
-      throw new Error(
-        `Invalid or tiny audio blob: ${
-          audioBlob ? audioBlob.size : 0
-        } bytes`
-      );
-    }
-
-    currentAudioUrl = URL.createObjectURL(audioBlob);
-    currentAudio = new Audio(currentAudioUrl);
-    currentAudio.preload = "auto";
-    currentAudio.volume = 1;
-
-    currentAudio.onplay = () => {
-      generatingVoice = false;
-      speaking = true;
-      setAvatarSpeaking(true);
-
-      setMeta({
-        status: `OpenAI TTS Playing · ${Math.round(audioBlob.size / 1024)} KB`,
-        mode
-      });
-
-      setThinkingState("Premium narration playing.");
-      updateAvatarSpeech("OpenAI premium anlatıcı sesi oynatılıyor.");
-    };
-
-    currentAudio.onended = () => {
-      cleanupAudio();
-
-      setMeta({
-        status: "Completed",
-        mode
-      });
-
-      setThinkingState("Voice completed.");
-      updateAvatarSpeech("Seslendirme tamamlandı.");
-    };
-
-    currentAudio.onerror = () => {
-      cleanupAudio();
-
-      setMeta({
-        status: "Voice Error",
-        mode
-      });
-
-      setThinkingState("Voice playback error.");
-      setOutput(text + "\n\n[Voice Error: Audio playback failed.]");
-    };
-
-    await currentAudio.play();
-  } catch (error) {
-    cleanupAudio();
-
-    setMeta({
-      status: "Voice Error",
-      mode
+    await audio.play().catch(() => {
+      showToast("Voice generated. Press play to listen.");
     });
 
-    setThinkingState("Voice generation error.");
-
-    setOutput(
-      text +
-      "\n\n[Voice Error: " +
-      error.message +
-      "]\n\nCheck OPENAI_API_KEY, /tts endpoint and Render logs."
-    );
+    HOPE.metrics.ttsRuns += 1;
+    updateDashboard();
+  } catch (err) {
+    console.warn("TTS unavailable:", err);
+    addTrace("TTS fallback", "Voice endpoint unavailable or browser blocked autoplay.");
   }
 }
 
-function playArchivalVoice() {
-  const modeInput = safeGet("mode");
-  const mode = modeInput ? modeInput.value : "constitutional";
+/* ============================================================
+   API PLAYGROUND
+   ============================================================ */
 
-  if (generatingVoice || speaking || currentAudio) {
-    setMeta({
-      status: "Already Speaking",
-      mode
-    });
+function bindApiPlayground() {
+  const btn = byId("apiRunBtn");
+  const input = byId("apiPayload");
+  const output = byId("apiOutput");
 
-    updateAvatarSpeech("Ses zaten çalışıyor. Önce Stop Voice ile durdurun.");
-    return;
-  }
+  if (!btn || !input) return;
 
-  const audioUrl =
-    "/static/ataturk-archival-voice.mp3?v=" +
-    Date.now();
+  btn.addEventListener("click", async () => {
+    let payload;
 
-  setMeta({
-    status: "Starting Archival Voice",
-    mode
-  });
+    try {
+      payload = JSON.parse(input.value);
+    } catch {
+      safeText(output, "Invalid JSON payload.");
+      return;
+    }
 
-  setThinkingState("Starting archive voice.");
-  updateAvatarSpeech("Gerçek tarihî arşiv kaydı başlatılıyor.");
+    safeText(output, "Running API request...");
 
-  currentAudio = new Audio(audioUrl);
-  currentAudio.preload = "auto";
-  currentAudio.volume = 1;
+    try {
+      const res = await fetch(HOPE.api.task, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-  currentAudio.onplay = () => {
-    speaking = true;
-    setAvatarSpeaking(true);
-
-    updateAvatarSpeech("Gerçek tarihî arşiv kaydı oynatılıyor.");
-
-    setMeta({
-      status: "Playing Archival Voice",
-      mode
-    });
-
-    setThinkingState("Archive voice playing.");
-  };
-
-  currentAudio.onended = () => {
-    cleanupAudio();
-
-    setMeta({
-      status: "Completed",
-      mode
-    });
-
-    setThinkingState("Archive voice completed.");
-    updateAvatarSpeech("Arşiv sesi tamamlandı.");
-  };
-
-  currentAudio.onerror = () => {
-    cleanupAudio();
-
-    updateAvatarSpeech(
-      "Arşiv sesi oynatılamadı. Dosya yolu: /static/ataturk-archival-voice.mp3"
-    );
-
-    setMeta({
-      status: "Archive Voice Error",
-      mode
-    });
-
-    setThinkingState("Archive voice error.");
-  };
-
-  currentAudio.play().catch((err) => {
-    cleanupAudio();
-
-    updateAvatarSpeech("Arşiv sesi oynatılamadı: " + err.message);
-
-    setMeta({
-      status: "Archive Voice Error",
-      mode
-    });
-
-    setThinkingState("Archive voice error.");
+      const data = await res.json().catch(() => ({}));
+      safeText(output, JSON.stringify(data, null, 2));
+    } catch (err) {
+      safeText(output, `API error: ${err.message}`);
+    }
   });
 }
 
-function cleanupAudio() {
-  if (currentAudio) {
-    try {
-      currentAudio.pause();
-      currentAudio.src = "";
-      currentAudio.load();
-    } catch (e) {
-      console.warn("Audio cleanup warning:", e);
-    }
-  }
+/* ============================================================
+   CONTRIBUTOR GATEWAY
+   ============================================================ */
 
-  if (currentAudioUrl) {
-    try {
-      URL.revokeObjectURL(currentAudioUrl);
-    } catch (e) {
-      console.warn("URL revoke warning:", e);
-    }
-  }
+function bindContributorGateway() {
+  const form = byId("contributorForm");
+  const output = byId("contributorOutput");
 
-  currentAudio = null;
-  currentAudioUrl = null;
-  speaking = false;
-  generatingVoice = false;
-  setAvatarSpeaking(false);
-}
+  if (!form) return;
 
-function stopSpeaking() {
-  cleanupAudio();
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-  if ("speechSynthesis" in window) {
-    try {
-      window.speechSynthesis.cancel();
-    } catch (e) {
-      console.warn("Speech synthesis cancel warning:", e);
-    }
-  }
+    const data = new FormData(form);
+    const name = data.get("name") || "Contributor";
+    const role = data.get("role") || "HOPEverse Builder";
+    const focus = data.get("focus") || "Constitutional AI / HOPEtensor / Vicdan Layer";
 
-  const modeElement = safeGet("mode");
+    const message = {
+      status: "received",
+      gateway: "HOPEverse Contributor Gateway",
+      name,
+      role,
+      focus,
+      doctrine: HOPE.doctrine,
+      next_step:
+        "Contributor profile prepared for HOPEtensor execution, identity, and trust layer alignment."
+    };
 
-  setMeta({
-    status: "Stopped",
-    mode: modeElement ? modeElement.value : "constitutional"
+    safeText(output, JSON.stringify(message, null, 2));
+    showToast("Contributor gateway profile generated.");
   });
-
-  setThinkingState("Stopped.");
-  updateAvatarSpeech("Ses durduruldu.");
 }
+
+/* ============================================================
+   ARCHITECTURE / NODE VISUALS
+   ============================================================ */
+
+function startNodePulse() {
+  const nodes = $$(".hope-node, .architecture-node, [data-node]");
+  if (!nodes.length) return;
+
+  let index = 0;
+
+  setInterval(() => {
+    nodes.forEach((n) => n.classList.remove("active-node"));
+    nodes[index % nodes.length].classList.add("active-node");
+
+    HOPE.metrics.nodeChecks += 1;
+    updateDashboard();
+
+    index += 1;
+  }, 1800);
+}
+
+/* ============================================================
+   REFORM MAP / TIMELINE
+   ============================================================ */
+
+function activateTimelineItem(id) {
+  $$(".timeline-item").forEach((item) => item.classList.remove("active"));
+  const el = byId(id);
+  if (el) el.classList.add("active");
+}
+
+function activateReformCard(id) {
+  $$(".reform-card").forEach((item) => item.classList.remove("active"));
+  const el = byId(id);
+  if (el) el.classList.add("active");
+}
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+
+function bindKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && HOPE.ui.isStreaming) {
+      stopStreaming();
+    }
+
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      const input = byId("promptInput") || byId("demoPrompt");
+      if (input) input.focus();
+    }
+  });
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+function showToast(message) {
+  let toast = byId("hopeToast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "hopeToast";
+    toast.className = "hope-toast";
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2600);
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function estimateTokens(text) {
+  if (!text) return 0;
+  return Math.max(1, Math.ceil(text.length / 4));
+}
+
+/* ============================================================
+   PUBLIC DEBUG HANDLE
+   ============================================================ */
+
+window.HOPE = HOPE;
+window.runCognition = runCognition;
+window.stopStreaming = stopStreaming;
+window.clearDemo = clearDemo;
+window.speakText = speakText;

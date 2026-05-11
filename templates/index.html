@@ -1,645 +1,1249 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Atatürk Digital Twin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/style.css" />
+
+  <title>ATATÜRK DIGITAL TWIN / HOPEVERSE</title>
+
+  <meta
+    name="description"
+    content="ATATÜRK DIGITAL TWIN / HOPEVERSE — Constitutional cognition, HOPEtensor architecture, Vicdan layer, streaming AI, OpenAI premium TTS, and peace doctrine."
+  />
+
+  <link rel="icon" href="/static/favicon.ico" />
+  <script src="/static/app.js" defer></script>
 
   <style>
-    :root{
-      --gold:#d8a94f;
-      --gold-soft:#f3cc7a;
-      --bg:#050505;
-      --panel:rgba(255,255,255,.04);
-      --panel-border:rgba(216,169,79,.20);
-      --text:#ece4d8;
-      --muted:#b8ab91;
-      --green:#4cff88;
-      --blue:#8bbcff;
+    :root {
+      --bg: #05070d;
+      --bg-soft: #0b1020;
+      --card: rgba(255, 255, 255, 0.075);
+      --card-strong: rgba(255, 255, 255, 0.12);
+      --text: #f7f8ff;
+      --muted: #aeb7d4;
+      --gold: #f5c542;
+      --blue: #4da3ff;
+      --cyan: #63f7ff;
+      --red: #ff4d5e;
+      --green: #55ffb2;
+      --line: rgba(255, 255, 255, 0.13);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+      --radius: 28px;
     }
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
       background:
-        radial-gradient(circle at top, rgba(216,169,79,.08), transparent 30%),
-        radial-gradient(circle at 80% 20%, rgba(139,188,255,.05), transparent 28%),
-        #050505;
-      color:var(--text);
-      font-family:Inter,Arial,sans-serif;
+        radial-gradient(circle at 20% 0%, rgba(77, 163, 255, 0.28), transparent 38%),
+        radial-gradient(circle at 80% 10%, rgba(245, 197, 66, 0.18), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(99, 247, 255, 0.12), transparent 38%),
+        var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
     }
 
-    .wrap{width:min(1400px,92%);margin:auto;padding:40px 0 80px}
-
-    .hero-grid{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:42px;
-      align-items:center;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    @media(max-width:980px){.hero-grid{grid-template-columns:1fr}}
-
-    .hero-badge,.truth-label{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      border:1px solid var(--panel-border);
-      border-radius:999px;
-      padding:10px 16px;
-      font-size:13px;
-      color:var(--gold-soft);
-      margin-bottom:18px;
-      background:rgba(0,0,0,.24);
-      font-weight:800;
-      letter-spacing:.035em;
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
     }
 
-    .truth-label{margin-top:24px}
-
-    .hero-dot,.status-dot{
-      width:10px;height:10px;border-radius:50%;
-      background:var(--green);
-      box-shadow:0 0 12px var(--green);
+    button {
+      cursor: pointer;
     }
 
-    .signature{
-      margin-top:14px;
-      color:#b8ab91;
-      font-size:14px;
-      letter-spacing:.08em;
-      font-weight:700;
+    .shell {
+      width: min(1220px, calc(100% - 36px));
+      margin: 0 auto;
     }
 
-    .doctrine{
-      margin-top:24px;
-      margin-bottom:28px;
-      border-left:3px solid var(--gold);
-      padding-left:20px;
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(5, 7, 13, 0.74);
+      border-bottom: 1px solid var(--line);
     }
 
-    .doctrine-title{
-      color:var(--gold-soft);
-      font-size:13px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      margin-bottom:12px;
-      font-weight:900;
+    .nav-inner {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
     }
 
-    .doctrine-line{
-      font-size:22px;
-      line-height:1.7;
-      color:var(--text);
-      font-weight:700;
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    .doctrine-line:last-child{color:var(--gold-soft)}
-
-    .mega-title{
-      font-size:clamp(52px,8vw,92px);
-      line-height:.92;
-      margin:0;
-      letter-spacing:-.04em;
+    .brand span:first-child {
+      font-size: 14px;
+      color: var(--gold);
     }
 
-    .mega-sub{
-      margin-top:22px;
-      font-size:20px;
-      line-height:1.65;
-      color:var(--muted);
-      max-width:760px;
+    .brand span:last-child {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.14em;
     }
 
-    .buttons{
-      margin-top:34px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:14px;
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
-    .buttons a,button{
-      cursor:pointer;
-      border:none;
-      border-radius:16px;
-      padding:14px 20px;
-      background:linear-gradient(135deg,#d8a94f,#9e6e1d);
-      color:black;
-      font-weight:800;
-      text-decoration:none;
-      transition:.25s;
-      font-size:15px;
+    .nav-link {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 9px 10px;
+      border-radius: 999px;
+      transition: 0.2s ease;
     }
 
-    .buttons a:hover,button:hover{
-      transform:translateY(-2px);
-      box-shadow:0 10px 30px rgba(216,169,79,.22);
+    .nav-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    .secondary{
-      background:rgba(255,255,255,.08)!important;
-      color:white!important;
-      border:1px solid rgba(255,255,255,.10)!important;
+    .hero {
+      min-height: calc(100vh - 76px);
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 88px 0 70px;
+      overflow: hidden;
     }
 
-    .avatar-card,.dashboard-panel,.engine-panel{
-      border:1px solid var(--panel-border);
-      border-radius:32px;
-      padding:26px;
+    .hope-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .hope-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(245, 197, 66, 0.78);
+      box-shadow: 0 0 22px rgba(245, 197, 66, 0.9);
+      animation: floatParticle linear infinite;
+    }
+
+    @keyframes floatParticle {
+      from {
+        transform: translateY(30px) scale(0.7);
+        opacity: 0;
+      }
+      30% {
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-90px) scale(1.3);
+        opacity: 0;
+      }
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 42px;
+      align-items: center;
+    }
+
+    .hero-badge,
+    .hero-title,
+    .hero-subtitle {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: 0.75s ease;
+    }
+
+    .visible {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 11px 15px;
+      border: 1px solid rgba(245, 197, 66, 0.34);
+      border-radius: 999px;
+      background: rgba(245, 197, 66, 0.08);
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(44px, 7vw, 92px);
+      line-height: 0.94;
+      letter-spacing: -0.07em;
+      margin: 0 0 28px;
+      max-width: 920px;
+    }
+
+    .hero-title strong {
+      color: var(--gold);
+      font-weight: 950;
+    }
+
+    .hero-subtitle {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.65;
+      max-width: 720px;
+      margin: 0 0 32px;
+    }
+
+    .doctrine-card {
+      padding: 24px;
+      border-radius: var(--radius);
       background:
-        radial-gradient(circle at top, rgba(216,169,79,.12), transparent 40%),
-        rgba(255,255,255,.03);
-      box-shadow:0 40px 120px rgba(0,0,0,.44);
+        linear-gradient(135deg, rgba(245, 197, 66, 0.14), rgba(77, 163, 255, 0.08)),
+        var(--card);
+      border: 1px solid rgba(245, 197, 66, 0.22);
+      box-shadow: var(--shadow);
+      margin: 28px 0;
     }
 
-    .avatar-frame{
-      position:relative;
-      height:520px;
-      overflow:hidden;
-      border-radius:28px;
-      border:1px solid rgba(216,169,79,.18);
+    .doctrine-label {
+      color: var(--gold);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .hope-doctrine {
+      display: grid;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.22;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--line);
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--gold), #ff7a3d);
+      color: #171000;
+      border: 0;
+      box-shadow: 0 18px 40px rgba(245, 197, 66, 0.22);
+    }
+
+    .btn.danger {
+      background: rgba(255, 77, 94, 0.16);
+      border: 1px solid rgba(255, 77, 94, 0.28);
+      color: #ffdce0;
+    }
+
+    .hero-panel {
+      border-radius: 34px;
       background:
-        radial-gradient(circle at center, rgba(216,169,79,.12), transparent 40%),
-        rgba(255,255,255,.03);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      min-height: 520px;
     }
 
-    .avatar-photo{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter:contrast(1.05) brightness(.92) sepia(.12);
-    }
-
-    .holo-ring{
-      position:absolute;
-      inset:40px;
-      border:1px dashed rgba(216,169,79,.24);
-      border-radius:50%;
-      animation:spin 24s linear infinite;
-      pointer-events:none;
-    }
-
-    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-    .avatar-speech{
-      margin-top:18px;
-      border:1px solid rgba(216,169,79,.18);
-      border-radius:18px;
-      padding:18px;
-      background:rgba(0,0,0,.24);
-      line-height:1.6;
-      color:var(--text);
-      min-height:92px;
-    }
-
-    .section{margin-top:90px}
-    .section h2{font-size:42px;margin-bottom:18px}
-    .section p{color:var(--muted);line-height:1.7;max-width:960px}
-
-    .dashboard-grid,.grid,.reform-map,.contributors,.roadmap{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
-      margin-top:28px;
-    }
-
-    .metric,.card,.reform-node,.contributor,.roadmap-step{
-      border:1px solid rgba(216,169,79,.18);
-      border-radius:22px;
-      padding:20px;
-      background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
-    }
-
-    .metric span,.mini-label{
-      display:block;
-      color:var(--muted);
-      font-size:12px;
-      letter-spacing:.09em;
-      margin-bottom:10px;
-      text-transform:uppercase;
-    }
-
-    .metric strong{color:var(--gold-soft);font-size:26px}
-
-    .card strong,.reform-node strong,.contributor strong,.roadmap-step strong{
-      color:var(--gold-soft);
-      font-size:20px;
-      display:block;
-      margin-bottom:12px;
-    }
-
-    .node-status{display:grid;gap:12px;margin-top:24px}
-
-    .node-row{
-      display:grid;
-      grid-template-columns:28px 1fr 130px;
-      gap:12px;
-      align-items:center;
-      padding:14px 16px;
-      border:1px solid rgba(216,169,79,.16);
-      border-radius:16px;
-      background:rgba(255,255,255,.035);
-    }
-
-    .node-row strong{color:var(--text)}
-    .node-row span{color:var(--muted);font-size:13px}
-
-    .timeline{
-      margin-top:34px;
-      border-left:2px solid rgba(216,169,79,.22);
-      padding-left:24px;
-    }
-
-    .timeline-item{margin-bottom:34px;position:relative}
-
-    .timeline-item::before{
-      content:"";
-      position:absolute;
-      left:-31px;
-      top:4px;
-      width:14px;
-      height:14px;
-      border-radius:50%;
-      background:var(--gold);
-      box-shadow:0 0 14px rgba(216,169,79,.6);
-    }
-
-    .timeline-item h3{margin:0;color:var(--gold-soft)}
-    .timeline-item span{color:var(--muted);line-height:1.6;display:block;margin-top:8px}
-
-    .flow{
-      margin-top:24px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      align-items:center;
-    }
-
-    .flow div{
-      border:1px solid var(--panel-border);
-      border-radius:16px;
-      padding:14px 18px;
-      background:rgba(255,255,255,.04);
-    }
-
-    .api-box{
-      margin-top:28px;
-      border:1px solid rgba(216,169,79,.22);
-      border-radius:24px;
-      overflow:hidden;
-      background:rgba(0,0,0,.32);
-    }
-
-    .api-row{
-      display:grid;
-      grid-template-columns:130px 1fr;
-      border-bottom:1px solid rgba(216,169,79,.12);
-    }
-
-    .api-row:last-child{border-bottom:none}
-    .api-method{padding:16px;color:black;font-weight:900;background:var(--gold)}
-    .api-path{padding:16px;color:var(--text);font-family:Consolas,monospace}
-
-    .engine-topbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:22px;
-      margin-bottom:22px;
-    }
-
-    .response-shell{
-      border:1px solid rgba(216,169,79,.18);
-      border-radius:24px;
-      overflow:hidden;
+    .orb {
+      height: 260px;
+      border-radius: 32px;
       background:
-        radial-gradient(circle at top,rgba(216,169,79,.06),transparent 40%),
-        rgba(0,0,0,.26);
+        radial-gradient(circle at 50% 45%, rgba(245, 197, 66, 0.95), rgba(245, 197, 66, 0.08) 32%, transparent 58%),
+        radial-gradient(circle at 50% 50%, rgba(77, 163, 255, 0.45), transparent 55%);
+      border: 1px solid rgba(245, 197, 66, 0.17);
+      position: relative;
+      overflow: hidden;
     }
 
-    .stream-topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:14px 18px;
-      border-bottom:1px solid rgba(216,169,79,.12);
-      background:rgba(255,255,255,.02);
+    .orb::after {
+      content: "";
+      position: absolute;
+      inset: 18%;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      animation: pulse 2.6s ease-in-out infinite;
     }
 
-    .stream-indicator{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color:var(--gold-soft);
-      font-size:12px;
-      letter-spacing:.08em;
-      font-weight:800;
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(0.88);
+        opacity: 0.42;
+      }
+      50% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
     }
 
-    .pulse-dot{
-      width:10px;height:10px;border-radius:50%;
-      background:#4cff88;
-      box-shadow:0 0 18px #4cff88;
-      animation:pulse 1.4s infinite;
+    .panel-title {
+      font-size: 22px;
+      font-weight: 950;
+      margin: 22px 0 8px;
     }
 
-    @keyframes pulse{
-      0%{transform:scale(1);opacity:1}
-      50%{transform:scale(1.45);opacity:.45}
-      100%{transform:scale(1);opacity:1}
+    .panel-text {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
     }
 
-    .thinking-state{
-      color:#b8ab91;
-      font-size:12px;
-      letter-spacing:.06em;
+    section {
+      padding: 86px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.065);
     }
 
-    .response-box{
-      padding:28px;
-      min-height:260px;
-      line-height:1.9;
-      white-space:pre-wrap;
-      position:relative;
-      font-size:17px;
-      color:var(--text);
+    .section-head {
+      margin-bottom: 30px;
     }
 
-    .stream-cursor{
-      display:inline-block;
-      width:12px;
-      height:22px;
-      background:var(--gold);
-      margin-left:6px;
-      animation:cursorBlink 1s infinite;
-      vertical-align:middle;
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.14em;
+      margin-bottom: 10px;
     }
 
-    @keyframes cursorBlink{
-      0%{opacity:1}
-      50%{opacity:0}
-      100%{opacity:1}
+    h2 {
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin: 0 0 16px;
     }
 
-    input,select{
-      width:100%;
-      margin-top:8px;
-      margin-bottom:18px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:#111!important;
-      color:white!important;
-      padding:16px;
-      font-size:16px;
+    .section-lead {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 860px;
+      margin: 0;
     }
 
-    select option{background:#111!important;color:#fff!important}
-
-    footer{
-      margin-top:90px;
-      padding-bottom:60px;
-      color:var(--muted);
-      text-align:center;
-      font-size:14px;
-      letter-spacing:.08em;
+    .grid {
+      display: grid;
+      gap: 18px;
     }
 
-    #loader.hidden{display:none}
+    .grid.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 24px;
+      box-shadow: 0 18px 56px rgba(0, 0, 0, 0.22);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .card ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+    }
+
+    .metric {
+      display: grid;
+      gap: 8px;
+    }
+
+    .metric-value {
+      font-size: 38px;
+      font-weight: 950;
+      color: var(--gold);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+    }
+
+    .status,
+    .health,
+    .indicator {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .status.ready,
+    .indicator.ready,
+    .health.online {
+      color: var(--green);
+      background: rgba(85, 255, 178, 0.08);
+      border-color: rgba(85, 255, 178, 0.22);
+    }
+
+    .status.live,
+    .indicator.live {
+      color: var(--gold);
+      background: rgba(245, 197, 66, 0.08);
+      border-color: rgba(245, 197, 66, 0.25);
+    }
+
+    .health.fallback {
+      color: var(--gold);
+      background: rgba(245, 197, 66, 0.08);
+      border-color: rgba(245, 197, 66, 0.22);
+    }
+
+    .architecture-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .hope-node,
+    .architecture-node {
+      min-height: 190px;
+      border-radius: 26px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.064);
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+      transition: 0.25s ease;
+    }
+
+    .hope-node::before,
+    .architecture-node::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 0%, rgba(245, 197, 66, 0.18), transparent 42%);
+      opacity: 0;
+      transition: 0.25s ease;
+    }
+
+    .active-node {
+      border-color: rgba(245, 197, 66, 0.46);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(245, 197, 66, 0.13);
+    }
+
+    .active-node::before {
+      opacity: 1;
+    }
+
+    .node-index {
+      color: var(--gold);
+      font-weight: 950;
+      margin-bottom: 14px;
+    }
+
+    .demo-layout {
+      display: grid;
+      grid-template-columns: 1fr 0.82fr;
+      gap: 18px;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.24);
+      color: var(--text);
+      padding: 15px 16px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: rgba(245, 197, 66, 0.5);
+      box-shadow: 0 0 0 4px rgba(245, 197, 66, 0.08);
+    }
+
+    .answer-output,
+    .api-output,
+    .contributor-output {
+      white-space: pre-wrap;
+      min-height: 260px;
+      max-height: 520px;
+      overflow: auto;
+      border-radius: 22px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--line);
+      color: #eef3ff;
+      line-height: 1.65;
+    }
+
+    .trace {
+      max-height: 520px;
+      overflow: auto;
+      display: grid;
+      gap: 12px;
+    }
+
+    .trace-item {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--line);
+    }
+
+    .trace-time {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .trace-title {
+      font-weight: 950;
+      margin-bottom: 5px;
+    }
+
+    .trace-detail {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .control-row .btn {
+      flex: 0 0 auto;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .switch-row input {
+      width: auto;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 16px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      border-radius: 24px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.058);
+      transition: 0.25s ease;
+    }
+
+    .timeline-item.active,
+    .reform-card.active {
+      border-color: rgba(245, 197, 66, 0.42);
+      background: rgba(245, 197, 66, 0.08);
+    }
+
+    .timeline-date {
+      color: var(--gold);
+      font-weight: 950;
+    }
+
+    .reform-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .reform-card {
+      border-radius: 24px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.058);
+      transition: 0.25s ease;
+    }
+
+    .api-columns {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+    }
+
+    .code {
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+      font-size: 13px;
+    }
+
+    .footer {
+      padding: 48px 0 70px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .footer strong {
+      color: var(--gold);
+    }
+
+    .hope-toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 100;
+      border-radius: 18px;
+      padding: 14px 18px;
+      background: rgba(5, 7, 13, 0.92);
+      border: 1px solid rgba(245, 197, 66, 0.28);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.25s ease;
+    }
+
+    .hope-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .demo-layout,
+      .api-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.cols-2,
+      .grid.cols-3,
+      .grid.cols-4,
+      .architecture-map,
+      .reform-map {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-inner {
+        height: auto;
+        padding: 16px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <nav class="navbar">
+    <div class="shell nav-inner">
+      <a href="#top" class="brand">
+        <span>ATATÜRK DIGITAL TWIN</span>
+        <span>HOPEVERSE / HOPEtensor / Vicdan Layer</span>
+      </a>
 
-<main class="wrap">
+      <div class="nav-links">
+        <a class="nav-link" href="#dashboard">Dashboard</a>
+        <a class="nav-link" href="#architecture">Architecture</a>
+        <a class="nav-link" href="#reform-map">Reform Map</a>
+        <a class="nav-link" href="#timeline">Timeline</a>
+        <a class="nav-link" href="#roadmap">Roadmap</a>
+        <a class="nav-link" href="#api">API</a>
+        <a class="nav-link" href="#contributor">Contributor</a>
+        <a class="nav-link" href="#demo">Live Demo</a>
+      </div>
+    </div>
+  </nav>
 
-  <section class="hero-grid">
-    <div>
-      <div class="hero-badge">
-        <div class="hero-dot"></div>
-        HOPEverse Civilization Interface · v2.7 Full Canon
+  <main id="top">
+    <header class="hero">
+      <div id="hopeParticles" class="hope-particles"></div>
+
+      <div class="shell hero-grid">
+        <div>
+          <div id="heroBadge" class="hero-badge">
+            Constitutional Cognition Engine
+          </div>
+
+          <h1 id="heroTitle" class="hero-title">
+            ATATÜRK DIGITAL TWIN for the <strong>HOPEVERSE</strong>
+          </h1>
+
+          <p id="heroSubtitle" class="hero-subtitle">
+            A civic, historical and constitutional AI interface built on FastAPI,
+            OpenAI streaming, premium TTS, the Vicdan layer, and HOPEtensor
+            architecture.
+          </p>
+
+          <div class="doctrine-card">
+            <div class="doctrine-label">Central Doctrine</div>
+            <div id="doctrineText" class="hope-doctrine" data-doctrine>
+              <span>Peace at home.</span>
+              <span>Peace in the world.</span>
+              <span>Peace in the universe and HOPEverse.</span>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn primary" data-scroll="#demo">Run Live Demo</button>
+            <button class="btn" data-scroll="#architecture">View Architecture</button>
+            <button class="btn" data-scroll="#contributor">Contributor Gateway</button>
+          </div>
+        </div>
+
+        <aside class="hero-panel">
+          <div class="orb"></div>
+          <div class="panel-title">Vicdan Layer Online</div>
+          <p class="panel-text">
+            The interface routes cognition through doctrine, ethics, reform memory,
+            HOPEtensor node logic, and streaming output. It is designed as a public
+            digital-twin experience, not a generic chatbot.
+          </p>
+
+          <div style="margin-top: 20px; display: grid; gap: 10px;">
+            <span id="systemStatus" class="status ready">READY</span>
+            <span id="healthStatus" class="health">checking</span>
+            <span id="streamIndicator" class="indicator ready">Ready</span>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section id="dashboard">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Dashboard</div>
+          <h2>Live cognition cockpit</h2>
+          <p class="section-lead">
+            Real-time counters for sessions, cognition runs, streamed token flow,
+            TTS generation, constitutional safety passes, and HOPEtensor node checks.
+          </p>
+        </div>
+
+        <div class="grid cols-3">
+          <div class="card metric">
+            <div id="metricSessions" class="metric-value">1</div>
+            <div class="metric-label">Sessions</div>
+          </div>
+
+          <div class="card metric">
+            <div id="metricCognitionRuns" class="metric-value">0</div>
+            <div class="metric-label">Cognition Runs</div>
+          </div>
+
+          <div class="card metric">
+            <div id="metricStreamedTokens" class="metric-value">0</div>
+            <div class="metric-label">Streamed Tokens</div>
+          </div>
+
+          <div class="card metric">
+            <div id="metricTTSRuns" class="metric-value">0</div>
+            <div class="metric-label">OpenAI TTS Runs</div>
+          </div>
+
+          <div class="card metric">
+            <div id="metricSafetyPasses" class="metric-value">0</div>
+            <div class="metric-label">Safety Passes</div>
+          </div>
+
+          <div class="card metric">
+            <div id="metricNodeChecks" class="metric-value">0</div>
+            <div class="metric-label">Node Checks</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Architecture</div>
+          <h2>HOPEtensor constitutional cognition architecture</h2>
+          <p class="section-lead">
+            The system is structured as a layered reasoning chain: user input,
+            doctrine alignment, Vicdan ethics, verification, execution, streaming,
+            and archive voice output.
+          </p>
+        </div>
+
+        <div class="architecture-map">
+          <div class="hope-node architecture-node" data-node>
+            <div class="node-index">01</div>
+            <h3>Input Layer</h3>
+            <p>User prompt enters the digital twin interface with project context and doctrine.</p>
+          </div>
+
+          <div class="hope-node architecture-node" data-node>
+            <div class="node-index">02</div>
+            <h3>Vicdan Layer</h3>
+            <p>Ethics, conscience, civic framing and constitutional sensitivity are activated.</p>
+          </div>
+
+          <div class="hope-node architecture-node" data-node>
+            <div class="node-index">03</div>
+            <h3>Reasoning Node</h3>
+            <p>OpenAI / local fallback / HOPEtensor-compatible reasoning flow generates answer candidates.</p>
+          </div>
+
+          <div class="hope-node architecture-node" data-node>
+            <div class="node-index">04</div>
+            <h3>Verification Node</h3>
+            <p>Output is checked against doctrine, project identity, historical tone and safety rules.</p>
+          </div>
+
+          <div class="hope-node architecture-node" data-node>
+            <div class="node-index">05</div>
+            <h3>Delivery Layer</h3>
+            <p>Streaming SSE, UI trace, premium TTS and archive voice deliver the final experience.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reform-map">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Reform Map</div>
+          <h2>Reform memory as cognition substrate</h2>
+          <p class="section-lead">
+            The digital twin does not speak from personality imitation alone. It speaks from a structured
+            map of reforms, institutions, civic responsibility, science, education, sovereignty and peace.
+          </p>
+        </div>
+
+        <div class="reform-map">
+          <div id="reform-civic" class="reform-card active">
+            <h3>Civic Republic</h3>
+            <p>Citizen dignity, secular institutions, public reason, law, equality and participation.</p>
+          </div>
+
+          <div id="reform-education" class="reform-card">
+            <h3>Education & Science</h3>
+            <p>Modern education, rational inquiry, scientific literacy and cultural development.</p>
+          </div>
+
+          <div id="reform-economy" class="reform-card">
+            <h3>Economic Sovereignty</h3>
+            <p>Productive independence, national capability, infrastructure and technological progress.</p>
+          </div>
+
+          <div id="reform-peace" class="reform-card">
+            <h3>Peace Doctrine</h3>
+            <p>Peace at home, peace in the world, and peace in the universe and HOPEverse.</p>
+          </div>
+
+          <div id="reform-culture" class="reform-card">
+            <h3>Culture & Language</h3>
+            <p>Identity, memory, language, arts, archive and public imagination.</p>
+          </div>
+
+          <div id="reform-future" class="reform-card">
+            <h3>Future Governance</h3>
+            <p>AI constitutionalism, transparent execution, decentralized verification and human dignity.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Timeline</div>
+          <h2>From republic memory to HOPEverse execution</h2>
+          <p class="section-lead">
+            A living timeline connecting founding doctrine, digital sovereignty, AI trust,
+            HOPEtensor architecture, and contributor-scale deployment.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div id="timeline-1923" class="timeline-item active">
+            <div class="timeline-date">1923</div>
+            <div>
+              <h3>Republic as Operating System</h3>
+              <p>The republic becomes the institutional base for sovereignty, education, reform and civic modernization.</p>
+            </div>
+          </div>
+
+          <div id="timeline-1930s" class="timeline-item">
+            <div class="timeline-date">1930s</div>
+            <div>
+              <h3>Reform Acceleration</h3>
+              <p>Law, language, education, culture, industry and public identity become integrated modernization layers.</p>
+            </div>
+          </div>
+
+          <div id="timeline-ai" class="timeline-item">
+            <div class="timeline-date">AI Era</div>
+            <div>
+              <h3>Constitutional Cognition</h3>
+              <p>Historical memory is transformed into structured AI behavior, not imitation or nostalgia.</p>
+            </div>
+          </div>
+
+          <div id="timeline-hope" class="timeline-item">
+            <div class="timeline-date">HOPEverse</div>
+            <div>
+              <h3>Distributed Trust Layer</h3>
+              <p>HOPEtensor, Vicdan, contributor identity, execution nodes and verified reasoning form the future layer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Roadmap</div>
+          <h2>Build path</h2>
+          <p class="section-lead">
+            The project evolves from a working FastAPI demo into a verified civic AI interface,
+            contributor gateway, distributed cognition runtime and HOPEverse institutional layer.
+          </p>
+        </div>
+
+        <div class="grid cols-4">
+          <div class="card">
+            <h3>Phase 1 — Canon UI</h3>
+            <ul>
+              <li>Hero, doctrine, dashboard and live demo</li>
+              <li>Streaming cognition UI</li>
+              <li>Premium visual identity</li>
+              <li>Crafted by Erhan branding</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Phase 2 — Engine</h3>
+            <ul>
+              <li>FastAPI backend</li>
+              <li>OpenAI streaming SSE</li>
+              <li>OpenAI premium TTS</li>
+              <li>Fallback reason endpoint</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Phase 3 — HOPEtensor</h3>
+            <ul>
+              <li>Reasoning Node</li>
+              <li>Verification Node</li>
+              <li>Ethics / Vicdan Node</li>
+              <li>Observer / Audit Node</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Phase 4 — HOPEverse</h3>
+            <ul>
+              <li>Contributor Gateway</li>
+              <li>Identity and trust layer</li>
+              <li>Archive voice layer</li>
+              <li>Public deployment on Render</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="api">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">API</div>
+          <h2>API playground</h2>
+          <p class="section-lead">
+            Test the HOPEtensor-compatible task endpoint from the browser. The frontend expects
+            <code>/v1/tasks</code>, <code>/reason</code>, <code>/stream</code>, <code>/tts</code> and <code>/health</code>.
+          </p>
+        </div>
+
+        <div class="api-columns">
+          <div class="card">
+            <h3>Payload</h3>
+            <textarea id="apiPayload" class="code">{
+  "task": "Explain the ATATÜRK DIGITAL TWIN doctrine",
+  "mode": "v1-hybrid",
+  "layer": "vicdan",
+  "architecture": "HOPEtensor"
+}</textarea>
+
+            <div class="control-row">
+              <button id="apiRunBtn" class="btn primary">Run API</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Response</h3>
+            <pre id="apiOutput" class="api-output code">API response will appear here.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contributor">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Contributor Gateway</div>
+          <h2>Join the HOPEverse contributor layer</h2>
+          <p class="section-lead">
+            Contributor onboarding for builders, architects, researchers, civic technologists,
+            educators, AI engineers, historians, designers and institutional partners.
+          </p>
+        </div>
+
+        <div class="grid cols-2">
+          <form id="contributorForm" class="card">
+            <h3>Contributor Profile</h3>
+
+            <div style="display: grid; gap: 12px; margin-top: 16px;">
+              <input name="name" placeholder="Name / Organization" />
+              <input name="role" placeholder="Role — Builder, Architect, Researcher..." />
+              <textarea name="focus" placeholder="Focus area — HOPEtensor, AI, education, archive, governance..."></textarea>
+            </div>
+
+            <div class="control-row">
+              <button class="btn primary" type="submit">Generate Contributor Profile</button>
+            </div>
+          </form>
+
+          <div class="card">
+            <h3>Gateway Output</h3>
+            <pre id="contributorOutput" class="contributor-output code">Contributor output will appear here.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo">
+      <div class="shell">
+        <div class="section-head">
+          <div class="kicker">Live Demo</div>
+          <h2>Streaming Vicdan cognition UI</h2>
+          <p class="section-lead">
+            Ask the digital twin. The frontend first tries the streaming SSE endpoint,
+            then falls back to the standard reasoning endpoint if streaming is unavailable.
+          </p>
+        </div>
+
+        <div class="demo-layout">
+          <div class="card">
+            <h3>Prompt</h3>
+            <textarea id="promptInput" placeholder="Ask the ATATÜRK DIGITAL TWIN...">Explain the doctrine: Peace at home, peace in the world, peace in the universe and HOPEverse.</textarea>
+
+            <div class="control-row">
+              <button id="askButton" class="btn primary">Run Cognition</button>
+              <button id="stopButton" class="btn danger" disabled>Stop</button>
+              <button id="clearButton" class="btn">Clear</button>
+            </div>
+
+            <div style="margin-top: 18px;" class="grid cols-2">
+              <label class="switch-row">
+                <input id="ttsToggle" type="checkbox" checked />
+                OpenAI premium TTS
+              </label>
+
+              <label class="switch-row">
+                <input id="archiveVoiceToggle" type="checkbox" checked />
+                Archive voice
+              </label>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <label class="metric-label" for="voiceSelect">Voice</label>
+              <select id="voiceSelect">
+                <option value="alloy">alloy</option>
+                <option value="verse">verse</option>
+                <option value="ash">ash</option>
+                <option value="ballad">ballad</option>
+                <option value="coral">coral</option>
+                <option value="sage">sage</option>
+              </select>
+            </div>
+
+            <div class="control-row">
+              <button id="replayVoiceBtn" class="btn">Replay Voice</button>
+            </div>
+
+            <div id="ttsPlayer"></div>
+            <audio id="ttsAudio"></audio>
+          </div>
+
+          <div class="card">
+            <h3>Answer</h3>
+            <div id="answerOutput" class="answer-output">Answer stream will appear here.</div>
+          </div>
+        </div>
+
+        <div class="grid cols-2" style="margin-top: 18px;">
+          <div class="card">
+            <h3>Cognition Trace</h3>
+            <div id="cognitionTrace" class="trace"></div>
+          </div>
+
+          <div class="card">
+            <h3>Execution Contract</h3>
+            <ul>
+              <li>FastAPI backend</li>
+              <li>Streaming Server-Sent Events</li>
+              <li>OpenAI premium TTS endpoint</li>
+              <li>HOPEtensor-compatible task endpoint</li>
+              <li>Vicdan and doctrine preservation</li>
+              <li>Render deployment readiness</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <div class="doctrine-card">
+        <div class="doctrine-label">Central Doctrine</div>
+        <div class="hope-doctrine">
+          <span>Peace at home.</span>
+          <span>Peace in the world.</span>
+          <span>Peace in the universe and HOPEverse.</span>
+        </div>
       </div>
 
-      <div class="signature">
-        Crafted by Erhan · HOPEverse Civilization Canon
-      </div>
-
-      <div class="doctrine">
-        <div class="doctrine-title">Central Doctrine</div>
-        <div class="doctrine-line">Peace at home.</div>
-        <div class="doctrine-line">Peace in the world.</div>
-        <div class="doctrine-line">Peace in the universe and HOPEverse.</div>
-      </div>
-
-      <h1 class="mega-title">Atatürk<br/>Digital Twin</h1>
-
-      <p class="mega-sub">
-        Cumhuriyet aklı, anayasal bilinç, Vicdan katmanı,
-        arşiv zekâsı ve HOPEtensor reasoning mimarisiyle çalışan
-        canlı civilization intelligence platformu.
+      <p>
+        <strong>ATATÜRK DIGITAL TWIN / HOPEVERSE</strong><br />
+        Constitutional cognition engine, HOPEtensor architecture, Vicdan layer,
+        OpenAI streaming, premium TTS, archive voice and contributor gateway.
       </p>
 
-      <div class="truth-label">HISTORICAL ARCHIVE ≠ AI GENERATED RESPONSE</div>
-
-      <div class="buttons">
-        <a href="#dashboard">Dashboard</a>
-        <a class="secondary" href="#architecture">Architecture</a>
-        <a class="secondary" href="#reforms">Reform Map</a>
-        <a class="secondary" href="#timeline">Timeline</a>
-        <a class="secondary" href="#roadmap">Roadmap</a>
-        <a class="secondary" href="#demo">Launch Demo</a>
-      </div>
+      <p>
+        <strong>Crafted by Erhan</strong>
+      </p>
     </div>
-
-    <div class="avatar-card">
-      <div class="avatar-frame">
-        <div class="holo-ring"></div>
-        <img class="avatar-photo" src="/static/ataturk-avatar.jpg" alt="Atatürk" />
-      </div>
-
-      <div class="avatar-speech" id="avatarSpeech">
-        Hazırım. Sorunuzu Cumhuriyet aklı, bilim, egemenlik ve vicdan süzgecinden geçireceğim.
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="dashboard">
-    <h2>Live Platform Dashboard</h2>
-    <p>Constitutional intelligence platform operational status.</p>
-
-    <div class="dashboard-panel">
-      <div class="dashboard-grid">
-        <div class="metric"><span>Engine</span><strong>Online</strong></div>
-        <div class="metric"><span>Reasoning</span><strong>Streaming</strong></div>
-        <div class="metric"><span>Vicdan Layer</span><strong>Active</strong></div>
-        <div class="metric"><span>Archive Mode</span><strong>Ready</strong></div>
-      </div>
-
-      <div class="node-status">
-        <div class="node-row"><div class="status-dot"></div><strong>Coordinator Node</strong><span>Prototype Ready</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Vicdan Node</strong><span>Active</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Reasoning Node</strong><span>Live LLM</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Archive Node</strong><span>Operational</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Observer Node</strong><span>Next Build</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="architecture">
-    <h2>HOPEtensor Constitutional Architecture</h2>
-    <p>Sistem klasik chatbot değildir. Çok katmanlı civilization cognition mimarisi olarak tasarlanmıştır.</p>
-
-    <div class="grid">
-      <div class="card"><strong>Vicdan Node</strong>İnsan onuru, etik sınırlar ve anayasal risk analizi yapar.</div>
-      <div class="card"><strong>Reasoning Node</strong>Canlı LLM cognition ve stratejik cevap üretimi sağlar.</div>
-      <div class="card"><strong>Verification Node</strong>Halüsinasyon, çelişki ve manipülasyon kontrolü yapar.</div>
-      <div class="card"><strong>Archive Node</strong>Tarihî içerik, Nutuk, reformlar ve arşiv bağlamını yönetir.</div>
-    </div>
-  </section>
-
-  <section class="section" id="reforms">
-    <h2>Civilization Reform Map</h2>
-    <p>Cumhuriyet devrimleri, modern devlet, bilimsel toplum ve yurttaş egemenliği için medeniyet modülleridir.</p>
-
-    <div class="reform-map">
-      <div class="reform-node"><strong>Education</strong>Tevhid-i Tedrisat, bilimsel eğitim, ortak yurttaşlık bilinci.</div>
-      <div class="reform-node"><strong>Law</strong>Modern hukuk, eşit yurttaşlık, laik yargı ve kurumsal düzen.</div>
-      <div class="reform-node"><strong>Science</strong>Akıl, deney, teknik ilerleme ve çağdaş bilgi üretimi.</div>
-      <div class="reform-node"><strong>Women’s Rights</strong>Siyasal temsil, eğitim, hukuk önünde eşitlik ve toplumsal katılım.</div>
-      <div class="reform-node"><strong>Language</strong>Ulusal bilinç, okuryazarlık ve düşünce erişilebilirliği.</div>
-      <div class="reform-node"><strong>Economy</strong>Üretim, bağımsızlık, kurumsal kapasite ve kalkınma disiplini.</div>
-    </div>
-  </section>
-
-  <section class="section" id="timeline">
-    <h2>Civilization Timeline</h2>
-
-    <div class="timeline">
-      <div class="timeline-item"><h3>1919 · National Resistance</h3><span>Ulusal egemenlik fikrinin yeniden inşası ve bağımsızlık organizasyonu.</span></div>
-      <div class="timeline-item"><h3>1920 · Grand National Assembly</h3><span>Egemenliğin saraydan millete geçişi.</span></div>
-      <div class="timeline-item"><h3>1923 · Republic</h3><span>Modern anayasal devlet mimarisinin kuruluşu.</span></div>
-      <div class="timeline-item"><h3>1924–1937 · Civilization Reforms</h3><span>Eğitim, hukuk, bilim, kadın hakları, ekonomi ve laik devlet reformları.</span></div>
-      <div class="timeline-item"><h3>2030+ · Constitutional AI Era</h3><span>Dijital vicdan, anayasal yapay zekâ ve civilization intelligence sistemleri.</span></div>
-    </div>
-  </section>
-
-  <section class="section" id="statecraft">
-    <h2>Statecraft Simulation</h2>
-    <p>Sistem gelecekte anayasal kriz simülasyonu, stratejik devlet aklı ve civilization-scale governance modelleri için kullanılabilir.</p>
-
-    <div class="flow">
-      <div>Economic Crisis</div>
-      <span>→</span>
-      <div>Ethical Review</div>
-      <span>→</span>
-      <div>Constitutional Analysis</div>
-      <span>→</span>
-      <div>Strategic Response</div>
-      <span>→</span>
-      <div>Public Stability</div>
-    </div>
-  </section>
-
-  <section class="section" id="roadmap">
-    <h2>Execution Roadmap</h2>
-    <p>Bu roadmap, MVP’nin platforma dönüşmesi için sıradaki build aşamalarını gösterir.</p>
-
-    <div class="roadmap">
-      <div class="roadmap-step"><strong>Archive Intelligence</strong>Nutuk, konuşmalar, tarihsel belgeler ve reform veritabanı.</div>
-      <div class="roadmap-step"><strong>Verification Layer</strong>Kaynak kontrolü, hallucination scoring ve observer audit.</div>
-      <div class="roadmap-step"><strong>HOPEtensor Nodes</strong>Reasoning, Vicdan, Archive ve Strategy node ayrıştırması.</div>
-      <div class="roadmap-step"><strong>Public Contributor Launch</strong>Geliştirici, tarihçi, eğitimci ve etik reviewer onboarding.</div>
-    </div>
-  </section>
-
-  <section class="section" id="api">
-    <h2>Atatürk Digital Twin API</h2>
-    <p>Bu MVP dış sistemlere bağlanabilecek bir constitutional intelligence API çekirdeğidir.</p>
-
-    <div class="api-box">
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/stream · canlı streaming constitutional cognition</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/demo · tam yanıtlı reasoning endpoint</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/vicdan · etik ön kontrol ve risk skoru</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/tts · AI narrator voice generation</div></div>
-      <div class="api-row"><div class="api-method">GET</div><div class="api-path">/timeline · tarihsel civilization context</div></div>
-    </div>
-  </section>
-
-  <section class="section" id="contributors">
-    <h2>Contributor Gateway</h2>
-    <p>Bu proje geliştirici, tarihçi, eğitimci, etik denetçi ve altyapı katkıcıları için açık bir civilization build alanıdır.</p>
-
-    <div class="contributors">
-      <div class="contributor"><strong>Developers</strong>API, frontend, streaming, memory, routing ve HOPEtensor node entegrasyonu.</div>
-      <div class="contributor"><strong>Historians</strong>Nutuk, arşivler, konuşmalar, reformlar ve kaynaklı tarihsel bağlam.</div>
-      <div class="contributor"><strong>Educators</strong>Cumhuriyet eğitimi, civic intelligence ve gençlik modülleri.</div>
-      <div class="contributor"><strong>Ethics Reviewers</strong>Vicdan layer, güvenlik, manipülasyon önleme ve anayasal guardrails.</div>
-    </div>
-  </section>
-
-  <section class="section" id="demo">
-    <h2>Live Constitutional Cognition Demo</h2>
-    <p>Sorunuzu yazın. Sistem canlı reasoning ile cevap üretsin.</p>
-
-    <label>Question</label>
-    <input id="q" value="Yapay zekâ çağında anayasal bilinç neden gereklidir?" />
-
-    <label>Reasoning Mode</label>
-    <select id="mode">
-      <option value="constitutional">Constitutional Cognition</option>
-      <option value="atatürk_principles">Atatürk Principles</option>
-      <option value="republican_statecraft">Republican Statecraft</option>
-      <option value="education">Education & Enlightenment</option>
-      <option value="ai_governance">AI Governance</option>
-      <option value="civilization">Civilization Strategy</option>
-      <option value="crisis_response">Crisis Response</option>
-      <option value="youth_address">Address to Youth</option>
-      <option value="archive_context">Historical Archive Context</option>
-      <option value="hopeverse">HOPEverse / HOPEtensor Strategy</option>
-    </select>
-
-    <div class="buttons">
-      <button onclick="ask()">Run Live Engine</button>
-      <button class="secondary" onclick="speakCurrentResponse()">Speak AI Response</button>
-      <button class="secondary" onclick="playArchivalVoice()">Play Archive Voice</button>
-      <button class="secondary" onclick="stopSpeaking()">Stop Voice</button>
-      <button class="secondary" onclick="checkVicdan()">Vicdan Check</button>
-    </div>
-
-    <div class="engine-panel">
-      <div class="engine-topbar">
-        <div><span class="mini-label">ENGINE STATUS</span><strong id="engineStatus">Idle</strong></div>
-        <div><span class="mini-label">MODE</span><strong id="modeBadge">constitutional</strong></div>
-        <div><span class="mini-label">VICDAN SCORE</span><strong id="vicdanScore">—</strong></div>
-      </div>
-
-      <div id="loader" class="hidden">Constitutional cognition pipeline running...</div>
-
-      <div class="response-shell">
-        <div class="stream-topbar">
-          <div class="stream-indicator">
-            <div class="pulse-dot"></div>
-            LIVE CONSTITUTIONAL STREAM
-          </div>
-          <div class="thinking-state" id="thinkingState">Awaiting cognition...</div>
-        </div>
-
-        <div class="response-box" id="responseBox">
-          Live response will appear here.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    Crafted by Erhan · HOPEverse Civilization Canon ·
-    Atatürk Digital Twin · Constitutional Intelligence Platform · v2.7
   </footer>
-
-</main>
-
-<script src="/static/app.js"></script>
-
 </body>
 </html>
