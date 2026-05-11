@@ -14,6 +14,11 @@ function setOutput(text) {
   document.getElementById("responseBox").textContent = text;
 }
 
+function appendOutput(text) {
+  const box = document.getElementById("responseBox");
+  box.textContent += text;
+}
+
 function setMeta({status, mode, score}) {
   if (status) document.getElementById("engineStatus").textContent = status;
   if (mode) document.getElementById("modeBadge").textContent = mode;
@@ -27,11 +32,11 @@ async function ask() {
   const mode = document.getElementById("mode").value;
 
   setMeta({status: "Initializing", mode, score: null});
-  setOutput("Preparing constitutional cognition request...");
-  setLoading(true, "Reasoning");
+  setOutput("");
+  setLoading(true, "Streaming");
 
   try {
-    const res = await fetch("/demo", {
+    const res = await fetch("/stream", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({question, mode})
@@ -41,21 +46,58 @@ async function ask() {
       throw new Error(`Backend error: ${res.status}`);
     }
 
-    const data = await res.json();
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
 
-    setMeta({
-      status: data.success ? "Completed" : "Failed",
-      mode: data.mode || mode,
-      score: data.vicdan && data.vicdan.score
-    });
+    while (true) {
+      const {value, done} = await reader.read();
 
-    setOutput(data.response || JSON.stringify(data, null, 2));
+      if (done) break;
+
+      buffer += decoder.decode(value, {stream: true});
+
+      const events = buffer.split("\n\n");
+      buffer = events.pop();
+
+      for (const event of events) {
+        if (!event.startsWith("data: ")) continue;
+
+        const raw = event.replace("data: ", "").trim();
+        if (!raw) continue;
+
+        const data = JSON.parse(raw);
+
+        if (data.type === "meta") {
+          setMeta({
+            status: "Streaming",
+            mode: data.mode || mode,
+            score: data.vicdan && data.vicdan.score
+          });
+        }
+
+        if (data.type === "token") {
+          appendOutput(data.token);
+        }
+
+        if (data.type === "done") {
+          setMeta({
+            status: "Completed",
+            mode
+          });
+        }
+
+        if (data.type === "error") {
+          throw new Error(data.message);
+        }
+      }
+    }
   } catch (error) {
     setMeta({status: "Error", mode, score: null});
     setOutput(
-      "Engine error.\n\n" +
+      "Streaming engine error.\n\n" +
       error.message +
-      "\n\nCheck Render logs, OPENAI_API_KEY, and /health endpoint."
+      "\n\nCheck Render logs, OPENAI_API_KEY, /health, and /stream endpoint."
     );
   } finally {
     setLoading(false);

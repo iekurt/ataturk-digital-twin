@@ -1,8 +1,9 @@
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from datetime import datetime
+import json
 
 from engine.cognition import (
     PRINCIPLES,
@@ -10,11 +11,11 @@ from engine.cognition import (
     vicdan_check
 )
 
-from engine.llm import ask_llm
+from engine.llm import ask_llm, stream_llm
 
 app = FastAPI(
     title="Atatürk Digital Twin",
-    version="0.6",
+    version="0.8",
     description="Constitutional Cognition Engine powered by HOPEtensor and Vicdan Layer"
 )
 
@@ -38,7 +39,7 @@ def health():
     return {
         "status": "healthy",
         "project": "Atatürk Digital Twin",
-        "version": "0.6",
+        "version": "0.8",
         "time": datetime.utcnow().isoformat()
     }
 
@@ -61,7 +62,6 @@ def principles():
 
 @app.post("/demo")
 def demo(data: Question):
-
     vicdan = vicdan_check(data.question)
 
     response = ask_llm(
@@ -72,7 +72,7 @@ def demo(data: Question):
     return {
         "success": True,
         "engine": "constitutional-cognition-engine",
-        "version": "0.6",
+        "version": "0.8",
         "mode": data.mode,
         "principles": PRINCIPLES,
         "timeline": TIMELINE,
@@ -81,12 +81,53 @@ def demo(data: Question):
     }
 
 
+@app.post("/stream")
+def stream(data: Question):
+    vicdan = vicdan_check(data.question)
+
+    def event_generator():
+        meta = {
+            "type": "meta",
+            "success": True,
+            "engine": "constitutional-cognition-engine",
+            "version": "0.8",
+            "mode": data.mode,
+            "vicdan": vicdan
+        }
+        yield f"data: {json.dumps(meta)}\n\n"
+
+        try:
+            for chunk in stream_llm(data.question, data.mode):
+                payload = {
+                    "type": "token",
+                    "token": chunk
+                }
+                yield f"data: {json.dumps(payload)}\n\n"
+
+            done = {
+                "type": "done"
+            }
+            yield f"data: {json.dumps(done)}\n\n"
+
+        except Exception as e:
+            error = {
+                "type": "error",
+                "message": str(e)
+            }
+            yield f"data: {json.dumps(error)}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream"
+    )
+
+
 @app.post("/vicdan")
 def vicdan(data: Question):
     return {
         "success": True,
         "engine": "digital-vicdan",
-        "version": "0.6",
+        "version": "0.8",
         "input": data.question,
         "review": vicdan_check(data.question)
     }
