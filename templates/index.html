@@ -5,23 +5,53 @@
   <title>Atatürk Digital Twin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    .avatar-photo-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .avatar-photo {
+      width: 78%;
+      max-height: 88%;
+      object-fit: cover;
+      border-radius: 28px;
+      border: 1px solid rgba(216,179,106,.32);
+      box-shadow:
+        0 0 45px rgba(216,169,79,.16),
+        0 30px 90px rgba(0,0,0,.45);
+      filter: sepia(.18) contrast(1.04) brightness(.95);
+    }
+
+    .avatar-voice-note {
+      margin-top: 12px;
+      color: #b8ab91;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+  </style>
 </head>
 <body>
   <main class="wrap">
 
     <section class="hero avatar-hero">
       <div class="hero-copy">
-        <div class="badge">HOPEverse Civilization Interface · MVP v1.0 Avatar</div>
+        <div class="badge">HOPEverse Civilization Interface · MVP v1.1 Historical Avatar</div>
         <h1>Atatürk<br/>Digital Twin</h1>
 
         <p class="lead">
           Cumhuriyet ilkelerinden ilham alan canlı anayasal düşünme motoru:
-          Türkçe cevap, Vicdan katmanı, streaming cognition ve sesli avatar arayüzü.
+          Türkçe cevap, Vicdan katmanı, streaming cognition ve tarihsel avatar arayüzü.
         </p>
 
         <div class="live-engine">
           <div class="live-dot"></div>
-          LIVE ENGINE ACTIVE · Turkish Constitutional Cognition · Avatar Voice Online
+          LIVE ENGINE ACTIVE · Turkish Constitutional Cognition · Historical Avatar Online
         </div>
 
         <div class="buttons">
@@ -35,25 +65,22 @@
         <div class="avatar-card">
           <div class="avatar-frame">
             <div class="hologram-ring"></div>
-            <div class="avatar-face">
-              <div class="avatar-cap"></div>
-              <div class="avatar-head"></div>
-              <div class="avatar-brow"></div>
-              <div class="avatar-eyes">
-                <span></span><span></span>
-              </div>
-              <div id="avatarMouth" class="avatar-mouth"></div>
-              <div class="avatar-suit"></div>
+            <div class="avatar-photo-wrap">
+              <img class="avatar-photo" src="/static/ataturk-avatar.jpg" alt="Mustafa Kemal Atatürk historical portrait" />
             </div>
           </div>
 
           <div class="avatar-caption">
-            <strong>Constitutional Avatar</strong>
-            <span>Historically inspired · Not impersonation · Educational interface</span>
+            <strong>Mustafa Kemal Atatürk Inspired Constitutional Avatar</strong>
+            <span>Educational interface · Constitutional cognition · Not literal impersonation</span>
+          </div>
+
+          <div class="avatar-voice-note">
+            Seslendirme şu anda tarayıcı Türkçe TTS motoru ile yapılır. Gerçek Atatürk sesi olduğu iddia edilmez.
           </div>
 
           <div id="avatarSpeech" class="avatar-speech">
-            Hazırım. Sorunuzu anayasal düşünme süzgecinden geçireceğim.
+            Hazırım. Sorunuzu Cumhuriyet aklı, bilim, egemenlik ve vicdan süzgecinden geçireceğim.
           </div>
         </div>
       </div>
@@ -70,7 +97,7 @@
       <div class="grid">
         <div class="card"><strong>Live LLM Reasoning</strong><br/><br/>Sorular anayasal sistem prompt’u üzerinden dinamik olarak işlenir.</div>
         <div class="card"><strong>Vicdan Layer Online</strong><br/><br/>Manipülasyon, tahakküm ve insan onuruna aykırı niyetler kontrol edilir.</div>
-        <div class="card"><strong>Avatar Voice</strong><br/><br/>Cevaplar tarayıcı TTS motoruyla Türkçe sesli okunabilir.</div>
+        <div class="card"><strong>Historical Avatar</strong><br/><br/>Arayüz Atatürk fotoğrafı ile tarihsel bağlamı görünür kılar.</div>
         <div class="card"><strong>HOPEtensor Ready</strong><br/><br/>Gelecekte çoklu node reasoning, verification ve observer audit için hazırdır.</div>
       </div>
     </section>
@@ -86,7 +113,7 @@
         <span>→</span>
         <div>Constitutional Prompt</div>
         <span>→</span>
-        <div>Avatar Voice</div>
+        <div>Turkish Voice</div>
         <span>→</span>
         <div>Response</div>
       </div>
@@ -95,7 +122,7 @@
     <section id="demo">
       <h2>Live Constitutional Avatar Demo</h2>
       <p>
-        Sorunuzu yazın. Cevap streaming olarak gelsin; isterseniz avatar cevabı Türkçe sesli okusun.
+        Sorunuzu yazın. Cevap streaming olarak gelsin; isterseniz sistem cevabı Türkçe sesli okusun.
       </p>
 
       <label>Question</label>
@@ -152,7 +179,7 @@
     </section>
 
     <footer>
-      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v1.0 · Avatar Voice Active
+      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v1.1 · Historical Avatar Active
     </footer>
   </main>
 
