@@ -10,7 +10,7 @@
   <main class="wrap">
 
     <section class="hero">
-      <div class="badge">HOPEverse Civilization Interface · MVP v0.6</div>
+      <div class="badge">HOPEverse Civilization Interface · MVP v0.7</div>
       <h1>Atatürk<br/>Digital Twin</h1>
 
       <p class="lead">
@@ -48,22 +48,6 @@
     </section>
 
     <section>
-      <h2>Civilization Execution Stack</h2>
-      <p>
-        This MVP is the first deployable seed of a constitutional cognition engine:
-        not roleplay, not chatbot theatre, but an operational reasoning pipeline.
-      </p>
-
-      <div class="stack">
-        <div class="stack-card">Consciousness<br/><span>Vicdan · Ethics · Meaning</span></div>
-        <div class="stack-card">Coordination<br/><span>DID · Reputation · Governance</span></div>
-        <div class="stack-card">Intelligence<br/><span>HOPEtensor · Reasoning Nodes</span></div>
-        <div class="stack-card">Economy<br/><span>Contribution · Trust · Value</span></div>
-        <div class="stack-card">Habitat<br/><span>ECPH · Edge Compute · Resilience</span></div>
-      </div>
-    </section>
-
-    <section>
       <h2>HOPEtensor Execution Flow</h2>
       <div class="flow">
         <div>User Query</div>
@@ -80,38 +64,10 @@
       </div>
     </section>
 
-    <section>
-      <h2>Civilization Node Mesh</h2>
-      <p>
-        Every participant becomes a node: human, AI, city, institution, school,
-        habitat, validator, observer, or contributor.
-      </p>
-
-      <div class="mesh">
-        <div class="node center">HOPEverse</div>
-        <div class="node n1">Human Nodes</div>
-        <div class="node n2">AI Nodes</div>
-        <div class="node n3">Education Nodes</div>
-        <div class="node n4">Vicdan Nodes</div>
-        <div class="node n5">Observer Nodes</div>
-        <div class="node n6">Habitat Nodes</div>
-      </div>
-    </section>
-
-    <section>
-      <h2>Historical Timeline Engine</h2>
-      <div class="timeline">
-        <div><strong>1919</strong><span>National resistance begins with civic sovereignty logic.</span></div>
-        <div><strong>1923</strong><span>Republic founded as a modern constitutional civilization project.</span></div>
-        <div><strong>1924–1938</strong><span>Education, law, language, science and institutional reforms.</span></div>
-        <div><strong>AI Era</strong><span>Constitutional cognition becomes necessary for machine governance.</span></div>
-      </div>
-    </section>
-
     <section id="demo">
       <h2>Live Constitutional Cognition Demo</h2>
       <p>
-        Ask a civilization-level question. The backend now runs real LLM reasoning through
+        Ask a civilization-level question. The backend runs real LLM reasoning through
         the Atatürk Digital Twin constitutional cognition prompt.
       </p>
 
@@ -129,8 +85,32 @@
       <br/><br/>
       <button onclick="ask()">Run Live Cognition Engine</button>
       <button class="secondary" onclick="checkVicdan()">Run Vicdan Check</button>
-      <br/><br/>
-      <pre id="out">Live response will appear here.</pre>
+
+      <div class="engine-panel">
+        <div class="engine-topbar">
+          <div>
+            <span class="mini-label">ENGINE STATUS</span>
+            <strong id="engineStatus">Idle</strong>
+          </div>
+          <div>
+            <span class="mini-label">MODE</span>
+            <strong id="modeBadge">constitutional</strong>
+          </div>
+          <div>
+            <span class="mini-label">VICDAN SCORE</span>
+            <strong id="vicdanScore">—</strong>
+          </div>
+        </div>
+
+        <div id="loader" class="loader hidden">
+          <div class="scanline"></div>
+          Constitutional cognition pipeline running...
+        </div>
+
+        <div id="responseBox" class="response-box">
+          Live response will appear here.
+        </div>
+      </div>
     </section>
 
     <section class="manifesto">
@@ -153,7 +133,7 @@
     </section>
 
     <footer>
-      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v0.6 · Live Engine Active
+      HOPEverse Civilization Canon · Atatürk Digital Twin MVP · v0.7 · Live Engine Active
     </footer>
   </main>
 
