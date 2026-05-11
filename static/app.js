@@ -1,6 +1,7 @@
 let latestResponse = "";
 let speaking = false;
 let availableVoices = [];
+let currentAudio = null;
 
 function loadVoices() {
   if ("speechSynthesis" in window) {
@@ -213,14 +214,7 @@ async function clearMemory() {
   }
 }
 
-function speakCurrentResponse() {
-  if (!("speechSynthesis" in window)) {
-    setOutput("Bu tarayıcı Speech Synthesis desteklemiyor.");
-    return;
-  }
-
-  loadVoices();
-
+async function speakCurrentResponse() {
   let text =
     latestResponse ||
     document.getElementById("responseBox").textContent ||
@@ -235,31 +229,33 @@ function speakCurrentResponse() {
 
   stopSpeaking();
 
-  setTimeout(() => {
-    const utterance = new SpeechSynthesisUtterance(text);
+  setMeta({
+    status: "Generating Voice",
+    mode: document.getElementById("mode").value
+  });
 
-    utterance.lang = "tr-TR";
-    utterance.rate = 0.88;
-    utterance.pitch = 0.78;
-    utterance.volume = 1;
+  setAvatarSpeaking(true);
 
-    const voices = availableVoices.length
-      ? availableVoices
-      : window.speechSynthesis.getVoices();
+  try {
+    const res = await fetch("/tts", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        text: text,
+        voice: "cedar"
+      })
+    });
 
-    const trVoice =
-      voices.find(v => v.lang === "tr-TR") ||
-      voices.find(v => v.lang && v.lang.toLowerCase().startsWith("tr")) ||
-      voices.find(v => v.name && v.name.toLowerCase().includes("turkish")) ||
-      voices.find(v => v.name && v.name.toLowerCase().includes("tolga")) ||
-      voices.find(v => v.name && v.name.toLowerCase().includes("yelda")) ||
-      voices[0];
-
-    if (trVoice) {
-      utterance.voice = trVoice;
+    if (!res.ok) {
+      throw new Error(`TTS backend error: ${res.status}`);
     }
 
-    utterance.onstart = () => {
+    const audioBlob = await res.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    currentAudio = new Audio(audioUrl);
+
+    currentAudio.onplay = () => {
       speaking = true;
       setAvatarSpeaking(true);
       setMeta({
@@ -268,37 +264,59 @@ function speakCurrentResponse() {
       });
     };
 
-    utterance.onend = () => {
+    currentAudio.onended = () => {
       speaking = false;
       setAvatarSpeaking(false);
       setMeta({
         status: "Completed",
         mode: document.getElementById("mode").value
       });
+      URL.revokeObjectURL(audioUrl);
+      currentAudio = null;
     };
 
-    utterance.onerror = (event) => {
+    currentAudio.onerror = () => {
       speaking = false;
       setAvatarSpeaking(false);
       setMeta({
         status: "Voice Error",
         mode: document.getElementById("mode").value
       });
-
-      const originalText = text;
-      setOutput(
-        originalText +
-        "\n\n[Voice Error: " +
-        (event.error || "unknown") +
-        "]"
-      );
+      setOutput(text + "\n\n[Voice Error: Audio playback failed.]");
+      URL.revokeObjectURL(audioUrl);
+      currentAudio = null;
     };
 
-    window.speechSynthesis.speak(utterance);
-  }, 250);
+    await currentAudio.play();
+
+  } catch (error) {
+    speaking = false;
+    setAvatarSpeaking(false);
+    setMeta({
+      status: "Voice Error",
+      mode: document.getElementById("mode").value
+    });
+
+    setOutput(
+      text +
+      "\n\n[Voice Error: " +
+      error.message +
+      "]\n\nCheck OPENAI_API_KEY, /tts endpoint, and Render logs."
+    );
+  }
 }
 
 function stopSpeaking() {
+  if (currentAudio) {
+    try {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    } catch (e) {
+      console.warn("Audio stop warning:", e);
+    }
+    currentAudio = null;
+  }
+
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
   }
