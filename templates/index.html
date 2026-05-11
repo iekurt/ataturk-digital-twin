@@ -7,419 +7,353 @@
   <link rel="stylesheet" href="/static/style.css" />
 
   <style>
-    :root {
-      --gold: #d8a94f;
-      --gold-soft: #f3cc7a;
-      --bg: #050505;
-      --panel: rgba(255,255,255,.04);
-      --panel-border: rgba(216,169,79,.20);
-      --text: #ece4d8;
-      --muted: #b8ab91;
-      --green: #4cff88;
-      --blue: #8bbcff;
+    :root{
+      --gold:#d8a94f;
+      --gold-soft:#f3cc7a;
+      --bg:#050505;
+      --panel:rgba(255,255,255,.04);
+      --panel-border:rgba(216,169,79,.20);
+      --text:#ece4d8;
+      --muted:#b8ab91;
+      --green:#4cff88;
+      --blue:#8bbcff;
     }
 
-    body {
+    *{
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      margin:0;
       background:
         radial-gradient(circle at top, rgba(216,169,79,.08), transparent 30%),
         radial-gradient(circle at 80% 20%, rgba(139,188,255,.05), transparent 28%),
-        #050505;
+        var(--bg);
+      color:var(--text);
+      font-family:Inter,Arial,sans-serif;
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 42px;
-      align-items: center;
+    .wrap{
+      width:min(1400px,92%);
+      margin:auto;
+      padding:40px 0 80px;
     }
 
-    @media(max-width: 980px) {
-      .hero-grid { grid-template-columns: 1fr; }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:42px;
+      align-items:center;
     }
 
-    .hero-badge, .truth-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      border: 1px solid var(--panel-border);
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-size: 13px;
-      color: var(--gold-soft);
-      margin-bottom: 18px;
-      background: rgba(0,0,0,.24);
-      font-weight: 800;
-      letter-spacing: .035em;
+    @media(max-width:980px){
+      .hero-grid{
+        grid-template-columns:1fr;
+      }
     }
 
-    .truth-label {
-      margin-top: 24px;
+    .hero-badge,
+    .truth-label{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--panel-border);
+      border-radius:999px;
+      padding:10px 16px;
+      font-size:13px;
+      color:var(--gold-soft);
+      margin-bottom:18px;
+      background:rgba(0,0,0,.24);
+      font-weight:800;
+      letter-spacing:.035em;
     }
 
-    .hero-dot, .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 12px var(--green);
+    .truth-label{
+      margin-top:24px;
     }
 
-    .mega-title {
-      font-size: clamp(52px, 8vw, 92px);
-      line-height: .92;
-      margin: 0;
-      letter-spacing: -.04em;
+    .hero-dot,
+    .status-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 12px var(--green);
     }
 
-    .mega-sub {
-      margin-top: 22px;
-      font-size: 20px;
-      line-height: 1.65;
-      color: var(--muted);
-      max-width: 760px;
+    .mega-title{
+      font-size:clamp(52px,8vw,92px);
+      line-height:.92;
+      margin:0;
+      letter-spacing:-.04em;
     }
 
-    .buttons {
-      margin-top: 34px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
+    .mega-sub{
+      margin-top:22px;
+      font-size:20px;
+      line-height:1.65;
+      color:var(--muted);
+      max-width:760px;
+    }
+
+    .buttons{
+      margin-top:34px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
     }
 
     .buttons a,
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 16px;
-      padding: 14px 20px;
-      background: linear-gradient(135deg, #d8a94f, #9e6e1d);
-      color: black;
-      font-weight: 800;
-      text-decoration: none;
-      transition: .25s;
-      font-size: 15px;
+    button{
+      cursor:pointer;
+      border:none;
+      border-radius:16px;
+      padding:14px 20px;
+      background:linear-gradient(135deg,#d8a94f,#9e6e1d);
+      color:black;
+      font-weight:800;
+      text-decoration:none;
+      transition:.25s;
+      font-size:15px;
     }
 
     .buttons a:hover,
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(216,169,79,.22);
+    button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(216,169,79,.22);
     }
 
-    .secondary {
-      background: rgba(255,255,255,.08) !important;
-      color: white !important;
-      border: 1px solid rgba(255,255,255,.10) !important;
+    .secondary{
+      background:rgba(255,255,255,.08)!important;
+      color:white!important;
+      border:1px solid rgba(255,255,255,.10)!important;
     }
 
-    .avatar-card, .dashboard-panel, .engine-panel {
-      border: 1px solid var(--panel-border);
-      border-radius: 32px;
-      padding: 26px;
+    .avatar-card,
+    .dashboard-panel,
+    .engine-panel{
+      border:1px solid var(--panel-border);
+      border-radius:32px;
+      padding:26px;
       background:
         radial-gradient(circle at top, rgba(216,169,79,.12), transparent 40%),
         rgba(255,255,255,.03);
-      box-shadow: 0 40px 120px rgba(0,0,0,.44);
+      box-shadow:0 40px 120px rgba(0,0,0,.44);
     }
 
-    .avatar-frame {
-      position: relative;
-      height: 520px;
-      overflow: hidden;
-      border-radius: 28px;
-      border: 1px solid rgba(216,169,79,.18);
+    .avatar-frame{
+      position:relative;
+      height:520px;
+      overflow:hidden;
+      border-radius:28px;
+      border:1px solid rgba(216,169,79,.18);
       background:
         radial-gradient(circle at center, rgba(216,169,79,.12), transparent 40%),
         rgba(255,255,255,.03);
     }
 
-    .avatar-photo {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: contrast(1.05) brightness(.92) sepia(.12);
+    .avatar-photo{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      filter:contrast(1.05) brightness(.92) sepia(.12);
     }
 
-    .holo-ring {
-      position: absolute;
-      inset: 40px;
-      border: 1px dashed rgba(216,169,79,.24);
-      border-radius: 50%;
-      animation: spin 24s linear infinite;
-      pointer-events: none;
+    .holo-ring{
+      position:absolute;
+      inset:40px;
+      border:1px dashed rgba(216,169,79,.24);
+      border-radius:50%;
+      animation:spin 24s linear infinite;
+      pointer-events:none;
     }
 
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    @keyframes spin{
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
     }
 
-    .avatar-speech {
-      margin-top: 18px;
-      border: 1px solid rgba(216,169,79,.18);
-      border-radius: 18px;
-      padding: 18px;
-      background: rgba(0,0,0,.24);
-      line-height: 1.6;
-      color: var(--text);
-      min-height: 92px;
+    .avatar-speech{
+      margin-top:18px;
+      border:1px solid rgba(216,169,79,.18);
+      border-radius:18px;
+      padding:18px;
+      background:rgba(0,0,0,.24);
+      line-height:1.6;
+      color:var(--text);
+      min-height:92px;
     }
 
-    .section { margin-top: 90px; }
-
-    .section h2 {
-      font-size: 42px;
-      margin-bottom: 18px;
+    .section{
+      margin-top:90px;
     }
 
-    .section p {
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 960px;
+    .section h2{
+      font-size:42px;
+      margin-bottom:18px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-      gap: 18px;
-      margin-top: 30px;
+    .section p{
+      color:var(--muted);
+      line-height:1.7;
+      max-width:960px;
     }
 
-    .card {
-      border: 1px solid var(--panel-border);
-      border-radius: 24px;
-      padding: 22px;
-      background:
-        radial-gradient(circle at top left, rgba(216,169,79,.08), transparent 40%),
-        var(--panel);
-      min-height: 180px;
+    .dashboard-grid,
+    .grid,
+    .reform-map,
+    .contributors,
+    .roadmap{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+      margin-top:28px;
     }
 
-    .card strong {
-      color: var(--gold-soft);
-      font-size: 20px;
-      display: block;
-      margin-bottom: 12px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 28px;
-    }
-
-    .metric {
-      border: 1px solid rgba(216,169,79,.18);
-      border-radius: 22px;
-      padding: 20px;
-      background: rgba(0,0,0,.26);
-    }
-
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .09em;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    .metric strong {
-      color: var(--gold-soft);
-      font-size: 26px;
-    }
-
-    .node-status {
-      display: grid;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .node-row {
-      display: grid;
-      grid-template-columns: 28px 1fr 130px;
-      gap: 12px;
-      align-items: center;
-      padding: 14px 16px;
-      border: 1px solid rgba(216,169,79,.16);
-      border-radius: 16px;
-      background: rgba(255,255,255,.035);
-    }
-
-    .node-row strong { color: var(--text); }
-    .node-row span { color: var(--muted); font-size: 13px; }
-
-    .timeline {
-      margin-top: 34px;
-      border-left: 2px solid rgba(216,169,79,.22);
-      padding-left: 24px;
-    }
-
-    .timeline-item {
-      margin-bottom: 34px;
-      position: relative;
-    }
-
-    .timeline-item::before {
-      content: "";
-      position: absolute;
-      left: -31px;
-      top: 4px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--gold);
-      box-shadow: 0 0 14px rgba(216,169,79,.6);
-    }
-
-    .timeline-item h3 {
-      margin: 0;
-      color: var(--gold-soft);
-    }
-
-    .timeline-item span {
-      color: var(--muted);
-      line-height: 1.6;
-      display: block;
-      margin-top: 8px;
-    }
-
-    .flow {
-      margin-top: 24px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .flow div {
-      border: 1px solid var(--panel-border);
-      border-radius: 16px;
-      padding: 14px 18px;
-      background: rgba(255,255,255,.04);
-    }
-
-    .engine-topbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
-      margin-bottom: 22px;
-    }
-
-    .mini-label {
-      display: block;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: .08em;
-      margin-bottom: 4px;
-    }
-
-    .response-box {
-      white-space: pre-wrap;
-      line-height: 1.75;
-      color: var(--text);
-      min-height: 220px;
-    }
-
-    input, select {
-      width: 100%;
-      margin-top: 8px;
-      margin-bottom: 18px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding: 16px;
-      color: white;
-      font-size: 16px;
-    }
-
-    .reform-map, .contributors {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 14px;
-      margin-top: 30px;
-    }
-
-    .reform-node, .contributor {
-      position: relative;
-      border: 1px solid rgba(216,169,79,.18);
+    .metric,
+    .card,
+    .reform-node,
+    .contributor,
+    .roadmap-step{
+      border:1px solid rgba(216,169,79,.18);
+      border-radius:22px;
+      padding:20px;
       background:
         linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
-      border-radius: 22px;
-      padding: 20px;
-      min-height: 145px;
-      overflow: hidden;
     }
 
-    .reform-node strong, .contributor strong {
-      color: var(--gold-soft);
-      font-size: 19px;
-      display: block;
-      margin-bottom: 10px;
+    .metric span,
+    .mini-label{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.09em;
+      margin-bottom:10px;
+      text-transform:uppercase;
     }
 
-    .api-box {
-      margin-top: 28px;
-      border: 1px solid rgba(216,169,79,.22);
-      border-radius: 24px;
-      overflow: hidden;
-      background: rgba(0,0,0,.32);
+    .metric strong{
+      color:var(--gold-soft);
+      font-size:26px;
     }
 
-    .api-row {
-      display: grid;
-      grid-template-columns: 130px 1fr;
-      border-bottom: 1px solid rgba(216,169,79,.12);
+    .card strong,
+    .reform-node strong,
+    .contributor strong,
+    .roadmap-step strong{
+      color:var(--gold-soft);
+      font-size:20px;
+      display:block;
+      margin-bottom:12px;
     }
 
-    .api-row:last-child { border-bottom: none; }
-
-    .api-method {
-      padding: 16px;
-      color: black;
-      font-weight: 900;
-      background: var(--gold);
+    .node-status{
+      display:grid;
+      gap:12px;
+      margin-top:24px;
     }
 
-    .api-path {
-      padding: 16px;
-      color: var(--text);
-      font-family: Consolas, monospace;
+    .node-row{
+      display:grid;
+      grid-template-columns:28px 1fr 130px;
+      gap:12px;
+      align-items:center;
+      padding:14px 16px;
+      border:1px solid rgba(216,169,79,.16);
+      border-radius:16px;
+      background:rgba(255,255,255,.035);
     }
 
-    .roadmap {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-      gap: 16px;
-      margin-top: 30px;
+    .timeline{
+      margin-top:34px;
+      border-left:2px solid rgba(216,169,79,.22);
+      padding-left:24px;
     }
 
-    .roadmap-step {
-      border: 1px solid rgba(216,169,79,.18);
-      border-radius: 24px;
-      padding: 22px;
-      background: rgba(255,255,255,.035);
+    .timeline-item{
+      margin-bottom:34px;
+      position:relative;
     }
 
-    .roadmap-step small {
-      color: var(--blue);
-      font-weight: 800;
-      letter-spacing: .08em;
+    .timeline-item::before{
+      content:"";
+      position:absolute;
+      left:-31px;
+      top:4px;
+      width:14px;
+      height:14px;
+      border-radius:50%;
+      background:var(--gold);
+      box-shadow:0 0 14px rgba(216,169,79,.6);
     }
 
-    .roadmap-step strong {
-      display: block;
-      color: var(--gold-soft);
-      margin: 10px 0;
-      font-size: 20px;
+    .timeline-item h3{
+      margin:0;
+      color:var(--gold-soft);
     }
 
-    footer {
-      margin-top: 90px;
-      padding-bottom: 60px;
-      color: var(--muted);
-      text-align: center;
+    .timeline-item span{
+      color:var(--muted);
+      line-height:1.6;
+      display:block;
+      margin-top:8px;
+    }
+
+    .flow{
+      margin-top:24px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+    }
+
+    .flow div{
+      border:1px solid var(--panel-border);
+      border-radius:16px;
+      padding:14px 18px;
+      background:rgba(255,255,255,.04);
+    }
+
+    .engine-topbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:22px;
+      margin-bottom:22px;
+    }
+
+    .response-box{
+      white-space:pre-wrap;
+      line-height:1.75;
+      color:var(--text);
+      min-height:220px;
+    }
+
+    input,
+    select{
+      width:100%;
+      margin-top:8px;
+      margin-bottom:18px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      padding:16px;
+      color:white;
+      font-size:16px;
+    }
+
+    footer{
+      margin-top:90px;
+      padding-bottom:60px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    #loader.hidden{
+      display:none;
     }
   </style>
 </head>
@@ -429,13 +363,18 @@
 <main class="wrap">
 
   <section class="hero-grid">
+
     <div>
+
       <div class="hero-badge">
         <div class="hero-dot"></div>
-        HOPEverse Civilization Interface · v2.2 Platform Dashboard
+        HOPEverse Civilization Interface · v2.3 Constitutional Platform
       </div>
 
-      <h1 class="mega-title">Atatürk<br/>Digital Twin</h1>
+      <h1 class="mega-title">
+        Atatürk<br/>
+        Digital Twin
+      </h1>
 
       <p class="mega-sub">
         Cumhuriyet aklı, anayasal bilinç, Vicdan katmanı,
@@ -443,7 +382,9 @@
         canlı civilization intelligence platformu.
       </p>
 
-      <div class="truth-label">HISTORICAL ARCHIVE ≠ AI GENERATED RESPONSE</div>
+      <div class="truth-label">
+        HISTORICAL ARCHIVE ≠ AI GENERATED RESPONSE
+      </div>
 
       <div class="buttons">
         <a href="#dashboard">Dashboard</a>
@@ -451,176 +392,430 @@
         <a class="secondary" href="#roadmap">Roadmap</a>
         <a class="secondary" href="#api">API</a>
       </div>
+
     </div>
 
     <div class="avatar-card">
+
       <div class="avatar-frame">
         <div class="holo-ring"></div>
-        <img class="avatar-photo" src="/static/ataturk-avatar.jpg" alt="Ataturk Historical Portrait" />
+
+        <img
+          class="avatar-photo"
+          src="/static/ataturk-avatar.jpg"
+          alt="Ataturk Historical Portrait"
+        />
       </div>
 
       <div class="avatar-speech" id="avatarSpeech">
         Hazırım. Sorunuzu Cumhuriyet aklı, bilim, egemenlik ve vicdan süzgecinden geçireceğim.
       </div>
+
     </div>
+
   </section>
 
   <section class="section" id="dashboard">
+
     <h2>Live Platform Dashboard</h2>
+
     <p>
-      Bu panel, MVP’nin artık yalnızca bir web demo değil; çalışan bir constitutional intelligence platform seed olduğunu gösterir.
+      Constitutional intelligence platform operational status.
     </p>
 
     <div class="dashboard-panel">
+
       <div class="dashboard-grid">
-        <div class="metric"><span>Engine</span><strong>Online</strong></div>
-        <div class="metric"><span>Reasoning</span><strong>Streaming</strong></div>
-        <div class="metric"><span>Vicdan Layer</span><strong>Active</strong></div>
-        <div class="metric"><span>Archive Mode</span><strong>Ready</strong></div>
+
+        <div class="metric">
+          <span>Engine</span>
+          <strong>Online</strong>
+        </div>
+
+        <div class="metric">
+          <span>Reasoning</span>
+          <strong>Streaming</strong>
+        </div>
+
+        <div class="metric">
+          <span>Vicdan Layer</span>
+          <strong>Active</strong>
+        </div>
+
+        <div class="metric">
+          <span>Archive Mode</span>
+          <strong>Ready</strong>
+        </div>
+
       </div>
 
       <div class="node-status">
-        <div class="node-row"><div class="status-dot"></div><strong>Coordinator Node</strong><span>Prototype Ready</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Vicdan Node</strong><span>Active</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Reasoning Node</strong><span>Live LLM</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Archive Node</strong><span>Static Assets</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Observer Node</strong><span>Next Build</span></div>
+
+        <div class="node-row">
+          <div class="status-dot"></div>
+          <strong>Coordinator Node</strong>
+          <span>Prototype Ready</span>
+        </div>
+
+        <div class="node-row">
+          <div class="status-dot"></div>
+          <strong>Vicdan Node</strong>
+          <span>Active</span>
+        </div>
+
+        <div class="node-row">
+          <div class="status-dot"></div>
+          <strong>Reasoning Node</strong>
+          <span>Live LLM</span>
+        </div>
+
+        <div class="node-row">
+          <div class="status-dot"></div>
+          <strong>Archive Node</strong>
+          <span>Operational</span>
+        </div>
+
       </div>
+
     </div>
+
   </section>
 
-  <section class="section" id="architecture">
+  <section class="section">
+
     <h2>HOPEtensor Constitutional Architecture</h2>
-    <p>Sistem klasik chatbot değildir. Çok katmanlı civilization cognition mimarisi olarak tasarlanmıştır.</p>
 
     <div class="grid">
-      <div class="card"><strong>Vicdan Node</strong>İnsan onuru, etik sınırlar ve anayasal risk analizi yapar.</div>
-      <div class="card"><strong>Reasoning Node</strong>Canlı LLM cognition ve stratejik cevap üretimi sağlar.</div>
-      <div class="card"><strong>Verification Node</strong>Halüsinasyon, çelişki ve manipülasyon kontrolü yapar.</div>
-      <div class="card"><strong>Archive Node</strong>Tarihî içerik, Nutuk, reformlar ve arşiv bağlamını yönetir.</div>
+
+      <div class="card">
+        <strong>Vicdan Node</strong>
+        İnsan onuru, etik sınırlar ve anayasal risk analizi yapar.
+      </div>
+
+      <div class="card">
+        <strong>Reasoning Node</strong>
+        Canlı LLM cognition ve stratejik cevap üretimi sağlar.
+      </div>
+
+      <div class="card">
+        <strong>Verification Node</strong>
+        Halüsinasyon ve manipülasyon kontrolü yapar.
+      </div>
+
+      <div class="card">
+        <strong>Archive Node</strong>
+        Tarihî içerik ve reform bağlamı yönetir.
+      </div>
+
     </div>
+
   </section>
 
-  <section class="section" id="reforms">
+  <section class="section">
+
     <h2>Civilization Reform Map</h2>
-    <p>Cumhuriyet devrimleri, modern devlet, bilimsel toplum ve yurttaş egemenliği için medeniyet modülleridir.</p>
 
     <div class="reform-map">
-      <div class="reform-node"><strong>Education</strong><span>Tevhid-i Tedrisat, bilimsel eğitim, ortak yurttaşlık bilinci.</span></div>
-      <div class="reform-node"><strong>Law</strong><span>Modern hukuk, eşit yurttaşlık, laik yargı ve kurumsal düzen.</span></div>
-      <div class="reform-node"><strong>Science</strong><span>Akıl, deney, teknik ilerleme ve çağdaş bilgi üretimi.</span></div>
-      <div class="reform-node"><strong>Women’s Rights</strong><span>Siyasal temsil, eğitim, hukuk önünde eşitlik ve toplumsal katılım.</span></div>
-      <div class="reform-node"><strong>Language</strong><span>Ulusal bilinç, okuryazarlık ve düşünce erişilebilirliği.</span></div>
-      <div class="reform-node"><strong>Economy</strong><span>Üretim, bağımsızlık, kurumsal kapasite ve kalkınma disiplini.</span></div>
+
+      <div class="reform-node">
+        <strong>Education</strong>
+        Tevhid-i Tedrisat ve bilimsel eğitim.
+      </div>
+
+      <div class="reform-node">
+        <strong>Law</strong>
+        Modern hukuk ve anayasal düzen.
+      </div>
+
+      <div class="reform-node">
+        <strong>Science</strong>
+        Akıl, deney ve teknik ilerleme.
+      </div>
+
+      <div class="reform-node">
+        <strong>Women’s Rights</strong>
+        Eşit yurttaşlık ve temsil.
+      </div>
+
+      <div class="reform-node">
+        <strong>Language</strong>
+        Okuryazarlık ve düşünce erişimi.
+      </div>
+
+      <div class="reform-node">
+        <strong>Economy</strong>
+        Üretim ve bağımsız kalkınma.
+      </div>
+
     </div>
+
   </section>
 
   <section class="section" id="roadmap">
+
     <h2>Execution Roadmap</h2>
-    <p>
-      Bu roadmap, MVP’nin platforma dönüşmesi için sıradaki build aşamalarını gösterir.
-    </p>
 
     <div class="roadmap">
+
       <div class="roadmap-step">
-        <small>PHASE 01</small>
         <strong>Archive Intelligence</strong>
-        Nutuk, konuşmalar, tarihsel belgeler ve reform veritabanı.
+        Nutuk, konuşmalar ve reform veritabanı.
       </div>
 
       <div class="roadmap-step">
-        <small>PHASE 02</small>
         <strong>Verification Layer</strong>
-        Kaynak kontrolü, hallucination scoring ve observer audit.
+        Observer audit ve hallucination scoring.
       </div>
 
       <div class="roadmap-step">
-        <small>PHASE 03</small>
         <strong>HOPEtensor Nodes</strong>
-        Reasoning, Vicdan, Archive ve Strategy node ayrıştırması.
+        Multi-node constitutional reasoning.
       </div>
 
       <div class="roadmap-step">
-        <small>PHASE 04</small>
         <strong>Public Contributor Launch</strong>
-        Geliştirici, tarihçi, eğitimci ve etik reviewer onboarding.
+        Açık civilization contributor ağı.
       </div>
+
     </div>
+
   </section>
 
-  <section class="section" id="timeline">
+  <section class="section">
+
     <h2>Civilization Timeline</h2>
+
     <div class="timeline">
-      <div class="timeline-item"><h3>1919 · National Resistance</h3><span>Ulusal egemenlik fikrinin yeniden inşası ve bağımsızlık organizasyonu.</span></div>
-      <div class="timeline-item"><h3>1920 · Grand National Assembly</h3><span>Egemenliğin saraydan millete geçişi.</span></div>
-      <div class="timeline-item"><h3>1923 · Republic</h3><span>Modern anayasal devlet mimarisinin kuruluşu.</span></div>
-      <div class="timeline-item"><h3>1924–1937 · Civilization Reforms</h3><span>Eğitim, hukuk, bilim, kadın hakları, ekonomi ve laik devlet reformları.</span></div>
-      <div class="timeline-item"><h3>2030+ · Constitutional AI Era</h3><span>Dijital vicdan, anayasal yapay zekâ ve civilization intelligence sistemleri.</span></div>
+
+      <div class="timeline-item">
+        <h3>1919 · National Resistance</h3>
+        <span>Ulusal egemenlik organizasyonu.</span>
+      </div>
+
+      <div class="timeline-item">
+        <h3>1920 · Grand National Assembly</h3>
+        <span>Egemenliğin millete geçişi.</span>
+      </div>
+
+      <div class="timeline-item">
+        <h3>1923 · Republic</h3>
+        <span>Modern anayasal devletin kuruluşu.</span>
+      </div>
+
+      <div class="timeline-item">
+        <h3>2030+ · Constitutional AI Era</h3>
+        <span>Dijital vicdan ve civilization intelligence.</span>
+      </div>
+
     </div>
+
   </section>
 
   <section class="section" id="api">
-    <h2>Atatürk Digital Twin API</h2>
-    <p>Bu MVP dış sistemlere bağlanabilecek bir constitutional intelligence API çekirdeğidir.</p>
 
-    <div class="api-box">
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/stream · canlı streaming constitutional cognition</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/demo · tam yanıtlı reasoning endpoint</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/vicdan · etik ön kontrol ve risk skoru</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/tts · AI narrator voice generation</div></div>
-      <div class="api-row"><div class="api-method">GET</div><div class="api-path">/timeline · tarihsel civilization context</div></div>
+    <h2>Atatürk Digital Twin API</h2>
+
+    <div class="grid">
+
+      <div class="card">
+        <strong>POST /stream</strong>
+        Streaming constitutional cognition.
+      </div>
+
+      <div class="card">
+        <strong>POST /demo</strong>
+        Full reasoning endpoint.
+      </div>
+
+      <div class="card">
+        <strong>POST /vicdan</strong>
+        Ethical review and scoring.
+      </div>
+
+      <div class="card">
+        <strong>POST /tts</strong>
+        AI narration voice engine.
+      </div>
+
     </div>
+
   </section>
 
-  <section class="section" id="contributors">
+  <section class="section">
+
     <h2>Contributor Gateway</h2>
-    <p>Bu proje geliştirici, tarihçi, eğitimci, etik denetçi ve altyapı katkıcıları için açık bir civilization build alanıdır.</p>
 
     <div class="contributors">
-      <div class="contributor"><strong>Developers</strong>API, frontend, streaming, memory, routing ve HOPEtensor node entegrasyonu.</div>
-      <div class="contributor"><strong>Historians</strong>Nutuk, arşivler, konuşmalar, reformlar ve kaynaklı tarihsel bağlam.</div>
-      <div class="contributor"><strong>Educators</strong>Cumhuriyet eğitimi, civic intelligence ve gençlik modülleri.</div>
-      <div class="contributor"><strong>Ethics Reviewers</strong>Vicdan layer, güvenlik, manipülasyon önleme ve anayasal guardrails.</div>
+
+      <div class="contributor">
+        <strong>Developers</strong>
+        API, frontend and HOPEtensor integration.
+      </div>
+
+      <div class="contributor">
+        <strong>Historians</strong>
+        Nutuk, archives and reform context.
+      </div>
+
+      <div class="contributor">
+        <strong>Educators</strong>
+        Civic intelligence and youth modules.
+      </div>
+
+      <div class="contributor">
+        <strong>Ethics Reviewers</strong>
+        Vicdan layer and constitutional guardrails.
+      </div>
+
     </div>
+
   </section>
 
   <section class="section" id="demo">
+
     <h2>Live Constitutional Cognition Demo</h2>
-    <p>Sorunuzu yazın. Sistem canlı reasoning ile cevap üretsin.</p>
+
+    <p>
+      Sorunuzu yazın. Sistem canlı reasoning ile cevap üretsin.
+    </p>
 
     <label>Question</label>
-    <input id="q" value="Yapay zekâ çağında anayasal bilinç neden gereklidir?" />
+
+    <input
+      id="q"
+      value="Yapay zekâ çağında anayasal bilinç neden gereklidir?"
+    />
 
     <label>Reasoning Mode</label>
+
     <select id="mode">
-      <option value="constitutional">Constitutional Cognition</option>
-      <option value="education">Education & Enlightenment</option>
-      <option value="ai_governance">AI Governance</option>
-      <option value="civilization">Civilization Strategy</option>
+
+      <option value="constitutional">
+        Constitutional Cognition
+      </option>
+
+      <option value="atatürk_principles">
+        Atatürk Principles
+      </option>
+
+      <option value="republican_statecraft">
+        Republican Statecraft
+      </option>
+
+      <option value="education">
+        Education & Enlightenment
+      </option>
+
+      <option value="ai_governance">
+        AI Governance
+      </option>
+
+      <option value="civilization">
+        Civilization Strategy
+      </option>
+
+      <option value="crisis_response">
+        Crisis Response
+      </option>
+
+      <option value="youth_address">
+        Address to Youth
+      </option>
+
+      <option value="archive_context">
+        Historical Archive Context
+      </option>
+
+      <option value="hopeverse">
+        HOPEverse / HOPEtensor Strategy
+      </option>
+
     </select>
 
     <div class="buttons">
-      <button onclick="ask()">Run Live Engine</button>
-      <button class="secondary" onclick="speakCurrentResponse()">Speak AI Response</button>
-      <button class="secondary" onclick="playArchivalVoice()">Play Archive Voice</button>
-      <button class="secondary" onclick="stopSpeaking()">Stop Voice</button>
-      <button class="secondary" onclick="checkVicdan()">Vicdan Check</button>
+
+      <button onclick="ask()">
+        Run Live Engine
+      </button>
+
+      <button
+        class="secondary"
+        onclick="speakCurrentResponse()">
+        Speak AI Response
+      </button>
+
+      <button
+        class="secondary"
+        onclick="playArchivalVoice()">
+        Play Archive Voice
+      </button>
+
+      <button
+        class="secondary"
+        onclick="stopSpeaking()">
+        Stop Voice
+      </button>
+
+      <button
+        class="secondary"
+        onclick="checkVicdan()">
+        Vicdan Check
+      </button>
+
     </div>
 
     <div class="engine-panel">
+
       <div class="engine-topbar">
-        <div><span class="mini-label">ENGINE STATUS</span><strong id="engineStatus">Idle</strong></div>
-        <div><span class="mini-label">MODE</span><strong id="modeBadge">constitutional</strong></div>
-        <div><span class="mini-label">VICDAN SCORE</span><strong id="vicdanScore">—</strong></div>
+
+        <div>
+          <span class="mini-label">
+            ENGINE STATUS
+          </span>
+
+          <strong id="engineStatus">
+            Idle
+          </strong>
+        </div>
+
+        <div>
+          <span class="mini-label">
+            MODE
+          </span>
+
+          <strong id="modeBadge">
+            constitutional
+          </strong>
+        </div>
+
+        <div>
+          <span class="mini-label">
+            VICDAN SCORE
+          </span>
+
+          <strong id="vicdanScore">
+            —
+          </strong>
+        </div>
+
       </div>
 
-      <div id="loader" class="hidden">Constitutional cognition pipeline running...</div>
-      <div class="response-box" id="responseBox">Live response will appear here.</div>
+      <div id="loader" class="hidden">
+        Constitutional cognition pipeline running...
+      </div>
+
+      <div
+        class="response-box"
+        id="responseBox">
+        Live response will appear here.
+      </div>
+
     </div>
+
   </section>
 
   <footer>
-    HOPEverse Civilization Canon · Atatürk Digital Twin · Constitutional Intelligence Platform · v2.2
+    HOPEverse Civilization Canon · Atatürk Digital Twin · Constitutional Intelligence Platform · v2.3
   </footer>
 
 </main>
