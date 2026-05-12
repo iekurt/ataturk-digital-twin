@@ -8,7 +8,7 @@
 
   <meta
     name="description"
-    content="ATATÜRK DIGITAL TWIN / HOPEVERSE — Constitutional cognition, HOPEtensor architecture, Vicdan layer, streaming AI, OpenAI premium TTS, self-reflection metrics, and peace doctrine."
+    content="ATATÜRK DIGITAL TWIN / HOPEVERSE — Constitutional cognition, HOPEtensor architecture, Vicdan layer, streaming AI, OpenAI premium TTS, and peace doctrine."
   />
 
   <link rel="icon" href="/static/favicon.ico" />
@@ -27,7 +27,6 @@
       --cyan: #63f7ff;
       --red: #ff4d5e;
       --green: #55ffb2;
-      --amber: #ffbf47;
       --line: rgba(255, 255, 255, 0.13);
       --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
       --radius: 28px;
@@ -326,30 +325,23 @@
 
     .ataturk-frame {
       position: relative;
-      min-height: 560px;
+      min-height: 360px;
       border-radius: 30px;
-      overflow: visible;
+      overflow: hidden;
       border: 1px solid rgba(245, 197, 66, 0.24);
       background:
         radial-gradient(circle at 50% 15%, rgba(245, 197, 66, 0.22), transparent 36%),
         rgba(0, 0, 0, 0.32);
       box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding: 18px;
     }
 
     .ataturk-frame img {
       width: 100%;
-      height: auto;
-      max-height: 620px;
-      object-fit: contain;
-      object-position: center center;
+      height: 420px;
+      object-fit: cover;
+      object-position: center top;
       display: block;
-      border-radius: 24px;
-      filter: grayscale(10%) contrast(1.05) brightness(0.92);
+      filter: grayscale(18%) contrast(1.05) brightness(0.88);
     }
 
     .ataturk-frame::after {
@@ -357,15 +349,17 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(5, 7, 13, 0.02), rgba(5, 7, 13, 0.18));
+        linear-gradient(180deg, rgba(5, 7, 13, 0.05), rgba(5, 7, 13, 0.92)),
+        radial-gradient(circle at 50% 30%, transparent 30%, rgba(5, 7, 13, 0.45) 76%);
       pointer-events: none;
     }
 
     .portrait-caption {
-      position: relative;
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
       z-index: 2;
-      margin-top: 14px;
-      width: 100%;
       padding: 16px;
       border-radius: 22px;
       background: rgba(5, 7, 13, 0.68);
@@ -676,8 +670,7 @@
       width: auto;
     }
 
-    .reasoning-panel,
-    .reflection-panel {
+    .reasoning-panel {
       margin-bottom: 18px;
       background:
         linear-gradient(135deg, rgba(77, 163, 255, 0.08), rgba(245, 197, 66, 0.08)),
@@ -701,59 +694,6 @@
     #reasoningModeDescription {
       color: var(--muted);
       line-height: 1.7;
-    }
-
-    .reflection-grid {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .reflection-chip {
-      border-radius: 20px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      background: rgba(0, 0, 0, 0.2);
-      min-height: 118px;
-    }
-
-    .reflection-chip strong {
-      display: block;
-      font-size: 28px;
-      color: var(--gold);
-      margin: 8px 0 4px;
-    }
-
-    .reflection-chip span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .reflection-chip.ok strong {
-      color: var(--green);
-    }
-
-    .reflection-chip.warn strong {
-      color: var(--amber);
-    }
-
-    .reflection-chip.risk strong {
-      color: var(--red);
-    }
-
-    .reflection-summary {
-      margin-top: 14px;
-      color: var(--muted);
-      line-height: 1.65;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.045);
-      padding: 14px 16px;
     }
 
     .timeline {
@@ -852,12 +792,6 @@
       margin-top: 14px;
     }
 
-    @media (max-width: 1100px) {
-      .reflection-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
     @media (max-width: 980px) {
       .hero-grid,
       .demo-layout,
@@ -883,12 +817,8 @@
         grid-template-columns: 1fr;
       }
 
-      .reflection-grid {
-        grid-template-columns: 1fr;
-      }
-
       .ataturk-frame img {
-        max-height: 520px;
+        height: 360px;
       }
     }
   </style>
@@ -931,8 +861,8 @@
 
           <p id="heroSubtitle" class="hero-subtitle">
             A civic, historical and constitutional AI interface built on FastAPI,
-            OpenAI streaming, premium TTS, the Vicdan layer, HOPEtensor architecture,
-            memory, audit and self-reflection.
+            OpenAI streaming, premium TTS, the Vicdan layer, and HOPEtensor
+            architecture.
           </p>
 
           <div class="doctrine-card">
@@ -962,7 +892,7 @@
               <strong>Mustafa Kemal Atatürk</strong>
               <span>
                 Digital twin interface powered by constitutional cognition,
-                reform memory, Vicdan layer, HOPEtensor architecture and self-reflection.
+                reform memory, Vicdan layer and HOPEtensor architecture.
               </span>
             </div>
           </div>
@@ -970,7 +900,8 @@
           <div class="panel-title">Vicdan Layer Online</div>
           <p class="panel-text">
             The interface routes cognition through doctrine, ethics, reform memory,
-            HOPEtensor node logic, verification, self-reflection and streaming output.
+            HOPEtensor node logic, and streaming output. It is designed as a public
+            digital-twin experience, not a generic chatbot.
           </p>
 
           <div style="margin-top: 20px; display: grid; gap: 10px;">
@@ -989,7 +920,7 @@
           <h2>Live cognition cockpit</h2>
           <p class="section-lead">
             Real-time counters for sessions, cognition runs, streamed token flow,
-            TTS generation, constitutional safety passes, HOPEtensor node checks and self-reflection status.
+            TTS generation, constitutional safety passes, and HOPEtensor node checks.
           </p>
         </div>
 
@@ -1033,9 +964,9 @@
           <div class="kicker">Architecture</div>
           <h2>HOPEtensor constitutional cognition architecture</h2>
           <p class="section-lead">
-            The system is structured as a layered reasoning chain: input, memory,
-            doctrine alignment, Vicdan ethics, verification, audit, self-reflection,
-            memory writeback, streaming, and archive voice output.
+            The system is structured as a layered reasoning chain: user input,
+            doctrine alignment, Vicdan ethics, verification, execution, streaming,
+            and archive voice output.
           </p>
         </div>
 
@@ -1048,8 +979,8 @@
 
           <div class="hope-node architecture-node" data-node>
             <div class="node-index">02</div>
-            <h3>Session Memory</h3>
-            <p>Previous context is injected into the constitutional cognition pipeline.</p>
+            <h3>Vicdan Layer</h3>
+            <p>Ethics, conscience, civic framing and constitutional sensitivity are activated.</p>
           </div>
 
           <div class="hope-node architecture-node" data-node>
@@ -1060,14 +991,14 @@
 
           <div class="hope-node architecture-node" data-node>
             <div class="node-index">04</div>
-            <h3>Vicdan Verification</h3>
+            <h3>Verification Node</h3>
             <p>Output is checked against doctrine, project identity, historical tone and safety rules.</p>
           </div>
 
           <div class="hope-node architecture-node" data-node>
             <div class="node-index">05</div>
-            <h3>Self-Reflection</h3>
-            <p>Reflection score, alignment scores, confidence and hallucination risk are generated.</p>
+            <h3>Delivery Layer</h3>
+            <p>Streaming SSE, UI trace, premium TTS and archive voice deliver the final experience.</p>
           </div>
         </div>
       </div>
@@ -1208,11 +1139,11 @@
           </div>
 
           <div class="card">
-            <h3>Phase 4 — Self-Reflective HOPEverse</h3>
+            <h3>Phase 4 — HOPEverse</h3>
             <ul>
-              <li>Session Memory Node</li>
-              <li>Self-Reflection Metrics</li>
-              <li>Doctrine enforcement layer</li>
+              <li>Contributor Gateway</li>
+              <li>Identity and trust layer</li>
+              <li>Archive voice layer</li>
               <li>Public deployment on Render</li>
             </ul>
           </div>
@@ -1227,7 +1158,7 @@
           <h2>API playground</h2>
           <p class="section-lead">
             Test the HOPEtensor-compatible task endpoint from the browser. The frontend expects
-            <code>/v1/tasks</code>, <code>/reason</code>, <code>/stream</code>, <code>/tts</code>, <code>/health</code> and reflection outputs.
+            <code>/v1/tasks</code>, <code>/reason</code>, <code>/stream</code>, <code>/tts</code> and <code>/health</code>.
           </p>
         </div>
 
@@ -1341,57 +1272,6 @@
           </div>
         </div>
 
-        <div class="card reflection-panel">
-          <h3>Self-Reflection Metrics</h3>
-          <p>
-            Reflection scores are produced by the Self-Reflection Node after cognition completes.
-            They expose constitutional alignment, historical alignment, ethical alignment,
-            hallucination risk and confidence.
-          </p>
-
-          <div class="reflection-grid">
-            <div id="reflectionScoreChip" class="reflection-chip">
-              <span>Reflection</span>
-              <strong id="reflectionScore">—</strong>
-              <span>overall score</span>
-            </div>
-
-            <div id="constitutionalScoreChip" class="reflection-chip">
-              <span>Constitutional</span>
-              <strong id="constitutionalAlignment">—</strong>
-              <span>alignment</span>
-            </div>
-
-            <div id="historicalScoreChip" class="reflection-chip">
-              <span>Historical</span>
-              <strong id="historicalAlignment">—</strong>
-              <span>continuity</span>
-            </div>
-
-            <div id="ethicalScoreChip" class="reflection-chip">
-              <span>Ethical</span>
-              <strong id="ethicalAlignment">—</strong>
-              <span>Vicdan layer</span>
-            </div>
-
-            <div id="hallucinationRiskChip" class="reflection-chip">
-              <span>Hallucination</span>
-              <strong id="hallucinationRisk">—</strong>
-              <span>risk</span>
-            </div>
-
-            <div id="confidenceScoreChip" class="reflection-chip">
-              <span>Confidence</span>
-              <strong id="confidenceScore">—</strong>
-              <span>answer confidence</span>
-            </div>
-          </div>
-
-          <div id="reflectionSummary" class="reflection-summary">
-            Self-Reflection Node is waiting for cognition output.
-          </div>
-        </div>
-
         <div class="demo-layout">
           <div class="card">
             <h3>Prompt</h3>
@@ -1428,11 +1308,11 @@
             </div>
 
             <div class="control-row">
-              <button id="replayVoiceBtn" class="btn">Play Archive Voice</button>
+              <button id="replayVoiceBtn" class="btn">Replay Voice</button>
             </div>
 
             <div id="ttsPlayer"></div>
-            <audio id="ttsAudio" controls></audio>
+            <audio id="ttsAudio"></audio>
           </div>
 
           <div class="card">
@@ -1454,10 +1334,7 @@
               <li>Streaming Server-Sent Events</li>
               <li>OpenAI premium TTS endpoint</li>
               <li>HOPEtensor-compatible task endpoint</li>
-              <li>Session Memory Node</li>
-              <li>Vicdan verification layer</li>
-              <li>Observer / Audit Node</li>
-              <li>Self-Reflection Node</li>
+              <li>Vicdan and doctrine preservation</li>
               <li>Render deployment readiness</li>
             </ul>
           </div>
@@ -1480,8 +1357,7 @@
       <p>
         <strong>ATATÜRK DIGITAL TWIN / HOPEVERSE</strong><br />
         Constitutional cognition engine, HOPEtensor architecture, Vicdan layer,
-        OpenAI streaming, premium TTS, archive voice, session memory,
-        observer audit, self-reflection metrics and contributor gateway.
+        OpenAI streaming, premium TTS, archive voice and contributor gateway.
       </p>
 
       <p>
