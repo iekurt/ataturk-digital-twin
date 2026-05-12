@@ -14,6 +14,11 @@ try:
 except Exception:
     verify_and_repair_answer = None
 
+try:
+    from engine.memory import build_memory_context
+except Exception:
+    build_memory_context = None
+
 
 PROJECT_NAME = "ATATÜRK DIGITAL TWIN / HOPEVERSE"
 
@@ -161,6 +166,16 @@ def normalize_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def get_session_memory_context() -> str:
+    if build_memory_context is None:
+        return "Session Memory Node şu anda bağlı değil."
+
+    try:
+        return build_memory_context(limit=int(os.getenv("HOPE_MEMORY_LIMIT", "8")))
+    except Exception as exc:
+        return f"Session Memory Node okunamadı: {str(exc)}"
+
+
 def build_system_prompt(payload: Dict[str, Any]) -> str:
     reasoning_mode = payload.get("reasoning_mode", "balanced")
     mode_instruction = payload.get(
@@ -170,6 +185,8 @@ def build_system_prompt(payload: Dict[str, Any]) -> str:
             REASONING_MODE_INSTRUCTIONS["balanced"],
         ),
     )
+
+    memory_context = get_session_memory_context()
 
     return f"""
 Sen ATATÜRK DIGITAL TWIN / HOPEVERSE anayasal biliş motorusun.
@@ -198,10 +215,15 @@ MİMARİ:
 - Render deployment
 
 PIPELINE:
+0. Session Memory Node önceki konuşma bağlamını sağlar.
 1. Reasoning Node cevabı üretir.
 2. Vicdan Verification Node cevabı denetler.
 3. Gerekirse cevap onarılır.
-4. Final yanıt kullanıcıya verilir.
+4. Observer / Audit Node kaydı tutar.
+5. Final yanıt kullanıcıya verilir.
+
+SESSION MEMORY:
+{memory_context}
 
 CANON UI:
 - Hero
@@ -227,6 +249,8 @@ MODE TALİMATI:
 {FORBIDDEN_THIRD_PERSON_PATTERNS}
 
 DAVRANIŞ KURALLARI:
+- Hafıza bağlamını kullan ama kullanıcı açıkça sormadıkça uzun geçmiş özeti yapma.
+- "Kaldığımız yerden devam" denirse Session Memory bağlamını aktif kullan.
 - Kendini "Atatürk hakkında konuşan asistan" gibi konumlandırma.
 - Üçüncü şahıs Atatürk anlatımı yapma.
 - "Ben Atatürk'üm" gibi biyolojik/kişisel iddia kurma.
@@ -315,18 +339,6 @@ async def ask_llm(payload: Dict[str, Any]) -> str:
 
 
 async def stream_llm(payload: Dict[str, Any]) -> AsyncGenerator[str, None]:
-    """
-    Streaming mode:
-    - İlk aşamada tokenları canlı stream eder.
-    - Full cevap toplanır.
-    - Stream sonunda Vicdan Verification çalışır.
-    - Eğer verification cevabı onardıysa final düzeltmeyi ayrıca stream eder.
-
-    Not:
-    Bu yaklaşım kullanıcıya canlı cevap verir, ama onarım gerekiyorsa sonunda
-    'Vicdan düzeltmesi' olarak final constitutional output’u ekler.
-    """
-
     payload = normalize_payload(payload)
     client = get_client()
 
@@ -342,15 +354,15 @@ async def stream_llm(payload: Dict[str, Any]) -> AsyncGenerator[str, None]:
     )
 
     async for chunk in stream:
-      if not chunk.choices:
-          continue
+        if not chunk.choices:
+            continue
 
-      delta = chunk.choices[0].delta
+        delta = chunk.choices[0].delta
 
-      if delta and delta.content:
-          token = delta.content
-          full_answer_parts.append(token)
-          yield token
+        if delta and delta.content:
+            token = delta.content
+            full_answer_parts.append(token)
+            yield token
 
     raw_answer = "".join(full_answer_parts).strip()
 
