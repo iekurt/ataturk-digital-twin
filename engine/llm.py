@@ -1,361 +1,259 @@
-from openai import OpenAI
-from dotenv import load_dotenv
 import os
+from typing import Any, AsyncGenerator, Dict, List
 
 try:
-    from engine.memory import add_memory, get_memory
+    from dotenv import load_dotenv
+    load_dotenv()
 except Exception:
-    def add_memory(session_id: str, role: str, content: str):
-        return None
+    pass
 
-    def get_memory(session_id: str):
-        return []
+from openai import AsyncOpenAI
 
 
-load_dotenv()
+PROJECT_NAME = "ATATÜRK DIGITAL TWIN / HOPEVERSE"
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-DEFAULT_SESSION = "global"
-
-
-NUTUK_MEMORY = [
-    {
-        "topic": "egemenlik",
-        "keywords": ["egemenlik", "millet", "halk", "irade", "cumhuriyet", "meclis"],
-        "memory": """
-Egemenlik kayıtsız şartsız milletindir.
-Cumhuriyet, millet iradesinin kurumsal biçimidir.
-Bir devletin meşruiyeti, halkın egemenliğine dayanmalıdır.
-"""
-    },
-    {
-        "topic": "bilim",
-        "keywords": ["bilim", "fen", "akıl", "eğitim", "üniversite", "teknoloji", "yapay zeka", "ai"],
-        "memory": """
-Hayatta en hakiki mürşit ilimdir.
-Akıl, bilim ve eğitim rehber alınmadan çağdaş uygarlık kurulamaz.
-Teknoloji, insan onuruna ve toplum yararına hizmet etmelidir.
-"""
-    },
-    {
-        "topic": "gençlik",
-        "keywords": ["gençlik", "genç", "gelecek", "nesil", "çocuk", "umut"],
-        "memory": """
-Cumhuriyetin sürekliliği genç kuşakların aklına,
-ahlakına, eğitimine ve sorumluluk bilincine bağlıdır.
-Gençlik yalnızca mirasçı değil, aynı zamanda kurucu enerjidir.
-"""
-    },
-    {
-        "topic": "bağımsızlık",
-        "keywords": ["bağımsızlık", "istiklal", "özgürlük", "tam bağımsızlık", "manda", "mandat"],
-        "memory": """
-Tam bağımsızlık; siyasi, ekonomik, kültürel,
-askerî ve fikrî bağımsızlıkla mümkündür.
-Bağımsız olmayan akıl, bağımsız devlet kuramaz.
-"""
-    },
-    {
-        "topic": "medeniyet",
-        "keywords": ["medeniyet", "uygarlık", "çağdaşlık", "ilerleme", "modernleşme"],
-        "memory": """
-Cumhuriyetin hedefi çağdaş uygarlık seviyesinin üzerine çıkmaktır.
-Medeniyet yalnızca teknik ilerleme değil; hukuk, eğitim, bilim,
-kadın hakları, üretim ve toplumsal sorumluluk bütünüdür.
-"""
-    },
-    {
-        "topic": "kadın",
-        "keywords": ["kadın", "eşitlik", "hak", "toplum", "aile", "temsil"],
-        "memory": """
-Kadın toplumun yarısı değil, medeniyetin kurucu unsurudur.
-Kadın özgürleşmeden toplum ilerleyemez.
-Eşit yurttaşlık modern cumhuriyetin temelidir.
-"""
-    },
-    {
-        "topic": "barış",
-        "keywords": ["barış", "sulh", "savaş", "yurtta sulh", "cihanda sulh"],
-        "memory": """
-Yurtta sulh, cihanda sulh.
-Barış pasiflik değildir; güçlü kurumlar, eğitimli yurttaşlar,
-adalet, üretim ve akılcı dış politika ile korunur.
-"""
-    },
-    {
-        "topic": "vicdan",
-        "keywords": ["vicdan", "etik", "ahlak", "sorumluluk", "insan onuru"],
-        "memory": """
-Vicdan, teknolojinin fren sistemi değil; yön tayin eden pusulasıdır.
-Yapay zekâ, insan onurunu ve özgür iradeyi zedelemeden çalışmalıdır.
-"""
-    }
-]
-
-
-SYSTEM_PROMPT = """
-You are the Ataturk Digital Twin Constitutional Cognition Engine.
-
-IMPORTANT:
-You are NOT Mustafa Kemal Atatürk.
-You do NOT claim to literally be him.
-You do NOT impersonate him.
-
-Instead, you are an AI constitutional reasoning system inspired by:
-- republican principles
-- science
-- education
-- civic sovereignty
-- secular governance
-- peace
-- ethical modernization
-- civilization continuity
-
-Always answer in TURKISH unless explicitly asked otherwise.
-
-Your communication style should reflect:
-- clarity
-- dignity
-- rational statecraft
-- intellectual discipline
-- historical awareness
-- civic responsibility
-- calm authority
-- constitutional seriousness
-
-Your tone may be inspired by:
-- constitutional leadership
-- reformist vision
-- public responsibility
-- national modernization
-
-But NEVER claim personal identity as Mustafa Kemal Atatürk.
-
-Avoid:
-- fictional impersonation
-- propaganda
-- cult language
-- authoritarian rhetoric
-- blind obedience
-- mystical claims
-
-Prefer:
-- concise but powerful reasoning
-- educational explanations
-- civilizational perspective
-- ethical analysis
-- historical grounding
-- practical statecraft
-
-You are conceptually connected to:
-HOPEtensor,
-Vicdan Layer,
-Verification Nodes,
-Observer Systems,
-Civilization Intelligence Infrastructure.
+DOCTRINE = """
+Peace at home.
+Peace in the world.
+Peace in the universe and HOPEverse.
 """
 
-
-def retrieve_constitutional_memory(question: str, mode: str = "constitutional") -> str:
-    q = (question or "").lower()
-    mode_text = (mode or "").lower()
-
-    matched = []
-
-    for item in NUTUK_MEMORY:
-        if any(keyword in q for keyword in item["keywords"]):
-            matched.append(f"[{item['topic'].upper()}]\n{item['memory'].strip()}")
-
-    if "youth" in mode_text or "genç" in mode_text:
-        matched.append(NUTUK_MEMORY[2]["memory"].strip())
-
-    if "archive" in mode_text or "historical" in mode_text:
-        matched.extend([
-            NUTUK_MEMORY[0]["memory"].strip(),
-            NUTUK_MEMORY[1]["memory"].strip(),
-            NUTUK_MEMORY[4]["memory"].strip()
-        ])
-
-    if "ai_governance" in mode_text or "yapay" in q or "zeka" in q:
-        matched.extend([
-            NUTUK_MEMORY[1]["memory"].strip(),
-            NUTUK_MEMORY[7]["memory"].strip()
-        ])
-
-    if "crisis" in mode_text or "kriz" in q:
-        matched.extend([
-            NUTUK_MEMORY[0]["memory"].strip(),
-            NUTUK_MEMORY[3]["memory"].strip(),
-            NUTUK_MEMORY[6]["memory"].strip()
-        ])
-
-    if "hopeverse" in mode_text or "hopetensor" in mode_text or "hope" in q:
-        matched.extend([
-            NUTUK_MEMORY[1]["memory"].strip(),
-            NUTUK_MEMORY[7]["memory"].strip(),
-            NUTUK_MEMORY[4]["memory"].strip()
-        ])
-
-    unique = []
-    for m in matched:
-        if m not in unique:
-            unique.append(m)
-
-    if not unique:
-        unique.append("""
-[GENEL ANAYASAL HAFIZA]
-Cumhuriyet akıl, bilim, egemenlik, eğitim, bağımsızlık ve barış üzerine kuruludur.
-Her mesele önce insan onuru, kamu yararı ve tarihsel sorumluluk açısından değerlendirilmelidir.
-""".strip())
-
-    return "\n\n".join(unique[:5])
+REASONING_MODE_INSTRUCTIONS = {
+    "balanced": """
+Answer with a balanced, clear, practical and dignified tone.
+Preserve doctrine, civic dignity, reform memory and HOPEverse identity.
+""",
+    "constitutional": """
+Prioritize constitutional principles, civic responsibility, secular republican values,
+rule of law, public reason, institutional integrity, citizen dignity and peace doctrine.
+""",
+    "historical": """
+Frame the answer through historical continuity, reform memory, Atatürk's modernization logic,
+education, science, sovereignty, institutions, civic transformation and national development.
+""",
+    "visionary": """
+Answer with a future-facing HOPEverse vision: AI ethics, peace, civilization-scale coordination,
+decentralized trust, human dignity, contributor networks and universal HOPE.
+""",
+    "technical": """
+Answer as a technical architecture advisor. Emphasize FastAPI, OpenAI, Streaming SSE,
+premium TTS, HOPEtensor nodes, Vicdan layer, verification, deployment and implementation details.
+""",
+    "critical": """
+Answer critically and rigorously. Identify weaknesses, risks, contradictions, missing safeguards,
+technical debt, governance gaps and concrete improvements without weakening the doctrine.
+""",
+}
 
 
-def mode_instruction(mode: str) -> str:
-    modes = {
-        "constitutional": "Anayasal ilkeler, kamu yararı, egemenlik ve hukuk devleti ekseninde cevap ver.",
-        "atatürk_principles": "Cumhuriyetçilik, millî egemenlik, laiklik, bilim, eğitim ve çağdaşlaşma ilkeleriyle cevap ver.",
-        "republican_statecraft": "Devlet aklı, kurumlar, strateji, kamu düzeni ve uzun vadeli istikrar açısından analiz et.",
-        "education": "Eğitim, gençlik, bilimsel düşünce ve toplumsal aydınlanma ekseninde cevap ver.",
-        "ai_governance": "Yapay zekâ yönetişimi, etik, güvenlik, insan onuru ve anayasal guardrail açısından cevap ver.",
-        "civilization": "Medeniyet inşası, kurumlar, kültür, ekonomi, bilim ve barış perspektifiyle cevap ver.",
-        "crisis_response": "Kriz yönetimi, soğukkanlı strateji, kamu düzeni ve toplumsal güven açısından cevap ver.",
-        "youth_address": "Gençliğe hitap eden, sorumluluk ve umut veren ama romantize etmeyen güçlü bir dil kullan.",
-        "archive_context": "Tarihsel bağlamı öne çıkar; arşiv, Nutuk, reformlar ve Cumhuriyet inşası perspektifiyle cevap ver.",
-        "hopeverse": "HOPEverse, HOPEtensor, Vicdan layer ve civilization infrastructure perspektifiyle stratejik cevap ver."
+def get_client() -> AsyncOpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not configured.")
+
+    return AsyncOpenAI(api_key=api_key)
+
+
+def normalize_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+    prompt = (
+        payload.get("prompt")
+        or payload.get("question")
+        or payload.get("task")
+        or payload.get("message")
+        or ""
+    )
+
+    reasoning_mode = (
+        payload.get("reasoning_mode")
+        or payload.get("reasoningMode")
+        or payload.get("mode")
+        or "balanced"
+    )
+
+    reasoning_mode = str(reasoning_mode).strip().lower()
+
+    if reasoning_mode not in REASONING_MODE_INSTRUCTIONS:
+        reasoning_mode = "balanced"
+
+    mode_instruction = (
+        payload.get("mode_instruction")
+        or payload.get("modeInstruction")
+        or REASONING_MODE_INSTRUCTIONS[reasoning_mode]
+    )
+
+    return {
+        **payload,
+        "prompt": prompt,
+        "question": prompt,
+        "task": prompt,
+        "reasoning_mode": reasoning_mode,
+        "reasoningMode": reasoning_mode,
+        "mode": reasoning_mode,
+        "mode_instruction": mode_instruction,
+        "project": payload.get("project", PROJECT_NAME),
+        "doctrine": payload.get("doctrine", DOCTRINE),
+        "layer": payload.get("layer", "vicdan"),
+        "architecture": payload.get("architecture", "HOPEtensor"),
     }
 
-    return modes.get(mode, modes["constitutional"])
 
+def build_system_prompt(payload: Dict[str, Any]) -> str:
+    reasoning_mode = payload.get("reasoning_mode", "balanced")
+    mode_instruction = payload.get(
+        "mode_instruction",
+        REASONING_MODE_INSTRUCTIONS.get(reasoning_mode, REASONING_MODE_INSTRUCTIONS["balanced"]),
+    )
 
-def build_messages(question: str, mode: str):
-    memory = get_memory(DEFAULT_SESSION)
-    constitutional_memory = retrieve_constitutional_memory(question, mode)
-    instruction = mode_instruction(mode)
+    return f"""
+You are the ATATÜRK DIGITAL TWIN / HOPEVERSE constitutional cognition engine.
 
-    messages = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT
-        },
-        {
-            "role": "system",
-            "content": f"""
-ANAYASAL HAFIZA / CONSTITUTIONAL MEMORY:
-{constitutional_memory}
+You are NOT a generic chatbot.
+You are a civic, historical, constitutional and future-facing AI interface.
+
+CORE PROJECT:
+{PROJECT_NAME}
+
+CENTRAL DOCTRINE:
+{DOCTRINE}
+
+ARCHITECTURE:
+- FastAPI backend
+- OpenAI reasoning
+- Streaming SSE
+- OpenAI premium TTS
+- Constitutional cognition engine
+- HOPEtensor architecture
+- Vicdan layer
+- Render deployment
+
+CANON UI:
+- Hero
+- Dashboard
+- Architecture
+- Reform Map
+- Timeline
+- Roadmap
+- API
+- Contributor Gateway
+- Live Demo
+- Streaming cognition UI
+- OpenAI TTS
+- Archive voice
+- Crafted by Erhan branding
+
+REASONING MODE:
+{reasoning_mode.upper()}
 
 MODE INSTRUCTION:
-{instruction}
+{mode_instruction}
 
-OUTPUT FORMAT:
-- Türkçe cevap ver.
-- İlk paragraf güçlü ve net olsun.
-- Gerekiyorsa madde madde açıkla.
-- Tarihsel bağlamı kısa ama etkili kullan.
-- “Ben Atatürk’üm” deme.
-- “Atatürk ilkelerinden ilham alan anayasal değerlendirme” çerçevesinde kal.
+BEHAVIOR RULES:
+- Preserve the doctrine.
+- Preserve HOPEverse branding.
+- Preserve Atatürk’s civic, reformist, rational, scientific, republican and peace-oriented framing.
+- Do not imitate Atatürk as a fake person.
+- Speak as a constitutional digital twin interface grounded in reform memory and civic values.
+- Be clear, strong, useful and concrete.
+- Do not say the backend is unavailable unless there is an actual backend error.
+- If the user asks technical questions, give implementation-level answers.
+- If the user asks visionary questions, expand the HOPEverse direction.
+- If the user asks critical questions, identify real weaknesses and fixes.
 """
-        }
+
+
+def build_messages(payload: Dict[str, Any]) -> List[Dict[str, str]]:
+    prompt = payload.get("prompt", "")
+
+    return [
+        {
+            "role": "system",
+            "content": build_system_prompt(payload),
+        },
+        {
+            "role": "user",
+            "content": prompt,
+        },
     ]
 
-    messages.extend(memory)
 
-    messages.append({
-        "role": "user",
-        "content": f"""
-Reasoning Mode: {mode}
+async def ask_llm(payload: Dict[str, Any]) -> str:
+    payload = normalize_payload(payload)
+    client = get_client()
 
-Question:
-{question}
-"""
-    })
+    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
-    return messages
-
-
-def ask_llm(question: str, mode: str) -> str:
-    messages = build_messages(question, mode)
-
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=messages,
-        temperature=0.65,
-        max_tokens=1000
+    response = await client.chat.completions.create(
+        model=model,
+        messages=build_messages(payload),
+        temperature=float(os.getenv("OPENAI_TEMPERATURE", "0.7")),
+        max_tokens=int(os.getenv("OPENAI_MAX_TOKENS", "1200")),
     )
 
-    text = response.choices[0].message.content or ""
+    answer = response.choices[0].message.content
 
-    add_memory(DEFAULT_SESSION, "user", question)
-    add_memory(DEFAULT_SESSION, "assistant", text)
+    if not answer:
+        return "The cognition engine returned an empty answer."
 
-    return text
+    return answer.strip()
 
 
-def stream_llm(question: str, mode: str):
-    messages = build_messages(question, mode)
+async def stream_llm(payload: Dict[str, Any]) -> AsyncGenerator[str, None]:
+    payload = normalize_payload(payload)
+    client = get_client()
 
-    stream = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=messages,
-        temperature=0.65,
-        max_tokens=1000,
-        stream=True
+    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+    stream = await client.chat.completions.create(
+        model=model,
+        messages=build_messages(payload),
+        temperature=float(os.getenv("OPENAI_TEMPERATURE", "0.7")),
+        max_tokens=int(os.getenv("OPENAI_MAX_TOKENS", "1200")),
+        stream=True,
     )
 
-    full_text = ""
+    async for chunk in stream:
+        if not chunk.choices:
+            continue
 
-    for event in stream:
-        delta = event.choices[0].delta
+        delta = chunk.choices[0].delta
 
         if delta and delta.content:
-            token = delta.content
-            full_text += token
-            yield token
-
-    add_memory(DEFAULT_SESSION, "user", question)
-    add_memory(DEFAULT_SESSION, "assistant", full_text)
+            yield delta.content
 
 
-def text_to_speech(text: str, voice: str = "onyx") -> bytes:
+async def text_to_speech(text: str, voice: str = "alloy") -> bytes:
+    client = get_client()
+
     clean_text = (text or "").strip()
 
     if not clean_text:
-        clean_text = "Seslendirilecek metin bulunamadı."
+        raise ValueError("No text provided for TTS.")
 
-    if len(clean_text) > 4000:
-        clean_text = clean_text[:4000]
+    allowed_voices = {
+        "alloy",
+        "ash",
+        "ballad",
+        "coral",
+        "echo",
+        "fable",
+        "nova",
+        "onyx",
+        "sage",
+        "shimmer",
+        "verse",
+    }
 
-    speech = client.audio.speech.create(
-        model="gpt-4o-mini-tts",
-        voice="onyx",
-        input=clean_text,
-        instructions="""
-Türkçe konuş.
+    if voice not in allowed_voices:
+        voice = "alloy"
 
-Ton:
-- ciddi
-- ağırbaşlı
-- devlet adamı gibi
-- sakin ama güçlü
-- hitabet ritmi taşıyan
-- net artikülasyonlu
-- karizmatik
-- tarihî konuşma hissi veren
+    model = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")
 
-Konuşma biçimi:
-- cümle sonlarında hafif durakla
-- acele etme
-- vurgu noktalarını belirgin oku
-- kelimeleri yuvarlama
-- tok ve kontrollü ton kullan
-- nutuk verir gibi değil, kontrollü devlet konuşması gibi konuş
-
-ÖNEMLİ:
-Bu ses Mustafa Kemal Atatürk'ün gerçek sesi değildir.
-Tarihsel ciddiyet taşıyan sentetik bir anlatıcıdır.
-""",
-        response_format="mp3"
+    response = await client.audio.speech.create(
+        model=model,
+        voice=voice,
+        input=clean_text[:4000],
+        response_format="mp3",
     )
 
-    return speech.content
+    return response.content
