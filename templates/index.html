@@ -91,11 +91,12 @@
     }
 
     .nav-inner {
-      height: 76px;
+      min-height: 76px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 22px;
+      padding: 12px 0;
     }
 
     .brand {
@@ -121,7 +122,7 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
@@ -183,7 +184,7 @@
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.08fr 0.92fr;
       gap: 42px;
       align-items: center;
     }
@@ -291,6 +292,12 @@
       background: rgba(255, 255, 255, 0.16);
     }
 
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .btn.primary {
       background: linear-gradient(135deg, var(--gold), #ff7a3d);
       color: #171000;
@@ -312,37 +319,65 @@
       box-shadow: var(--shadow);
       padding: 24px;
       min-height: 520px;
-    }
-
-    .orb {
-      height: 260px;
-      border-radius: 32px;
-      background:
-        radial-gradient(circle at 50% 45%, rgba(245, 197, 66, 0.95), rgba(245, 197, 66, 0.08) 32%, transparent 58%),
-        radial-gradient(circle at 50% 50%, rgba(77, 163, 255, 0.45), transparent 55%);
-      border: 1px solid rgba(245, 197, 66, 0.17);
       position: relative;
       overflow: hidden;
     }
 
-    .orb::after {
-      content: "";
-      position: absolute;
-      inset: 18%;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: pulse 2.6s ease-in-out infinite;
+    .ataturk-frame {
+      position: relative;
+      min-height: 360px;
+      border-radius: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(245, 197, 66, 0.24);
+      background:
+        radial-gradient(circle at 50% 15%, rgba(245, 197, 66, 0.22), transparent 36%),
+        rgba(0, 0, 0, 0.32);
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.55);
     }
 
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(0.88);
-        opacity: 0.42;
-      }
-      50% {
-        transform: scale(1.08);
-        opacity: 1;
-      }
+    .ataturk-frame img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: grayscale(18%) contrast(1.05) brightness(0.88);
+    }
+
+    .ataturk-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(5, 7, 13, 0.05), rgba(5, 7, 13, 0.92)),
+        radial-gradient(circle at 50% 30%, transparent 30%, rgba(5, 7, 13, 0.45) 76%);
+      pointer-events: none;
+    }
+
+    .portrait-caption {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(5, 7, 13, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .portrait-caption strong {
+      display: block;
+      color: var(--gold);
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .portrait-caption span {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
     }
 
     .panel-title {
@@ -635,6 +670,32 @@
       width: auto;
     }
 
+    .reasoning-panel {
+      margin-bottom: 18px;
+      background:
+        linear-gradient(135deg, rgba(77, 163, 255, 0.08), rgba(245, 197, 66, 0.08)),
+        var(--card);
+    }
+
+    .reasoning-status-box {
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 18px;
+    }
+
+    #reasoningModeLabel {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    #reasoningModeDescription {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
     .timeline {
       display: grid;
       gap: 16px;
@@ -748,13 +809,16 @@
 
       .nav-inner {
         height: auto;
-        padding: 16px 0;
         align-items: flex-start;
         flex-direction: column;
       }
 
       .timeline-item {
         grid-template-columns: 1fr;
+      }
+
+      .ataturk-frame img {
+        height: 360px;
       }
     }
   </style>
@@ -818,7 +882,21 @@
         </div>
 
         <aside class="hero-panel">
-          <div class="orb"></div>
+          <div class="ataturk-frame">
+            <img
+              src="/static/ataturk.jpg"
+              alt="Mustafa Kemal Atatürk portrait for ATATÜRK DIGITAL TWIN"
+              onerror="this.style.display='none'; this.parentElement.classList.add('image-missing');"
+            />
+            <div class="portrait-caption">
+              <strong>Mustafa Kemal Atatürk</strong>
+              <span>
+                Digital twin interface powered by constitutional cognition,
+                reform memory, Vicdan layer and HOPEtensor architecture.
+              </span>
+            </div>
+          </div>
+
           <div class="panel-title">Vicdan Layer Online</div>
           <p class="panel-text">
             The interface routes cognition through doctrine, ethics, reform memory,
@@ -1089,7 +1167,8 @@
             <h3>Payload</h3>
             <textarea id="apiPayload" class="code">{
   "task": "Explain the ATATÜRK DIGITAL TWIN doctrine",
-  "mode": "v1-hybrid",
+  "reasoning_mode": "technical",
+  "mode": "technical",
   "layer": "vicdan",
   "architecture": "HOPEtensor"
 }</textarea>
@@ -1143,112 +1222,55 @@
 
     <section id="demo">
       <div class="shell">
-       <!-- =========================================================
-     REASONING MODE PANEL
-     ATATÜRK DIGITAL TWIN / HOPEVERSE
-     Add inside LIVE DEMO section
-     ========================================================= -->
+        <div class="section-head">
+          <div class="kicker">Live Demo</div>
+          <h2>Streaming Vicdan cognition UI</h2>
+          <p class="section-lead">
+            Ask the digital twin. The frontend first tries the streaming SSE endpoint,
+            then falls back to the standard reasoning endpoint if streaming is unavailable.
+          </p>
+        </div>
 
-<div class="card" style="margin-bottom:18px;">
-  <h3>Reasoning Mode</h3>
+        <div class="card reasoning-panel">
+          <h3>Reasoning Mode</h3>
 
-  <p
-    style="
-      color: var(--muted);
-      line-height: 1.6;
-      margin-top: 8px;
-      margin-bottom: 18px;
-    "
-  >
-    Select the cognition strategy used by the constitutional reasoning engine,
-    Vicdan layer and HOPEtensor routing system.
-  </p>
+          <p>
+            Select the cognition strategy used by the constitutional reasoning engine,
+            Vicdan layer and HOPEtensor routing system.
+          </p>
 
-  <div
-    style="
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:16px;
-    "
-  >
-    <div>
-      <label
-        for="reasoningMode"
-        class="metric-label"
-        style="margin-bottom:10px;display:block;"
-      >
-        Active Reasoning Mode
-      </label>
+          <div class="grid cols-2">
+            <div>
+              <label for="reasoningMode" class="metric-label" style="margin-bottom:10px;display:block;">
+                Active Reasoning Mode
+              </label>
 
-      <select id="reasoningMode">
-        <option value="balanced">
-          Balanced
-        </option>
+              <select id="reasoningMode">
+                <option value="balanced">Balanced</option>
+                <option value="constitutional">Constitutional</option>
+                <option value="historical">Historical</option>
+                <option value="visionary">Visionary</option>
+                <option value="technical">Technical</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
 
-        <option value="constitutional">
-          Constitutional
-        </option>
+            <div class="reasoning-status-box">
+              <div class="metric-label" style="margin-bottom:10px;">
+                Current Mode
+              </div>
 
-        <option value="historical">
-          Historical
-        </option>
+              <div id="reasoningModeLabel">
+                Balanced
+              </div>
 
-        <option value="visionary">
-          Visionary
-        </option>
-
-        <option value="technical">
-          Technical
-        </option>
-
-        <option value="critical">
-          Critical
-        </option>
-      </select>
-    </div>
-
-    <div
-      style="
-        border-radius:20px;
-        border:1px solid var(--line);
-        background:rgba(255,255,255,0.05);
-        padding:18px;
-      "
-    >
-      <div
-        class="metric-label"
-        style="
-          margin-bottom:10px;
-        "
-      >
-        Current Mode
-      </div>
-
-      <div
-        id="reasoningModeLabel"
-        style="
-          font-size:22px;
-          font-weight:900;
-          color:var(--gold);
-          margin-bottom:10px;
-        "
-      >
-        Balanced
-      </div>
-
-      <div
-        id="reasoningModeDescription"
-        style="
-          color:var(--muted);
-          line-height:1.7;
-        "
-      >
-        Answer with a balanced, clear and practical tone.
-        Preserve doctrine, civic dignity and project identity.
-      </div>
-    </div>
-  </div>
-</div>
+              <div id="reasoningModeDescription">
+                Answer with a balanced, clear and practical tone.
+                Preserve doctrine, civic dignity and project identity.
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="demo-layout">
           <div class="card">
