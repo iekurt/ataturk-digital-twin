@@ -51,7 +51,9 @@ const HOPE = {
   },
   ui: {
     isStreaming: false,
+    isGeneratingVoice: false,
     currentController: null,
+    ttsController: null,
     lastAnswer: "",
     selectedVoice: "alloy",
     ttsEnabled: true,
@@ -115,10 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
   startNodePulse();
   updateDashboard();
   checkHealth();
-  console.log(`${HOPE.project} initialized — ${HOPE.author}`);
 });
 
-/* FIX: ATATÜRK IMAGE MUST NOT BE CROPPED */
+/* ATATÜRK IMAGE FIX */
 function injectAtaturkImageFix() {
   const style = document.createElement("style");
   style.id = "ataturk-image-fix-style";
@@ -131,6 +132,7 @@ function injectAtaturkImageFix() {
       justify-content: center !important;
       overflow: visible !important;
       padding: 18px !important;
+      flex-direction: column !important;
     }
 
     .ataturk-frame img {
@@ -144,8 +146,7 @@ function injectAtaturkImageFix() {
     }
 
     .ataturk-frame::after {
-      background:
-        linear-gradient(180deg, rgba(5, 7, 13, 0.02), rgba(5, 7, 13, 0.18)) !important;
+      background: linear-gradient(180deg, rgba(5, 7, 13, 0.02), rgba(5, 7, 13, 0.18)) !important;
       pointer-events: none !important;
     }
 
@@ -156,10 +157,6 @@ function injectAtaturkImageFix() {
       bottom: auto !important;
       margin-top: 14px !important;
       width: 100% !important;
-    }
-
-    .ataturk-frame {
-      flex-direction: column !important;
     }
 
     @media (max-width: 980px) {
@@ -229,66 +226,23 @@ function buildCognitionPayload(prompt, transportMode) {
     prompt,
     question: prompt,
     task: prompt,
-
     project: HOPE.project,
     doctrine: HOPE.doctrine,
-
     response_language: "tr",
     language: "Turkish",
     answer_language: "Turkish",
     must_answer_in_turkish: true,
-
     reasoning_mode: reasoningMode,
     reasoningMode: reasoningMode,
     mode: reasoningMode,
-
     transport_mode: transportMode,
     frontend_mode: transportMode,
-
     mode_label: getReasoningModeLabel(),
     mode_instruction:
       getReasoningModeInstruction() +
       "\n\nZORUNLU DİL KURALI: Cevabın tamamını Türkçe ver. İngilizce cevap verme.",
-
     layer: "vicdan",
-    architecture: "HOPEtensor",
-
-    system_context: {
-      project: HOPE.project,
-      doctrine: HOPE.doctrine,
-      response_language: "Turkish",
-      must_answer_in_turkish: true,
-      reasoning_mode: reasoningMode,
-      reasoning_mode_label: getReasoningModeLabel(),
-      reasoning_mode_instruction:
-        getReasoningModeInstruction() +
-        "\n\nZORUNLU DİL KURALI: Cevabın tamamını Türkçe ver.",
-      stack: [
-        "FastAPI",
-        "OpenAI",
-        "Streaming SSE",
-        "OpenAI premium TTS",
-        "Constitutional cognition engine",
-        "HOPEtensor architecture",
-        "Vicdan layer",
-        "Render deployment"
-      ],
-      ui: [
-        "Hero",
-        "Dashboard",
-        "Architecture",
-        "Reform Map",
-        "Timeline",
-        "Roadmap",
-        "API",
-        "Contributor Gateway",
-        "Live Demo",
-        "Streaming cognition UI",
-        "OpenAI TTS",
-        "Archive voice",
-        "Crafted by Erhan branding"
-      ]
-    }
+    architecture: "HOPEtensor"
   };
 }
 
@@ -405,9 +359,7 @@ function bindDemo() {
   const input = byId("promptInput") || byId("demoPrompt");
   const clearBtn = byId("clearButton") || byId("clearDemoBtn");
 
-  if (askBtn) {
-    askBtn.addEventListener("click", () => runCognition());
-  }
+  if (askBtn) askBtn.addEventListener("click", () => runCognition());
 
   if (stopBtn) {
     stopBtn.addEventListener("click", () => {
@@ -416,9 +368,7 @@ function bindDemo() {
     });
   }
 
-  if (clearBtn) {
-    clearBtn.addEventListener("click", clearDemo);
-  }
+  if (clearBtn) clearBtn.addEventListener("click", clearDemo);
 
   if (input) {
     input.addEventListener("keydown", (e) => {
@@ -432,7 +382,7 @@ function bindDemo() {
 async function runCognition() {
   if (HOPE.ui.isStreaming) return;
 
-  stopVoice();
+  stopVoice(false);
 
   const input = byId("promptInput") || byId("demoPrompt");
   const output = byId("answerOutput") || byId("streamOutput") || byId("demoOutput");
@@ -453,7 +403,6 @@ async function runCognition() {
 
   updateDashboard();
   setStreamingUI(true);
-
   safeText(output, "");
 
   addTrace("Input received", "Prompt constitutional cognition pipeline içine alındı.");
@@ -473,8 +422,8 @@ async function runCognition() {
     addTrace("Constitutional check", "Yanıt doktrin ve güvenlik katmanından geçti.");
     addTrace("Cognition completed", `Yanıt ${HOPE.reasoningModes[reasoningMode].label} modunda tamamlandı.`);
 
-    if (HOPE.ui.ttsEnabled && HOPE.ui.archiveVoiceEnabled && HOPE.ui.lastAnswer) {
-      await speakText(HOPE.ui.lastAnswer);
+    if (HOPE.ui.ttsEnabled && HOPE.ui.archiveVoiceEnabled && HOPE.ui.lastAnswer.trim()) {
+      await speakText(HOPE.ui.lastAnswer, { autoplay: true });
     }
   } catch (err) {
     if (err.name === "AbortError") {
@@ -582,9 +531,7 @@ async function fallbackReasonRequest(prompt, output) {
     signal: HOPE.ui.currentController.signal
   });
 
-  if (!res.ok) {
-    throw new Error(`Reason endpoint failed: HTTP ${res.status}`);
-  }
+  if (!res.ok) throw new Error(`Reason endpoint failed: HTTP ${res.status}`);
 
   const data = await res.json();
 
@@ -625,7 +572,7 @@ function stopStreaming() {
 }
 
 function clearDemo() {
-  stopVoice();
+  stopVoice(false);
 
   const output = byId("answerOutput") || byId("streamOutput") || byId("demoOutput");
   const trace = byId("cognitionTrace");
@@ -680,6 +627,8 @@ function bindTTSControls() {
   const archiveToggle = byId("archiveVoiceToggle");
   const replayBtn = byId("replayVoiceBtn");
 
+  ensureAudioPlayer();
+
   if (voiceSelect) {
     voiceSelect.value = HOPE.ui.selectedVoice;
 
@@ -706,23 +655,71 @@ function bindTTSControls() {
   }
 
   if (replayBtn) {
-    replayBtn.addEventListener("click", () => {
-      if (HOPE.ui.lastAnswer) speakText(HOPE.ui.lastAnswer);
-      else showToast("Ses için cevap yok.");
+    replayBtn.textContent = "Play Archive Voice";
+    replayBtn.addEventListener("click", async () => {
+      if (HOPE.ui.lastAnswer.trim()) {
+        await speakText(HOPE.ui.lastAnswer, { autoplay: true, forceNew: true });
+      } else {
+        showToast("Ses için cevap yok.");
+      }
     });
   }
 }
 
-async function speakText(text) {
-  if (!text || !HOPE.ui.ttsEnabled) return;
+function ensureAudioPlayer() {
+  let audio = byId("ttsAudio");
 
-  stopVoice();
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "ttsAudio";
+  }
 
-  const audio = byId("ttsAudio") || new Audio();
+  audio.controls = true;
+  audio.preload = "auto";
+
+  const holder = byId("ttsPlayer");
+
+  if (holder && !holder.contains(audio)) {
+    holder.innerHTML = "";
+    holder.appendChild(audio);
+  }
+
   HOPE.ui.activeAudio = audio;
+  return audio;
+}
+
+async function speakText(text, options = {}) {
+  const autoplay = options.autoplay !== false;
+  const forceNew = options.forceNew === true;
+
+  const cleanText = String(text || "").trim();
+
+  if (!cleanText || !HOPE.ui.ttsEnabled || !HOPE.ui.archiveVoiceEnabled) return;
+
+  if (HOPE.ui.isGeneratingVoice && !forceNew) {
+    addTrace("OpenAI premium TTS", "Voice request already running. Duplicate request skipped.");
+    return;
+  }
+
+  stopVoice(false);
+
+  HOPE.ui.isGeneratingVoice = true;
+  HOPE.ui.ttsController = new AbortController();
+
+  const replayBtn = byId("replayVoiceBtn");
+  if (replayBtn) {
+    replayBtn.disabled = true;
+    replayBtn.textContent = "Generating Archive Voice...";
+  }
+
+  const audio = ensureAudioPlayer();
 
   try {
     addTrace("OpenAI premium TTS", "Archive voice rendering requested.");
+
+    const timeout = setTimeout(() => {
+      if (HOPE.ui.ttsController) HOPE.ui.ttsController.abort();
+    }, 45000);
 
     const res = await fetch(HOPE.api.tts, {
       method: "POST",
@@ -730,7 +727,7 @@ async function speakText(text) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        text,
+        text: cleanText,
         voice: HOPE.ui.selectedVoice,
         format: "mp3",
         project: HOPE.project,
@@ -740,60 +737,93 @@ async function speakText(text) {
         reasoning_mode: getReasoningMode(),
         reasoningMode: getReasoningMode(),
         mode_instruction: getReasoningModeInstruction()
-      })
+      }),
+      signal: HOPE.ui.ttsController.signal
     });
 
-    if (!res.ok) throw new Error(`TTS failed: HTTP ${res.status}`);
+    clearTimeout(timeout);
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-
-    HOPE.ui.activeAudioUrl = url;
-
-    audio.src = url;
-    audio.controls = true;
-
-    const holder = byId("ttsPlayer");
-
-    if (holder && !holder.contains(audio)) {
-      holder.innerHTML = "";
-      holder.appendChild(audio);
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => "");
+      throw new Error(`TTS failed: HTTP ${res.status} ${errorText}`);
     }
 
-    await audio.play().catch(() => {
-      showToast("Ses oluşturuldu. Dinlemek için play’e bas.");
-    });
+    const blob = await res.blob();
+
+    if (!blob || blob.size === 0) {
+      throw new Error("TTS returned empty audio blob.");
+    }
+
+    if (HOPE.ui.activeAudioUrl) {
+      URL.revokeObjectURL(HOPE.ui.activeAudioUrl);
+      HOPE.ui.activeAudioUrl = null;
+    }
+
+    const url = URL.createObjectURL(blob);
+    HOPE.ui.activeAudioUrl = url;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.src = url;
+    audio.load();
+
+    addTrace("OpenAI premium TTS", `Archive voice ready. Audio size: ${blob.size} bytes.`);
+
+    if (autoplay) {
+      try {
+        await audio.play();
+        addTrace("Archive Voice", "Voice playback started.");
+      } catch (err) {
+        addTrace("Archive Voice", "Audio hazır ama browser autoplay engelledi. Player üzerinden Play tuşuna bas.");
+        showToast("Archive Voice hazır. Player’dan Play tuşuna bas.");
+      }
+    }
 
     HOPE.metrics.ttsRuns += 1;
     updateDashboard();
   } catch (err) {
-    console.warn("TTS unavailable:", err);
-    addTrace("TTS fallback", "Voice endpoint unavailable veya browser autoplay engelledi.");
+    console.error("TTS unavailable:", err);
+    addTrace("TTS error", err.message || "Voice endpoint unavailable.");
+    showToast("Archive Voice üretilemedi. Log kontrol et.");
+  } finally {
+    HOPE.ui.isGeneratingVoice = false;
+    HOPE.ui.ttsController = null;
+
+    if (replayBtn) {
+      replayBtn.disabled = false;
+      replayBtn.textContent = "Play Archive Voice";
+    }
   }
 }
 
-function stopVoice() {
+function stopVoice(show = true) {
+  if (HOPE.ui.ttsController) {
+    try {
+      HOPE.ui.ttsController.abort();
+    } catch {}
+    HOPE.ui.ttsController = null;
+  }
+
   const audio = HOPE.ui.activeAudio || byId("ttsAudio");
 
   if (audio) {
     try {
       audio.pause();
       audio.currentTime = 0;
-      audio.removeAttribute("src");
-      audio.load();
     } catch (err) {
       console.warn("Voice stop error:", err);
     }
   }
 
-  if (HOPE.ui.activeAudioUrl) {
-    try {
-      URL.revokeObjectURL(HOPE.ui.activeAudioUrl);
-    } catch {}
-    HOPE.ui.activeAudioUrl = null;
+  HOPE.ui.isGeneratingVoice = false;
+
+  const replayBtn = byId("replayVoiceBtn");
+  if (replayBtn) {
+    replayBtn.disabled = false;
+    replayBtn.textContent = "Play Archive Voice";
   }
 
-  showToast("Voice stopped.");
+  if (show) showToast("Voice stopped.");
 }
 
 /* API */
@@ -976,3 +1006,5 @@ window.clearDemo = clearDemo;
 window.speakText = speakText;
 window.getReasoningMode = getReasoningMode;
 window.getReasoningModeInstruction = getReasoningModeInstruction;
+window.activateTimelineItem = activateTimelineItem;
+window.activateReformCard = activateReformCard;
