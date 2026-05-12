@@ -9,6 +9,11 @@ except Exception:
 
 from openai import AsyncOpenAI
 
+try:
+    from engine.verification import verify_and_repair_answer
+except Exception:
+    verify_and_repair_answer = None
+
 
 PROJECT_NAME = "ATATÜRK DIGITAL TWIN / HOPEVERSE"
 
@@ -192,6 +197,12 @@ MİMARİ:
 - Vicdan layer
 - Render deployment
 
+PIPELINE:
+1. Reasoning Node cevabı üretir.
+2. Vicdan Verification Node cevabı denetler.
+3. Gerekirse cevap onarılır.
+4. Final yanıt kullanıcıya verilir.
+
 CANON UI:
 - Hero
 - Dashboard
@@ -252,7 +263,7 @@ def post_process_answer(answer: str) -> str:
         return "Cognition engine boş yanıt döndürdü."
 
     replacements = {
-        "Atatürk şöyle derdi": "Bu bilinç katmanı şöyle söyler",
+        "Atatürk şöyle derdi": "Bu anayasal bilinç şöyle söyler",
         "Atatürk şöyle düşünürdü": "Bu anayasal bilinç açısından",
         "Atatürk'e göre": "Bu cumhuriyetçi bilinç açısından",
         "Atatürk’ün görüşüne göre": "Bu anayasal bilinç açısından",
@@ -272,6 +283,19 @@ def post_process_answer(answer: str) -> str:
     return cleaned
 
 
+def run_vicdan_verification(answer: str, payload: Dict[str, Any]) -> str:
+    cleaned = post_process_answer(answer)
+
+    if verify_and_repair_answer is None:
+        return cleaned
+
+    try:
+        result = verify_and_repair_answer(cleaned, payload)
+        return result.get("answer", cleaned)
+    except Exception:
+        return cleaned
+
+
 async def ask_llm(payload: Dict[str, Any]) -> str:
     payload = normalize_payload(payload)
     client = get_client()
@@ -285,16 +309,29 @@ async def ask_llm(payload: Dict[str, Any]) -> str:
         max_tokens=int(os.getenv("OPENAI_MAX_TOKENS", "1400")),
     )
 
-    answer = response.choices[0].message.content
+    answer = response.choices[0].message.content or ""
 
-    return post_process_answer(answer)
+    return run_vicdan_verification(answer, payload)
 
 
 async def stream_llm(payload: Dict[str, Any]) -> AsyncGenerator[str, None]:
+    """
+    Streaming mode:
+    - İlk aşamada tokenları canlı stream eder.
+    - Full cevap toplanır.
+    - Stream sonunda Vicdan Verification çalışır.
+    - Eğer verification cevabı onardıysa final düzeltmeyi ayrıca stream eder.
+
+    Not:
+    Bu yaklaşım kullanıcıya canlı cevap verir, ama onarım gerekiyorsa sonunda
+    'Vicdan düzeltmesi' olarak final constitutional output’u ekler.
+    """
+
     payload = normalize_payload(payload)
     client = get_client()
 
     model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    full_answer_parts: List[str] = []
 
     stream = await client.chat.completions.create(
         model=model,
@@ -305,13 +342,26 @@ async def stream_llm(payload: Dict[str, Any]) -> AsyncGenerator[str, None]:
     )
 
     async for chunk in stream:
-        if not chunk.choices:
-            continue
+      if not chunk.choices:
+          continue
 
-        delta = chunk.choices[0].delta
+      delta = chunk.choices[0].delta
 
-        if delta and delta.content:
-            yield delta.content
+      if delta and delta.content:
+          token = delta.content
+          full_answer_parts.append(token)
+          yield token
+
+    raw_answer = "".join(full_answer_parts).strip()
+
+    if not raw_answer:
+        return
+
+    verified_answer = run_vicdan_verification(raw_answer, payload)
+
+    if verified_answer.strip() != raw_answer.strip():
+        yield "\n\n---\n\nVicdan Verification Node düzeltmesi:\n\n"
+        yield verified_answer.strip()
 
 
 async def text_to_speech(text: str, voice: str = "alloy") -> bytes:
