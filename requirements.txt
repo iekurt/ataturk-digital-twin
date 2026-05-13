@@ -1,8 +1,8 @@
 fastapi
 uvicorn
-openai
 python-dotenv
 python-multipart
 jinja2
 aiofiles
 httpx
+openai>=1.30.0
