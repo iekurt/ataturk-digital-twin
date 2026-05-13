@@ -475,6 +475,9 @@ function ensureAudioPlayer() {
 }
 
 async function speakText(text) {
+/* PLAY ARCHIVE VOICE FIX — static/app.js FULL PATCHED FUNCTION */
+
+async function speakText(text) {
   if (!text) return;
 
   stopVoice(false);
@@ -483,6 +486,11 @@ async function speakText(text) {
     new AbortController();
 
   try {
+    addTrace(
+      "OpenAI TTS",
+      "Archive voice generation started."
+    );
+
     const res = await fetch("/tts", {
       method: "POST",
 
@@ -491,20 +499,35 @@ async function speakText(text) {
       },
 
       body: JSON.stringify({
-        text,
-        voice: "alloy"
+        text: text,
+        voice: HOPE.ui.selectedVoice || "alloy",
+        format: "mp3",
+        response_language: "tr",
+        language: "Turkish"
       }),
 
       signal: HOPE.ui.ttsController.signal
     });
 
     if (!res.ok) {
-      throw new Error("TTS failed");
+      const errText =
+        await res.text().catch(() => "");
+
+      throw new Error(
+        `TTS failed: HTTP ${res.status} ${errText}`
+      );
     }
 
     const blob = await res.blob();
 
-    const audio = ensureAudioPlayer();
+    if (!blob || blob.size === 0) {
+      throw new Error(
+        "TTS returned empty audio blob."
+      );
+    }
+
+    const audio =
+      ensureAudioPlayer();
 
     if (HOPE.ui.activeAudioUrl) {
       URL.revokeObjectURL(
@@ -517,18 +540,38 @@ async function speakText(text) {
 
     HOPE.ui.activeAudioUrl = url;
 
+    audio.pause();
+    audio.currentTime = 0;
+
     audio.src = url;
 
-    await audio.play();
+    audio.load();
+
+    const playPromise =
+      audio.play();
+
+    if (playPromise !== undefined) {
+      await playPromise;
+    }
+
+    addTrace(
+      "Archive Voice",
+      "Voice playback started."
+    );
 
   } catch (err) {
     console.error(err);
 
     addTrace(
       "TTS error",
-      err.message || "Voice error."
+      err.message || "Voice playback error."
+    );
+
+    showToast(
+      "Archive Voice failed."
     );
   }
+}
 }
 
 function stopVoice(show = true) {
