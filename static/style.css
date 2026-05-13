@@ -1,4 +1,4 @@
-/* ATATÜRK DIGITAL TWIN / HOPEVERSE — FULL style.css */
+/* FULL style.css — NAVBAR FIXED VERSION */
 
 * {
     margin: 0;
@@ -76,21 +76,23 @@ body {
     font-weight: 700;
 }
 
+/* NAVBAR FIX */
+
 .navbar {
     display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 34px;
+    flex-wrap: nowrap;
 }
 
 .navbar a {
     color: #dce6ff;
-
     text-decoration: none;
-
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 700;
-
     transition: 0.2s ease;
+    white-space: nowrap;
 }
 
 .navbar a:hover {
@@ -107,14 +109,10 @@ body {
 
 .hero-grid {
     width: 100%;
-
     display: grid;
-
     grid-template-columns:
         1.1fr 0.9fr;
-
     gap: 48px;
-
     align-items: center;
 }
 
@@ -132,31 +130,22 @@ body {
 
 .hero-badge {
     color: #ffc94d;
-
     font-size: 14px;
-
     font-weight: 800;
-
     letter-spacing: 0.2em;
 }
 
 .hero-title {
     font-size: 82px;
-
     line-height: 0.98;
-
     font-weight: 900;
-
     color: white;
 }
 
 .hero-subtitle {
     font-size: 22px;
-
     line-height: 1.7;
-
     color: #d2dcff;
-
     max-width: 760px;
 }
 
@@ -176,13 +165,9 @@ body {
 
 .doctrine-label {
     color: #ffc94d;
-
     font-size: 14px;
-
     font-weight: 800;
-
     letter-spacing: 0.2em;
-
     margin-bottom: 18px;
 }
 
@@ -194,11 +179,8 @@ body {
 
 .hope-doctrine span {
     font-size: 50px;
-
     font-weight: 900;
-
     line-height: 1.04;
-
     color: white;
 }
 
@@ -206,11 +188,8 @@ body {
 
 .ataturk-frame {
     width: 100%;
-
     min-height: 650px;
-
     border-radius: 28px;
-
     overflow: hidden;
 
     background:
@@ -222,13 +201,9 @@ body {
 
 .ataturk-frame img {
     width: 100%;
-
     height: 650px;
-
     object-fit: cover;
-
     object-position: top center;
-
     display: block;
 }
 
@@ -246,52 +221,38 @@ body {
 
 .portrait-caption h3 {
     font-size: 42px;
-
     color: #ffc94d;
-
     margin-bottom: 12px;
-
     font-weight: 900;
 }
 
 .portrait-caption p {
     font-size: 19px;
-
     line-height: 1.8;
-
     color: #d2dcff;
 }
 
 .crafted-by {
     margin-top: 18px;
-
     color: #bfcdf7;
-
     font-size: 14px;
-
     letter-spacing: 0.18em;
-
     text-transform: uppercase;
-
     opacity: 0.88;
 }
 
-/* SECTIONS */
+/* SECTION */
 
 .section {
     width: 100%;
-
     padding:
         50px 48px;
 }
 
 .section-title {
     font-size: 42px;
-
     font-weight: 900;
-
     margin-bottom: 28px;
-
     color: white;
 }
 
@@ -320,17 +281,13 @@ body {
 
 .metric-label {
     color: #ffc94d;
-
     font-size: 14px;
-
     letter-spacing: 0.16em;
-
     margin-bottom: 12px;
 }
 
 .metric-value {
     font-size: 28px;
-
     font-weight: 900;
 }
 
@@ -338,10 +295,7 @@ body {
 
 .demo-grid {
     display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
+    grid-template-columns: 1fr 1fr;
     gap: 28px;
 }
 
@@ -359,49 +313,36 @@ body {
 
 .panel-title {
     font-size: 28px;
-
     font-weight: 900;
-
     margin-bottom: 22px;
 }
 
 .input-label {
     display: block;
-
     margin-bottom: 10px;
-
     color: #ffc94d;
-
     font-size: 14px;
-
     letter-spacing: 0.16em;
 }
 
 select,
 textarea {
     width: 100%;
-
     border: none;
-
     outline: none;
-
     border-radius: 18px;
-
     padding: 18px;
-
     margin-bottom: 18px;
 
     background:
         rgba(7, 14, 24, 0.9);
 
     color: white;
-
     font-size: 16px;
 }
 
 textarea {
     min-height: 180px;
-
     resize: vertical;
 }
 
@@ -413,9 +354,7 @@ textarea {
 
 button {
     border: none;
-
     border-radius: 18px;
-
     padding:
         16px 22px;
 
@@ -424,7 +363,6 @@ button {
     color: #09111d;
 
     font-size: 15px;
-
     font-weight: 900;
 
     cursor: pointer;
@@ -438,11 +376,8 @@ button:hover {
 
 .answer-output {
     min-height: 380px;
-
     white-space: pre-wrap;
-
     line-height: 1.8;
-
     color: #f4f7ff;
 }
 
@@ -473,23 +408,18 @@ button:hover {
 
 .trace-time {
     color: #ffc94d;
-
     font-size: 13px;
-
     margin-bottom: 6px;
 }
 
 .trace-title {
     font-size: 18px;
-
     font-weight: 900;
-
     margin-bottom: 6px;
 }
 
 .trace-detail {
     color: #d0dcff;
-
     line-height: 1.7;
 }
 
@@ -518,17 +448,13 @@ button:hover {
 
 .reflection-label {
     color: #ffc94d;
-
     font-size: 13px;
-
     letter-spacing: 0.14em;
-
     margin-bottom: 12px;
 }
 
 .reflection-value {
     font-size: 42px;
-
     font-weight: 900;
 }
 
@@ -588,6 +514,12 @@ audio {
         flex-direction: column;
         align-items: flex-start;
         gap: 18px;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        gap: 18px;
+        justify-content: flex-start;
     }
 
     .hero-grid,
