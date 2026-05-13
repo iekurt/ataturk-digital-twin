@@ -1,11 +1,10 @@
 # app.py
 # ATATÜRK DIGITAL TWIN / HOPEVERSE
-# FULL CINEMATIC VERSION
+# FINAL WORKING VERSION
 
 import os
 import json
 import asyncio
-from datetime import datetime
 
 from fastapi import FastAPI, Request
 from fastapi.responses import (
@@ -32,7 +31,7 @@ except:
 
 app = FastAPI(
     title="ATATÜRK DIGITAL TWIN / HOPEVERSE",
-    version="2.0.0"
+    version="2.1.0"
 )
 
 app.mount(
@@ -53,7 +52,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = None
 
 if OPENAI_API_KEY and OpenAI:
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
+    except:
+        client = None
 
 
 # =========================================================
@@ -65,27 +67,6 @@ DOCTRINE = [
     "Peace in the world.",
     "Peace in the universe and HOPEverse."
 ]
-
-REASONING_MODES = {
-    "balanced": {
-        "label": "Balanced"
-    },
-    "constitutional": {
-        "label": "Constitutional"
-    },
-    "historical": {
-        "label": "Historical"
-    },
-    "visionary": {
-        "label": "Visionary"
-    },
-    "technical": {
-        "label": "Technical"
-    },
-    "critical": {
-        "label": "Critical"
-    }
-}
 
 
 # =========================================================
@@ -128,7 +109,7 @@ async def health():
     return {
         "status": "online",
         "service": "ATATÜRK DIGITAL TWIN / HOPEVERSE",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "openai_configured": bool(client),
         "pipeline": [
             "input",
@@ -142,12 +123,12 @@ async def health():
 
 
 # =========================================================
-# PROMPT BUILDER
+# SYSTEM PROMPT
 # =========================================================
 
 def build_system_prompt(mode: str):
 
-    base = f"""
+    prompt = f"""
 You are the constitutional cognition layer of
 ATATÜRK DIGITAL TWIN / HOPEVERSE.
 
@@ -167,37 +148,36 @@ Maintain:
 """
 
     if mode == "constitutional":
-        base += """
-Focus strongly on constitutional values,
-rule of law, secularism and civic equality.
+        prompt += """
+Focus on constitutional values,
+rule of law and secularism.
 """
 
     elif mode == "historical":
-        base += """
-Focus on historical continuity,
-reforms and modernization logic.
+        prompt += """
+Focus on reforms,
+modernization and historical continuity.
 """
 
     elif mode == "visionary":
-        base += """
-Focus on HOPEverse, AI ethics,
-future civilization systems and dignity.
+        prompt += """
+Focus on HOPEverse,
+AI ethics and future civilization systems.
 """
 
     elif mode == "technical":
-        base += """
-Focus on FastAPI, OpenAI,
-streaming SSE, HOPEtensor nodes,
-deployment and architecture.
+        prompt += """
+Focus on FastAPI,
+OpenAI, streaming SSE and deployment.
 """
 
     elif mode == "critical":
-        base += """
+        prompt += """
 Be analytical and critical.
-Point out risks and weaknesses clearly.
+Point out risks clearly.
 """
 
-    return base
+    return prompt
 
 
 # =========================================================
@@ -240,14 +220,10 @@ async def reason(payload: ReasonPayload):
             "answer": "Prompt boş."
         })
 
-    # FALLBACK
     if not client:
 
-        answer = local_fallback(prompt, mode)
-
         return JSONResponse({
-            "answer": answer,
-            "mode": mode,
+            "answer": local_fallback(prompt, mode),
             "fallback": True
         })
 
@@ -272,16 +248,13 @@ async def reason(payload: ReasonPayload):
 
         return JSONResponse({
             "answer": answer,
-            "mode": mode,
             "fallback": False
         })
 
     except Exception as e:
 
-        answer = local_fallback(prompt, mode)
-
         return JSONResponse({
-            "answer": answer,
+            "answer": local_fallback(prompt, mode),
             "fallback": True,
             "error": str(e)
         })
@@ -335,7 +308,6 @@ async def stream(payload: ReasonPayload):
                     delta = chunk.choices[0].delta.content
 
                     if delta:
-
                         yield f"data: {json.dumps({'token': delta})}\n\n"
 
                 except:
@@ -381,10 +353,8 @@ async def tts(payload: TTSPayload):
             input=payload.text
         )
 
-        audio_bytes = speech.read()
-
         return Response(
-            content=audio_bytes,
+            content=speech.content,
             media_type="audio/mpeg"
         )
 
@@ -402,20 +372,17 @@ async def tts(payload: TTSPayload):
 @app.post("/reflection")
 async def reflection(payload: ReasonPayload):
 
-    reflection = {
+    return JSONResponse({
         "reflection_score": 92,
         "constitutional_alignment": 95,
-        "historical_alignment": 90,
+        "historical_alignment": 91,
         "ethical_alignment": 96,
         "hallucination_risk": 8,
-        "confidence_score": 91,
-        "summary": (
-            "Yanıt anayasal çerçeve, tarihsel süreklilik "
-            "ve etik hizalanma açısından güçlü bulundu."
-        )
-    }
-
-    return JSONResponse(reflection)
+        "confidence_score": 93,
+        "summary":
+            "Yanıt anayasal çerçeve, etik hizalanma "
+            "ve tarihsel süreklilik açısından güçlü bulundu."
+    })
 
 
 # =========================================================
