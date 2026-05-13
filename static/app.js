@@ -4,12 +4,15 @@
 
 const HOPE = {
   project: "ATATÜRK DIGITAL TWIN / HOPEVERSE",
+
   doctrine: [
     "Peace at home.",
     "Peace in the world.",
     "Peace in the universe and HOPEverse."
   ],
+
   author: "Crafted by Erhan",
+
   api: {
     reason: "/reason",
     stream: "/stream",
@@ -24,20 +27,22 @@ const HOPE = {
     ttsController: null,
     lastAnswer: "",
     selectedVoice: "alloy",
-    ttsEnabled: true,
     archiveVoiceEnabled: true,
     activeAudio: null,
-    activeAudioUrl: null,
-    lastReflection: null
+    activeAudioUrl: null
   }
 };
+
+/* ---------------- HELPERS ---------------- */
 
 function byId(id) {
   return document.getElementById(id);
 }
 
 function safeText(el, text) {
-  if (el) el.textContent = text;
+  if (el) {
+    el.textContent = text;
+  }
 }
 
 function escapeHTML(value) {
@@ -47,6 +52,20 @@ function escapeHTML(value) {
     .replaceAll(">", "&gt;");
 }
 
+function showToast(message) {
+  let toast = byId("hopeToast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "hopeToast";
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+}
+
+/* ---------------- INIT ---------------- */
+
 document.addEventListener("DOMContentLoaded", () => {
   bindReasoningMode();
   bindDemo();
@@ -55,10 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
 });
 
-/* ---------------- REASONING MODE ---------------- */
+/* ---------------- REASONING ---------------- */
 
 function bindReasoningMode() {
   const select = byId("reasoningMode");
+
   if (!select) return;
 
   select.addEventListener("change", () => {
@@ -68,26 +88,12 @@ function bindReasoningMode() {
 
 function getReasoningMode() {
   const select = byId("reasoningMode");
-  return select ? select.value : "balanced";
-}
 
-/* ---------------- PAYLOAD ---------------- */
+  if (!select) {
+    return "balanced";
+  }
 
-function buildPayload(prompt) {
-  return {
-    prompt,
-    question: prompt,
-    task: prompt,
-    response_language: "tr",
-    language: "Turkish",
-    answer_language: "Turkish",
-    must_answer_in_turkish: true,
-    reasoning_mode: getReasoningMode(),
-    reasoningMode: getReasoningMode(),
-    mode: getReasoningMode(),
-    architecture: "HOPEtensor",
-    layer: "vicdan"
-  };
+  return select.value || "balanced";
 }
 
 /* ---------------- HEALTH ---------------- */
@@ -96,21 +102,22 @@ async function checkHealth() {
   try {
     const res = await fetch("/health");
 
-    if (!res.ok) throw new Error();
+    if (!res.ok) {
+      throw new Error();
+    }
 
     const data = await res.json();
 
-    const el = byId("healthStatus");
+    safeText(
+      byId("healthStatus"),
+      data.status || "online"
+    );
 
-    if (el) {
-      el.textContent = data.status || "online";
-    }
   } catch {
-    const el = byId("healthStatus");
-
-    if (el) {
-      el.textContent = "fallback";
-    }
+    safeText(
+      byId("healthStatus"),
+      "fallback"
+    );
   }
 }
 
@@ -175,6 +182,63 @@ function updateReflectionPanel(reflection) {
     byId("reflectionSummary"),
     reflection.summary || "Reflection completed."
   );
+
+  addTrace(
+    "Self-Reflection Node",
+    reflection.summary || "Reflection completed."
+  );
+}
+
+/* ---------------- TRACE ---------------- */
+
+function addTrace(title, detail) {
+  const trace = byId("cognitionTrace");
+
+  if (!trace) return;
+
+  const item = document.createElement("div");
+
+  item.className = "trace-item";
+
+  item.innerHTML = `
+    <div class="trace-time">
+      ${new Date().toLocaleTimeString("tr-TR")}
+    </div>
+
+    <div class="trace-title">
+      ${escapeHTML(title)}
+    </div>
+
+    <div class="trace-detail">
+      ${escapeHTML(detail)}
+    </div>
+  `;
+
+  trace.appendChild(item);
+
+  trace.scrollTop = trace.scrollHeight;
+}
+
+/* ---------------- PAYLOAD ---------------- */
+
+function buildPayload(prompt) {
+  return {
+    prompt,
+    question: prompt,
+    task: prompt,
+
+    response_language: "tr",
+    language: "Turkish",
+    answer_language: "Turkish",
+    must_answer_in_turkish: true,
+
+    reasoning_mode: getReasoningMode(),
+    reasoningMode: getReasoningMode(),
+    mode: getReasoningMode(),
+
+    architecture: "HOPEtensor",
+    layer: "vicdan"
+  };
 }
 
 /* ---------------- DEMO ---------------- */
@@ -202,6 +266,11 @@ async function runCognition() {
 
   const input = byId("promptInput");
   const output = byId("answerOutput");
+  const trace = byId("cognitionTrace");
+
+  if (trace) {
+    trace.innerHTML = "";
+  }
 
   const prompt = input ? input.value.trim() : "";
 
@@ -212,6 +281,26 @@ async function runCognition() {
 
   safeText(output, "");
 
+  addTrace(
+    "Input received",
+    "Prompt cognition pipeline içine alındı."
+  );
+
+  addTrace(
+    "Reasoning mode",
+    getReasoningMode()
+  );
+
+  addTrace(
+    "Vicdan layer",
+    "Constitutional cognition active."
+  );
+
+  addTrace(
+    "HOPEtensor routing",
+    "Distributed reasoning path initialized."
+  );
+
   HOPE.ui.isStreaming = true;
   HOPE.ui.lastAnswer = "";
   HOPE.ui.currentController = new AbortController();
@@ -219,11 +308,16 @@ async function runCognition() {
   try {
     const res = await fetch("/stream", {
       method: "POST",
+
       headers: {
         "Content-Type": "application/json",
         "Accept": "text/event-stream"
       },
-      body: JSON.stringify(buildPayload(prompt)),
+
+      body: JSON.stringify(
+        buildPayload(prompt)
+      ),
+
       signal: HOPE.ui.currentController.signal
     });
 
@@ -232,6 +326,7 @@ async function runCognition() {
     }
 
     const reader = res.body.getReader();
+
     const decoder = new TextDecoder("utf-8");
 
     let buffer = "";
@@ -241,9 +336,12 @@ async function runCognition() {
 
       if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+      buffer += decoder.decode(value, {
+        stream: true
+      });
 
       const chunks = buffer.split("\n\n");
+
       buffer = chunks.pop() || "";
 
       for (const chunk of chunks) {
@@ -251,12 +349,22 @@ async function runCognition() {
       }
     }
 
+    addTrace(
+      "Cognition completed",
+      "Streaming response finalized."
+    );
+
     if (HOPE.ui.archiveVoiceEnabled) {
       await speakText(HOPE.ui.lastAnswer);
     }
 
   } catch (err) {
     console.error(err);
+
+    addTrace(
+      "Stream error",
+      err.message || "Unknown stream error."
+    );
 
     safeText(
       output,
@@ -269,23 +377,32 @@ async function runCognition() {
   }
 }
 
+/* ---------------- STREAM ---------------- */
+
 function processSSEChunk(chunk, output) {
   const lines = chunk.split(/\r?\n/);
 
   for (const line of lines) {
     const trimmed = line.trim();
 
-    if (!trimmed.startsWith("data:")) continue;
+    if (!trimmed.startsWith("data:")) {
+      continue;
+    }
 
     const raw = trimmed.replace(/^data:\s*/, "");
 
-    if (raw === "[DONE]") continue;
+    if (raw === "[DONE]") {
+      continue;
+    }
 
     try {
       const json = JSON.parse(raw);
 
       if (json.reflection) {
-        updateReflectionPanel(json.reflection);
+        updateReflectionPanel(
+          json.reflection
+        );
+
         continue;
       }
 
@@ -331,7 +448,9 @@ function bindTTSControls() {
   if (replayBtn) {
     replayBtn.addEventListener("click", async () => {
       if (HOPE.ui.lastAnswer) {
-        await speakText(HOPE.ui.lastAnswer);
+        await speakText(
+          HOPE.ui.lastAnswer
+        );
       }
     });
   }
@@ -342,7 +461,9 @@ function ensureAudioPlayer() {
 
   if (!audio) {
     audio = document.createElement("audio");
+
     audio.id = "ttsAudio";
+
     audio.controls = true;
 
     document.body.appendChild(audio);
@@ -358,18 +479,22 @@ async function speakText(text) {
 
   stopVoice(false);
 
-  HOPE.ui.ttsController = new AbortController();
+  HOPE.ui.ttsController =
+    new AbortController();
 
   try {
     const res = await fetch("/tts", {
       method: "POST",
+
       headers: {
         "Content-Type": "application/json"
       },
+
       body: JSON.stringify({
         text,
-        voice: HOPE.ui.selectedVoice
+        voice: "alloy"
       }),
+
       signal: HOPE.ui.ttsController.signal
     });
 
@@ -382,10 +507,13 @@ async function speakText(text) {
     const audio = ensureAudioPlayer();
 
     if (HOPE.ui.activeAudioUrl) {
-      URL.revokeObjectURL(HOPE.ui.activeAudioUrl);
+      URL.revokeObjectURL(
+        HOPE.ui.activeAudioUrl
+      );
     }
 
-    const url = URL.createObjectURL(blob);
+    const url =
+      URL.createObjectURL(blob);
 
     HOPE.ui.activeAudioUrl = url;
 
@@ -395,6 +523,11 @@ async function speakText(text) {
 
   } catch (err) {
     console.error(err);
+
+    addTrace(
+      "TTS error",
+      err.message || "Voice error."
+    );
   }
 }
 
@@ -413,20 +546,6 @@ function stopVoice(show = true) {
   if (show) {
     showToast("Voice stopped.");
   }
-}
-
-/* ---------------- TOAST ---------------- */
-
-function showToast(message) {
-  let toast = byId("hopeToast");
-
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "hopeToast";
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
 }
 
 /* ---------------- DEBUG ---------------- */
