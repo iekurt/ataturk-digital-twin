@@ -10,7 +10,9 @@
 function setPresetPrompt(text){
 
     const input =
-        document.getElementById("promptInput");
+        document.getElementById(
+            "promptInput"
+        );
 
     if(input){
         input.value = text;
@@ -23,7 +25,9 @@ function setPresetPrompt(text){
 ========================================================= */
 
 const TRACE =
-    document.getElementById("cognitionTrace");
+    document.getElementById(
+        "cognitionTrace"
+    );
 
 function addTrace(title, detail){
 
@@ -32,11 +36,19 @@ function addTrace(title, detail){
     const item =
         document.createElement("div");
 
-    item.className = "trace-item";
+    item.className =
+        "trace-item";
 
     item.innerHTML = `
-        <div class="trace-title">${title}</div>
-        <div class="trace-detail">${detail}</div>
+
+        <div class="trace-title">
+            ${title}
+        </div>
+
+        <div class="trace-detail">
+            ${detail}
+        </div>
+
     `;
 
     TRACE.appendChild(item);
@@ -62,12 +74,35 @@ function updateReflection(){
         }
     };
 
-    set("reflectionScore","92");
-    set("constitutionalAlignment","95%");
-    set("historicalAlignment","91%");
-    set("ethicalAlignment","96%");
-    set("hallucinationRisk","8%");
-    set("confidenceScore","93%");
+    set(
+        "reflectionScore",
+        "92"
+    );
+
+    set(
+        "constitutionalAlignment",
+        "95%"
+    );
+
+    set(
+        "historicalAlignment",
+        "91%"
+    );
+
+    set(
+        "ethicalAlignment",
+        "96%"
+    );
+
+    set(
+        "hallucinationRisk",
+        "8%"
+    );
+
+    set(
+        "confidenceScore",
+        "93%"
+    );
 
     const summary =
         document.getElementById(
@@ -77,50 +112,116 @@ function updateReflection(){
     if(summary){
 
         summary.innerText =
+
             "Observer Node analysis completed. " +
+
             "Constitutional alignment stable. " +
+
             "Vicdan layer integrity preserved.";
     }
 }
 
 
 /* =========================================================
-   SPEECH
+   PREMIUM TTS
 ========================================================= */
 
-function speakAnswer(text){
+async function speakAnswer(text){
 
-    if(!window.speechSynthesis) return;
+    if(!text) return;
 
-    window.speechSynthesis.cancel();
+    try{
 
-    const utterance =
-        new SpeechSynthesisUtterance(text);
+        const voice =
+            document.getElementById(
+                "voiceSelector"
+            )?.value || "nova";
 
-    utterance.lang = "tr-TR";
+        addTrace(
+            "Archive Voice",
+            `Premium TTS rendering (${voice})`
+        );
 
-    utterance.rate = .96;
+        const response =
+            await fetch("/tts",{
 
-    utterance.pitch = .92;
+                method:"POST",
 
-    utterance.volume = 1;
+                headers:{
+                    "Content-Type":"application/json"
+                },
 
-    window.speechSynthesis.speak(
-        utterance
-    );
+                body:JSON.stringify({
 
-    /* app.js */
-/* speakAnswer içindeki body kısmını değiştir */
+                    text:text,
 
-body:JSON.stringify({
+                    voice:voice
+                })
+            });
 
-    text:text,
+        // RESPONSE TYPE CHECK
 
-    voice:
-        document.getElementById(
-            "voiceSelector"
-        )?.value || "nova"
-})
+        const type =
+            response.headers.get(
+                "content-type"
+            );
+
+        if(
+            !type ||
+            !type.includes("audio")
+        ){
+
+            console.error(
+                "TTS ERROR"
+            );
+
+            addTrace(
+                "TTS Error",
+                "Audio response alınamadı."
+            );
+
+            return;
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const audio =
+            document.getElementById(
+                "ttsAudio"
+            );
+
+        if(audio){
+
+            audio.pause();
+
+            audio.src = url;
+
+            audio.load();
+
+            await audio.play();
+
+            addTrace(
+                "Archive Voice",
+                "Playback started."
+            );
+        }
+
+    }catch(err){
+
+        console.error(
+            "VOICE ERROR",
+            err
+        );
+
+        addTrace(
+            "Voice Error",
+            String(err)
+        );
+    }
 }
 
 
@@ -160,8 +261,13 @@ async function cinematicReason(prompt){
             },
 
             body:JSON.stringify({
+
                 prompt:prompt,
-                reasoning_mode:"constitutional"
+
+                reasoning_mode:
+                    document.getElementById(
+                        "reasoningMode"
+                    )?.value || "constitutional"
             })
         });
 
@@ -170,6 +276,7 @@ async function cinematicReason(prompt){
 
     return (
         data.answer ||
+
         "No constitutional answer generated."
     );
 }
@@ -236,7 +343,7 @@ async function runCognition(){
 
     updateReflection();
 
-    speakAnswer(answer);
+    await speakAnswer(answer);
 }
 
 
@@ -262,26 +369,30 @@ const replayButton =
 
 if(replayButton){
 
-    replayButton.onclick = ()=>{
+    replayButton.onclick =
+        async ()=>{
 
-        const txt =
-            document.getElementById(
-                "answerOutput"
-            )?.innerText;
+            const txt =
+                document.getElementById(
+                    "answerOutput"
+                )?.innerText;
 
-        if(txt){
-            speakAnswer(txt);
-        }
-    };
+            if(txt){
+
+                await speakAnswer(txt);
+            }
+        };
 }
 
 
 /* =========================================================
-   AUTO START TRACE
+   AUTO TRACE
 ========================================================= */
 
 window.addEventListener(
+
     "load",
+
     ()=>{
 
         addTrace(
