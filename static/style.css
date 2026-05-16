@@ -448,5 +448,34 @@ audio{
         margin-left:22px;
         margin-right:22px;
     }
+/* LIVE CURSOR */
 
+.answer-output::after{
+
+    content:"█";
+
+    display:inline-block;
+
+    margin-left:6px;
+
+    color:#ffc94d;
+
+    animation:
+        hopeCursor 1s infinite;
+}
+
+@keyframes hopeCursor{
+
+    0%{
+        opacity:1;
+    }
+
+    50%{
+        opacity:0;
+    }
+
+    100%{
+        opacity:1;
+    }
+}
 }
