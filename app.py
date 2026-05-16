@@ -1,7 +1,8 @@
 # app.py
-# FINAL WORKING VERSION
 # ATATÜRK DIGITAL TWIN / HOPEVERSE
+# FINAL WORKING VERSION + PREMIUM TTS
 
+import os
 import json
 import asyncio
 
@@ -9,13 +10,19 @@ from fastapi import FastAPI, Request
 from fastapi.responses import (
     HTMLResponse,
     JSONResponse,
-    StreamingResponse
+    StreamingResponse,
+    Response
 )
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from pydantic import BaseModel
+
+try:
+    from openai import OpenAI
+except:
+    OpenAI = None
 
 
 # =========================================================
@@ -24,7 +31,7 @@ from pydantic import BaseModel
 
 app = FastAPI(
     title="ATATÜRK DIGITAL TWIN / HOPEVERSE",
-    version="3.0.0"
+    version="4.0.0"
 )
 
 app.mount(
@@ -33,7 +40,32 @@ app.mount(
     name="static"
 )
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(
+    directory="templates"
+)
+
+
+# =========================================================
+# OPENAI
+# =========================================================
+
+OPENAI_API_KEY =
+    os.getenv("OPENAI_API_KEY")
+
+client = None
+
+if OPENAI_API_KEY and OpenAI:
+
+    try:
+
+        client =
+            OpenAI(
+                api_key=OPENAI_API_KEY
+            )
+
+    except:
+
+        client = None
 
 
 # =========================================================
@@ -41,15 +73,28 @@ templates = Jinja2Templates(directory="templates")
 # =========================================================
 
 class ReasonPayload(BaseModel):
+
     prompt: str = ""
+
     reasoning_mode: str = "balanced"
+
+
+class TTSPayload(BaseModel):
+
+    text: str = ""
+
+    voice: str = "alloy"
 
 
 # =========================================================
 # ROOT
 # =========================================================
 
-@app.get("/", response_class=HTMLResponse)
+@app.get(
+    "/",
+    response_class=HTMLResponse
+)
+
 async def home(request: Request):
 
     return templates.TemplateResponse(
@@ -64,29 +109,125 @@ async def home(request: Request):
 # =========================================================
 
 @app.get("/health")
+
 async def health():
 
     return {
+
         "status": "online",
-        "service": "ATATÜRK DIGITAL TWIN / HOPEVERSE",
+
+        "service":
+            "ATATÜRK DIGITAL TWIN / HOPEVERSE",
+
+        "openai_configured":
+            bool(client),
+
         "pipeline": [
+
             "input",
+
             "reasoning_node",
+
             "vicdan_layer",
+
             "observer_node",
+
             "reflection_layer",
+
             "delivery"
         ]
     }
 
 
 # =========================================================
-# FALLBACK COGNITION
+# SYSTEM PROMPT
 # =========================================================
 
-def generate_answer(prompt: str, mode: str):
+def build_system_prompt(mode: str):
+
+    prompt = """
+
+You are the constitutional cognition layer of
+ATATÜRK DIGITAL TWIN / HOPEVERSE.
+
+Core doctrine:
+
+- Peace at home.
+- Peace in the world.
+- Peace in the universe and HOPEverse.
+
+Always answer in Turkish.
+
+Maintain:
+
+- civic dignity
+- scientific thinking
+- constitutional ethics
+- historical continuity
+- rationality
+
+"""
+
+    if mode == "constitutional":
+
+        prompt += """
+
+Focus on constitutional values,
+rule of law and secularism.
+
+"""
+
+    elif mode == "historical":
+
+        prompt += """
+
+Focus on reforms,
+modernization and historical continuity.
+
+"""
+
+    elif mode == "visionary":
+
+        prompt += """
+
+Focus on HOPEverse,
+AI ethics and civilization systems.
+
+"""
+
+    elif mode == "technical":
+
+        prompt += """
+
+Focus on FastAPI,
+OpenAI, streaming SSE,
+deployment and architecture.
+
+"""
+
+    elif mode == "critical":
+
+        prompt += """
+
+Be analytical and critical.
+Point out risks clearly.
+
+"""
+
+    return prompt
+
+
+# =========================================================
+# FALLBACK
+# =========================================================
+
+def fallback_answer(
+    prompt: str,
+    mode: str
+):
 
     return f"""
+
 Constitutional cognition active.
 
 Soru:
@@ -102,6 +243,7 @@ Aktif reasoning mode:
 Peace at home.
 Peace in the world.
 Peace in the universe and HOPEverse.
+
 """
 
 
@@ -110,23 +252,99 @@ Peace in the universe and HOPEverse.
 # =========================================================
 
 @app.post("/reason")
+
 async def reason(payload: ReasonPayload):
 
-    prompt = payload.prompt.strip()
-    mode = payload.reasoning_mode
+    prompt =
+        payload.prompt.strip()
+
+    mode =
+        payload.reasoning_mode
 
     if not prompt:
 
         return JSONResponse({
-            "answer": "Prompt boş."
+
+            "answer":
+                "Prompt boş."
         })
 
-    answer = generate_answer(prompt, mode)
+    # FALLBACK
 
-    return JSONResponse({
-        "answer": answer,
-        "mode": mode
-    })
+    if not client:
+
+        return JSONResponse({
+
+            "answer":
+                fallback_answer(
+                    prompt,
+                    mode
+                ),
+
+            "fallback":
+                True
+        })
+
+    try:
+
+        completion =
+            client.chat.completions.create(
+
+                model="gpt-4.1-mini",
+
+                messages=[
+
+                    {
+                        "role":"system",
+
+                        "content":
+                            build_system_prompt(
+                                mode
+                            )
+                    },
+
+                    {
+                        "role":"user",
+
+                        "content":
+                            prompt
+                    }
+                ],
+
+                temperature=0.7
+            )
+
+        answer =
+            completion
+            .choices[0]
+            .message
+            .content
+
+        return JSONResponse({
+
+            "answer":
+                answer,
+
+            "fallback":
+                False
+        })
+
+    except Exception as e:
+
+        return JSONResponse({
+
+            "answer":
+                fallback_answer(
+                    prompt,
+                    mode
+                ),
+
+            "fallback":
+                True,
+
+            "error":
+                str(e)
+        })
 
 
 # =========================================================
@@ -134,27 +352,170 @@ async def reason(payload: ReasonPayload):
 # =========================================================
 
 @app.post("/stream")
-async def stream(payload: ReasonPayload):
 
-    prompt = payload.prompt.strip()
-    mode = payload.reasoning_mode
+async def stream(
+    payload: ReasonPayload
+):
+
+    prompt =
+        payload.prompt.strip()
+
+    mode =
+        payload.reasoning_mode
 
     async def token_stream():
 
-        text = generate_answer(prompt, mode)
+        # FALLBACK STREAM
 
-        for ch in text:
+        if not client:
 
-            yield f"data: {json.dumps({'token': ch})}\n\n"
+            text =
+                fallback_answer(
+                    prompt,
+                    mode
+                )
 
-            await asyncio.sleep(0.01)
+            for ch in text:
 
-        yield "data: [DONE]\n\n"
+                yield (
+                    f"data: "
+                    f"{json.dumps({'token': ch})}"
+                    f"\\n\\n"
+                )
+
+                await asyncio.sleep(.01)
+
+            yield "data: [DONE]\\n\\n"
+
+            return
+
+        # OPENAI STREAM
+
+        try:
+
+            completion =
+                client.chat.completions.create(
+
+                    model="gpt-4.1-mini",
+
+                    messages=[
+
+                        {
+                            "role":"system",
+
+                            "content":
+                                build_system_prompt(
+                                    mode
+                                )
+                        },
+
+                        {
+                            "role":"user",
+
+                            "content":
+                                prompt
+                        }
+                    ],
+
+                    stream=True,
+
+                    temperature=.7
+                )
+
+            for chunk in completion:
+
+                try:
+
+                    delta =
+                        chunk
+                        .choices[0]
+                        .delta
+                        .content
+
+                    if delta:
+
+                        yield (
+
+                            f"data: "
+
+                            f"{json.dumps({'token': delta})}"
+
+                            f"\\n\\n"
+                        )
+
+                except:
+                    pass
+
+            yield "data: [DONE]\\n\\n"
+
+        except Exception as e:
+
+            text =
+                f"Streaming error: {str(e)}"
+
+            for ch in text:
+
+                yield (
+                    f"data: "
+                    f"{json.dumps({'token': ch})}"
+                    f"\\n\\n"
+                )
+
+                await asyncio.sleep(.01)
+
+            yield "data: [DONE]\\n\\n"
 
     return StreamingResponse(
         token_stream(),
-        media_type="text/event-stream"
+        media_type=
+            "text/event-stream"
     )
+
+
+# =========================================================
+# PREMIUM TTS
+# =========================================================
+
+@app.post("/tts")
+
+async def tts(
+    payload: TTSPayload
+):
+
+    if not client:
+
+        return JSONResponse({
+
+            "error":
+                "OpenAI client unavailable"
+        })
+
+    try:
+
+        speech =
+            client.audio.speech.create(
+
+                model="gpt-4o-mini-tts",
+
+                voice=payload.voice,
+
+                input=payload.text
+            )
+
+        return Response(
+
+            content=speech.content,
+
+            media_type="audio/mpeg"
+        )
+
+    except Exception as e:
+
+        return JSONResponse({
+
+            "error":
+                str(e)
+        })
 
 
 # =========================================================
@@ -162,7 +523,10 @@ async def stream(payload: ReasonPayload):
 # =========================================================
 
 @app.post("/reflection")
-async def reflection(payload: ReasonPayload):
+
+async def reflection(
+    payload: ReasonPayload
+):
 
     return JSONResponse({
 
@@ -179,6 +543,7 @@ async def reflection(payload: ReasonPayload):
         "confidence_score": 93,
 
         "summary":
+
             "Yanıt anayasal çerçeve, "
             "etik hizalanma ve tarihsel "
             "süreklilik açısından güçlü bulundu."
@@ -190,6 +555,7 @@ async def reflection(payload: ReasonPayload):
 # =========================================================
 
 @app.on_event("startup")
+
 async def startup_event():
 
     print("")
