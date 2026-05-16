@@ -450,21 +450,15 @@ audio{
     }
 /* LIVE CURSOR */
 
-.answer-output::after{
-
-    content:"█";
-
-    display:inline-block;
-
-    margin-left:6px;
+.live-cursor{
 
     color:#ffc94d;
 
     animation:
-        hopeCursor 1s infinite;
+        hopeBlink 1s infinite;
 }
 
-@keyframes hopeCursor{
+@keyframes hopeBlink{
 
     0%{
         opacity:1;
@@ -477,5 +471,4 @@ audio{
     100%{
         opacity:1;
     }
-}
 }

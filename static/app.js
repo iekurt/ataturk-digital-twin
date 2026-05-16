@@ -304,7 +304,7 @@ async function runCognition(){
         );
 
     if(output){
-        output.innerHTML = "";
+        output.innerHTML = '<span class="live-cursor">█</span>';
     }
 
     if(TRACE){
@@ -341,7 +341,15 @@ async function runCognition(){
 
     updateReflection();
 
-    await speakAnswer(answer);
+    const audio =
+    document.getElementById(
+        "ttsAudio"
+    );
+
+audio.src =
+    "/static/archive_voice.mp3";
+
+audio.play();
 }
 
 
