@@ -1,469 +1,134 @@
-/* FULL WORKING static/app.js */
-/* ATATÜRK DIGITAL TWIN / HOPEVERSE */
+const TRACE=document.getElementById("cognitionTrace");
 
-"use strict";
+function addTrace(title,detail){
 
+const item=document.createElement("div");
 
-/* =========================================================
-   PRESET PROMPTS
-========================================================= */
+item.innerHTML=`
+<b>${title}</b><br>${detail}<br><br>
+`;
 
-function setPresetPrompt(text){
-
-    const input =
-        document.getElementById(
-            "promptInput"
-        );
-
-    if(input){
-        input.value = text;
-    }
+TRACE.appendChild(item);
 }
-
-
-/* =========================================================
-   TRACE
-========================================================= */
-
-const TRACE =
-    document.getElementById(
-        "cognitionTrace"
-    );
-
-function addTrace(title, detail){
-
-    if(!TRACE) return;
-
-    const item =
-        document.createElement("div");
-
-    item.className =
-        "trace-item";
-
-    item.innerHTML = `
-
-        <div class="trace-title">
-            ${title}
-        </div>
-
-        <div class="trace-detail">
-            ${detail}
-        </div>
-
-    `;
-
-    TRACE.appendChild(item);
-
-    TRACE.scrollTop =
-        TRACE.scrollHeight;
-}
-
-
-/* =========================================================
-   REFLECTION
-========================================================= */
-
-function updateReflection(){
-
-    const set = (id,val)=>{
-
-        const el =
-            document.getElementById(id);
-
-        if(el){
-            el.innerText = val;
-        }
-    };
-
-    set(
-        "reflectionScore",
-        "92"
-    );
-
-    set(
-        "constitutionalAlignment",
-        "95%"
-    );
-
-    set(
-        "historicalAlignment",
-        "91%"
-    );
-
-    set(
-        "ethicalAlignment",
-        "96%"
-    );
-
-    set(
-        "hallucinationRisk",
-        "8%"
-    );
-
-    set(
-        "confidenceScore",
-        "93%"
-    );
-
-    const summary =
-        document.getElementById(
-            "reflectionSummary"
-        );
-
-    if(summary){
-
-        summary.innerText =
-
-            "Observer Node analysis completed. " +
-
-            "Constitutional alignment stable. " +
-
-            "Vicdan layer integrity preserved.";
-    }
-}
-
-
-/* =========================================================
-   PREMIUM TTS
-========================================================= */
 
 async function speakAnswer(text){
 
-    if(!text) return;
+const response=await fetch("/tts",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+text:text
+})
+});
 
-    try{
+const blob=await response.blob();
 
-        addTrace(
-            "Archive Voice",
-            "Premium TTS rendering (onyx)"
-        );
+const url=URL.createObjectURL(blob);
 
-        const response =
-            await fetch("/tts",{
+const audio=document.getElementById("ttsAudio");
 
-                method:"POST",
+audio.src=url;
 
-                headers:{
-                    "Content-Type":"application/json"
-                },
+audio.preservesPitch=false;
 
-                body:JSON.stringify({
+audio.playbackRate=0.88;
 
-                    text:text,
+audio.load();
 
-                    voice:"onyx"
-                })
-            });
-
-        const type =
-            response.headers.get(
-                "content-type"
-            );
-
-        if(
-            !type ||
-            !type.includes("audio")
-        ){
-
-            addTrace(
-                "TTS Error",
-                "Audio response alınamadı."
-            );
-
-            return;
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            URL.createObjectURL(blob);
-
-        const audio =
-            document.getElementById(
-                "ttsAudio"
-            );
-
-        if(audio){
-
-            audio.pause();
-
-            audio.src = url;
-
-            audio.load();
-
-            audio.playbackRate = 0.92;
-
-            await audio.play();
-
-            addTrace(
-                "Archive Voice",
-                "Playback started."
-            );
-        }
-
-    }catch(err){
-
-        console.error(err);
-
-        addTrace(
-            "Voice Error",
-            String(err)
-        );
-    }
+await audio.play();
 }
-
-
-/* =========================================================
-   API CALL
-========================================================= */
-
-/* FULL REAL SSE STREAMING */
-/* static/app.js içinde */
-/* cinematicReason FONKSİYONUNU TAMAMEN BUNUNLA DEĞİŞTİR */
 
 async function cinematicReason(prompt){
 
-    addTrace(
-        "Input Layer",
-        "Prompt constitutional cognition pipeline içine alındı."
-    );
+const output=document.getElementById("answerOutput");
 
-    addTrace(
-        "HOPEtensor Routing",
-        "Distributed reasoning orchestration başlatıldı."
-    );
+output.innerHTML='<span class="live-cursor">█</span>';
 
-    addTrace(
-        "Vicdan Layer",
-        "Ethical verification active."
-    );
+const response=await fetch("/stream",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+prompt:prompt
+})
+});
 
-    addTrace(
-        "Observer Node",
-        "Reflection telemetry hazırlanıyor."
-    );
+const reader=response.body.getReader();
 
-    const output =
-        document.getElementById(
-            "answerOutput"
-        );
+const decoder=new TextDecoder();
 
-    output.innerHTML =
-        '<span class="live-cursor">█</span>';
+let fullText="";
 
-    const response =
-        await fetch("/stream",{
+while(true){
 
-            method:"POST",
+const {done,value}=await reader.read();
 
-            headers:{
-                "Content-Type":"application/json"
-            },
+if(done) break;
 
-            body:JSON.stringify({
+const chunk=decoder.decode(value);
 
-                prompt:prompt,
+const lines=chunk.split("\\n");
 
-                reasoning_mode:
-                    document.getElementById(
-                        "reasoningMode"
-                    )?.value || "constitutional"
-            })
-        });
+for(const line of lines){
 
-    const reader =
-        response.body.getReader();
+if(!line.startsWith("data:")) continue;
 
-    const decoder =
-        new TextDecoder();
+const payload=line.replace("data:","").trim();
 
-    let fullText = "";
+if(payload==="[DONE]"){
 
-    while(true){
+await speakAnswer(fullText);
 
-        const {
-            done,
-            value
-        } = await reader.read();
-
-        if(done) break;
-
-        const chunk =
-            decoder.decode(value);
-
-        const lines =
-            chunk.split("\n");
-
-        for(const line of lines){
-
-            if(
-                !line.startsWith("data:")
-            ) continue;
-
-            const payload =
-                line.replace(
-                    "data:",
-                    ""
-                ).trim();
-
-            if(
-                payload === "[DONE]"
-            ){
-
-                addTrace(
-                    "Delivery Layer",
-                    "Streaming completed successfully."
-                );
-
-                updateReflection();
-
-                await speakAnswer(
-                    fullText
-                );
-
-                return fullText;
-            }
-
-            try{
-
-                const parsed =
-                    JSON.parse(payload);
-
-                if(parsed.token){
-
-                    fullText +=
-                        parsed.token;
-
-                    output.innerHTML =
-
-                        fullText +
-
-                        '<span class="live-cursor">█</span>';
-                }
-
-            }catch(err){
-
-                console.error(err);
-            }
-        }
-    }
-
-    return fullText;
+return;
 }
 
-/* =========================================================
-   RUN COGNITION
-========================================================= */
+try{
 
-/* runCognition FONKSİYONUNU */
-/* TAMAMEN BUNUNLA DEĞİŞTİR */
+const parsed=JSON.parse(payload);
 
-async function runCognition(){
+if(parsed.token){
 
-    const input =
-        document.getElementById(
-            "promptInput"
-        );
+fullText+=parsed.token;
 
-    if(!input) return;
-
-    const prompt =
-        input.value.trim();
-
-    if(!prompt) return;
-
-    if(TRACE){
-        TRACE.innerHTML = "";
-    }
-
-    addTrace(
-        "Constitutional Cognition",
-        "Pipeline initialized."
-    );
-
-    await cinematicReason(prompt);
+output.innerHTML=
+fullText +
+'<span class="live-cursor">█</span>';
 }
 
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-const askButton =
-    document.getElementById(
-        "askButton"
-    );
-
-if(askButton){
-
-    askButton.onclick =
-        runCognition;
+}catch(e){}
+}
+}
 }
 
+document.getElementById("askButton").onclick=async()=>{
 
-/* ARCHIVE VOICE */
+TRACE.innerHTML="";
 
-const replayButton =
-    document.getElementById(
-        "replayVoiceBtn"
-    );
-
-if(replayButton){
-
-    replayButton.onclick =
-        async ()=>{
-
-            const audio =
-                document.getElementById(
-                    "ttsAudio"
-                );
-
-            if(audio){
-
-                audio.pause();
-
-                audio.src =
-                    "/static/archive_voice.mp3";
-
-                audio.load();
-
-                audio.playbackRate = 0.92;
-
-                await audio.play();
-
-                addTrace(
-                    "Archive Voice",
-                    "Historical archive playback active."
-                );
-            }
-        };
-}
-
-
-/* =========================================================
-   AUTO TRACE
-========================================================= */
-
-window.addEventListener(
-
-    "load",
-
-    ()=>{
-
-        addTrace(
-            "HOPEtensor",
-            "Constitutional cognition engine online."
-        );
-
-        addTrace(
-            "Vicdan Layer",
-            "Ethical alignment initialized."
-        );
-
-        addTrace(
-            "Observer Node",
-            "Reflection telemetry ready."
-        );
-    }
+addTrace(
+"Constitutional Cognition",
+"Pipeline initialized."
 );
+
+const prompt=document.getElementById("promptInput").value;
+
+await cinematicReason(prompt);
+};
+
+document.getElementById("replayVoiceBtn").onclick=()=>{
+
+const audio=new Audio("/static/archive_voice.mp3");
+
+audio.preservesPitch=false;
+
+audio.playbackRate=0.88;
+
+audio.play();
+
+addTrace(
+"Archive Voice",
+"Historical archive playback active."
+);
+};
