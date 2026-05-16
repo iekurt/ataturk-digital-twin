@@ -205,7 +205,7 @@ async function speakAnswer(text){
                 "Archive Voice",
                 "Playback started."
             );
-            audio.playbackRate = 0.92;
+            audio.playbackRate = 1.1;
         }
 
     }catch(err){
