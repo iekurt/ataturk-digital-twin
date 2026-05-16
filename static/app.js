@@ -108,6 +108,19 @@ function speakAnswer(text){
     window.speechSynthesis.speak(
         utterance
     );
+
+    /* app.js */
+/* speakAnswer içindeki body kısmını değiştir */
+
+body:JSON.stringify({
+
+    text:text,
+
+    voice:
+        document.getElementById(
+            "voiceSelector"
+        )?.value || "nova"
+})
 }
 
 
