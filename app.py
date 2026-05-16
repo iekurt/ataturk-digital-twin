@@ -1,6 +1,6 @@
 # ============================================
 # app.py
-# FINAL WORKING VERSION
+# FULL LONG CINEMATIC VERSION
 # ATATÜRK DIGITAL TWIN / HOPEVERSE
 # ============================================
 
@@ -29,7 +29,8 @@ from openai import OpenAI
 # ============================================
 
 app = FastAPI(
-    title="ATATÜRK DIGITAL TWIN / HOPEVERSE"
+    title="ATATÜRK DIGITAL TWIN / HOPEVERSE",
+    version="7.0.0"
 )
 
 app.mount(
@@ -105,24 +106,24 @@ async def health():
         "status":"online",
 
         "service":
-            "ATATÜRK DIGITAL TWIN",
+            "ATATÜRK DIGITAL TWIN / HOPEVERSE",
 
         "openai":
             bool(OPENAI_API_KEY),
 
         "pipeline":[
 
-            "input",
+            "input_layer",
 
-            "reasoning",
+            "hopetensor_routing",
 
-            "vicdan",
+            "vicdan_layer",
 
-            "observer",
+            "observer_node",
 
-            "reflection",
+            "reflection_layer",
 
-            "delivery"
+            "delivery_layer"
         ]
     }
 
@@ -197,8 +198,11 @@ Peace in the universe and HOPEverse.
 
         prompt += """
 
-Focus on reforms,
-modernization and historical continuity.
+Focus on:
+- reform continuity
+- republican modernization
+- national sovereignty
+- scientific civilization
 
 """
 
@@ -206,10 +210,12 @@ modernization and historical continuity.
 
         prompt += """
 
-Focus on HOPEverse,
-civilization systems,
-ethical AI
-and future governance.
+Focus on:
+- HOPEverse
+- civilization systems
+- ethical AI
+- constitutional futures
+- distributed cognition
 
 """
 
@@ -217,11 +223,13 @@ and future governance.
 
         prompt += """
 
-Focus on FastAPI,
-OpenAI,
-streaming SSE,
-distributed cognition
-and deployment architecture.
+Focus on:
+- FastAPI
+- OpenAI
+- streaming SSE
+- distributed reasoning
+- cognition routing
+- architecture design
 
 """
 
@@ -229,9 +237,13 @@ and deployment architecture.
 
         prompt += """
 
-Be analytical and critical.
+Be analytical.
 
-Point out structural risks clearly.
+Point out:
+- structural risks
+- governance risks
+- ethical conflicts
+- system vulnerabilities
 
 """
 
@@ -252,6 +264,10 @@ Soru:
 {prompt}
 
 HOPEtensor distributed reasoning completed.
+
+Vicdan layer alignment successful.
+
+Observer Node telemetry stable.
 
 Peace at home.
 Peace in the world.

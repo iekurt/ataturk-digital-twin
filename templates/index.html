@@ -1,59 +1,633 @@
+<!-- templates/index.html -->
+<!-- FULL CINEMATIC LONG VERSION RESTORE -->
+
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ATATURK DIGITAL TWIN</title>
-<link rel="stylesheet" href="/static/style.css">
+
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>
+        ATATÜRK DIGITAL TWIN / HOPEVERSE
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    />
+
 </head>
+
 <body>
 
-<header class="topbar">
-<div class="brand-title">ATATÜRK DIGITAL TWIN</div>
-</header>
 
-<section class="hero-section">
-<h1 class="hero-title">HOPEtensor Constitutional AI</h1>
-<p class="hero-subtitle">
-Peace at home.<br>
-Peace in the world.<br>
-Peace in the universe and HOPEverse.
-</p>
-</section>
+    <!-- =========================================
+         TOPBAR
+    ========================================== -->
 
-<section class="section">
-<div class="demo-grid">
+    <header class="topbar">
 
-<div class="demo-panel">
+        <div class="brand">
 
-<select id="reasoningMode">
-<option value="constitutional">Constitutional</option>
-<option value="historical">Historical</option>
-</select>
+            <div class="brand-title">
+                ATATÜRK DIGITAL TWIN
+            </div>
 
-<textarea id="promptInput" placeholder="Bir soru sor..."></textarea>
+            <div class="brand-subtitle">
+                HOPEVERSE / HOPETENSOR / VICDAN LAYER
+            </div>
 
-<div class="button-row">
-<button id="askButton">Run Cognition</button>
-<button id="replayVoiceBtn">Play Archive Voice</button>
-</div>
+        </div>
 
-</div>
 
-<div class="demo-panel">
-<div class="answer-output" id="answerOutput"></div>
-</div>
+        <nav class="navbar">
 
-</div>
-</section>
+            <a href="#dashboard">
+                Dashboard
+            </a>
 
-<section class="section">
-<div class="trace-panel" id="cognitionTrace"></div>
-</section>
+            <a href="#architecture">
+                Architecture
+            </a>
 
-<audio id="ttsAudio" controls></audio>
+            <a href="#reform">
+                Reform Map
+            </a>
 
-<script src="/static/app.js"></script>
+            <a href="#timeline">
+                Timeline
+            </a>
+
+            <a href="#roadmap">
+                Roadmap
+            </a>
+
+            <a href="#api">
+                API
+            </a>
+
+            <a href="#contributor">
+                Contributor Gateway
+            </a>
+
+            <a href="#demo">
+                Live Demo
+            </a>
+
+            <a href="#reflection">
+                Reflection
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- =========================================
+         HERO
+    ========================================== -->
+
+    <section class="hero-section">
+
+        <div class="hero-grid">
+
+
+            <!-- LEFT -->
+
+            <div class="hero-left">
+
+                <div class="hero-badge">
+                    CONSTITUTIONAL COGNITION ENGINE
+                </div>
+
+                <h1 class="hero-title">
+                    HOPEtensor<br />
+                    Constitutional AI
+                </h1>
+
+                <p class="hero-subtitle">
+
+                    Constitutional cognition interface powered by
+                    distributed reasoning,
+                    reform memory,
+                    constitutional ethics,
+                    reflection telemetry,
+                    Observer Node,
+                    Vicdan Layer
+                    and HOPEtensor federation architecture.
+
+                </p>
+
+
+                <!-- DOCTRINE -->
+
+                <div class="doctrine-card">
+
+                    <div class="doctrine-label">
+                        CENTRAL DOCTRINE
+                    </div>
+
+                    <div class="hope-doctrine">
+
+                        <span>
+                            Peace at home.
+                        </span>
+
+                        <span>
+                            Peace in the world.
+                        </span>
+
+                        <span>
+                            Peace in the universe and HOPEverse.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LONG DESCRIPTION -->
+
+                <div class="portrait-caption">
+
+                    <h3>
+                        Constitutional Cognition Layer
+                    </h3>
+
+                    <p>
+
+                        ATATÜRK DIGITAL TWIN is designed as a
+                        civilization-scale constitutional cognition system.
+
+                        The architecture combines
+                        distributed reasoning,
+                        civic dignity,
+                        reform memory,
+                        ethical verification,
+                        reflection telemetry,
+                        constitutional continuity
+                        and future governance logic.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RIGHT -->
+
+            <div class="hero-right">
+
+                <div class="ataturk-frame">
+
+                    <img
+                        src="/static/img/ataturk.jpg"
+                        alt="Mustafa Kemal Atatürk"
+                    />
+
+                </div>
+
+                <div class="portrait-caption">
+
+                    <h3>
+                        Mustafa Kemal Atatürk
+                    </h3>
+
+                    <p>
+
+                        Constitutional cognition layer integrating
+                        reform memory,
+                        scientific thinking,
+                        civic sovereignty,
+                        distributed reasoning
+                        and ethical alignment.
+
+                    </p>
+
+                    <div class="crafted-by">
+                        Crafted by Erhan
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         DASHBOARD
+    ========================================== -->
+
+    <section
+        class="section"
+        id="dashboard"
+    >
+
+        <div class="section-title">
+            Dashboard
+        </div>
+
+        <div class="dashboard-grid">
+
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    System Health
+                </div>
+
+                <div class="metric-value">
+                    ONLINE
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    Vicdan Layer
+                </div>
+
+                <div class="metric-value">
+                    ACTIVE
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    HOPEtensor Federation
+                </div>
+
+                <div class="metric-value">
+                    CONNECTED
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    Streaming SSE
+                </div>
+
+                <div class="metric-value">
+                    LIVE
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    Observer Node
+                </div>
+
+                <div class="metric-value">
+                    ACTIVE
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-label">
+                    Reflection Layer
+                </div>
+
+                <div class="metric-value">
+                    READY
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         ARCHITECTURE
+    ========================================== -->
+
+    <section
+        class="section"
+        id="architecture"
+    >
+
+        <div class="section-title">
+            Architecture
+        </div>
+
+        <div class="trace-panel">
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Input Layer
+                </div>
+
+                <div class="trace-detail">
+
+                    Prompt ingestion,
+                    constitutional parsing,
+                    contextual routing
+                    and cognition initialization.
+
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    HOPEtensor Routing
+                </div>
+
+                <div class="trace-detail">
+
+                    Distributed reasoning federation
+                    coordinating multiple cognition pathways.
+
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Vicdan Layer
+                </div>
+
+                <div class="trace-detail">
+
+                    Ethical verification,
+                    constitutional alignment,
+                    civic dignity protection
+                    and hallucination resistance.
+
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Observer Audit Node
+                </div>
+
+                <div class="trace-detail">
+
+                    Reflection scoring,
+                    cognition telemetry,
+                    confidence analysis
+                    and structural consistency evaluation.
+
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Reflection Layer
+                </div>
+
+                <div class="trace-detail">
+
+                    Self-evaluation,
+                    constitutional continuity
+                    and reasoning integrity assessment.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         REFORM MAP
+    ========================================== -->
+
+    <section
+        class="section"
+        id="reform"
+    >
+
+        <div class="section-title">
+            Reform Map
+        </div>
+
+        <div class="reflection-grid">
+
+            <div class="reflection-card">
+                <div class="reflection-label">
+                    Education Reform
+                </div>
+            </div>
+
+            <div class="reflection-card">
+                <div class="reflection-label">
+                    Scientific Modernization
+                </div>
+            </div>
+
+            <div class="reflection-card">
+                <div class="reflection-label">
+                    Language Reform
+                </div>
+            </div>
+
+            <div class="reflection-card">
+                <div class="reflection-label">
+                    Civic Sovereignty
+                </div>
+            </div>
+
+            <div class="reflection-card">
+                <div class="reflection-label">
+                    Secular Governance
+                </div>
+            </div>
+
+            <div class="reflection-card">
+                <div class="reflection-label">
+                    Women's Rights
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         TIMELINE
+    ========================================== -->
+
+    <section
+        class="section"
+        id="timeline"
+    >
+
+        <div class="section-title">
+            Timeline
+        </div>
+
+        <div class="trace-panel">
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    1919
+                </div>
+
+                <div class="trace-detail">
+                    National struggle initialization.
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    1923
+                </div>
+
+                <div class="trace-detail">
+                    Republic foundation and constitutional transition.
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    1938
+                </div>
+
+                <div class="trace-detail">
+                    Institutional reform legacy.
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    2026
+                </div>
+
+                <div class="trace-detail">
+                    Constitutional cognition deployment.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         ROADMAP
+    ========================================== -->
+
+    <section
+        class="section"
+        id="roadmap"
+    >
+
+        <div class="section-title">
+            Roadmap
+        </div>
+
+        <div class="trace-panel">
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Phase 1 — Constitutional Core
+                </div>
+
+                <div class="trace-detail">
+
+                    Streaming cognition,
+                    reflection telemetry,
+                    premium TTS
+                    and constitutional prompting.
+
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Phase 2 — HOPEtensor Federation
+                </div>
+
+                <div class="trace-detail">
+
+                    Distributed reasoning nodes,
+                    civic audit systems
+                    and verification pipelines.
+
+                </div>
+
+            </div>
+
+
+            <div class="trace-item">
+
+                <div class="trace-title">
+                    Phase 3 — HOPEverse
+                </div>
+
+                <div class="trace-detail">
+
+                    Civilization-scale ethical coordination layer.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </body>
 </html>

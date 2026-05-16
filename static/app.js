@@ -1,134 +1,371 @@
-const TRACE=document.getElementById("cognitionTrace");
+/* =========================================
+   static/app.js
+   FULL LONG CINEMATIC VERSION
+========================================= */
 
-function addTrace(title,detail){
+"use strict";
 
-const item=document.createElement("div");
 
-item.innerHTML=`
-<b>${title}</b><br>${detail}<br><br>
-`;
+/* =========================================
+   TRACE
+========================================= */
 
-TRACE.appendChild(item);
+const TRACE =
+    document.getElementById(
+        "cognitionTrace"
+    );
+
+function addTrace(title, detail){
+
+    if(!TRACE) return;
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "trace-item";
+
+    item.innerHTML = `
+
+        <div class="trace-title">
+            ${title}
+        </div>
+
+        <div class="trace-detail">
+            ${detail}
+        </div>
+
+    `;
+
+    TRACE.appendChild(item);
+
+    TRACE.scrollTop =
+        TRACE.scrollHeight;
 }
+
+
+/* =========================================
+   PREMIUM TTS
+========================================= */
 
 async function speakAnswer(text){
 
-const response=await fetch("/tts",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-text:text
-})
-});
+    if(!text) return;
 
-const blob=await response.blob();
+    try{
 
-const url=URL.createObjectURL(blob);
+        addTrace(
+            "Archive Voice",
+            "Premium constitutional TTS rendering initialized."
+        );
 
-const audio=document.getElementById("ttsAudio");
+        const response =
+            await fetch("/tts",{
 
-audio.src=url;
+                method:"POST",
 
-audio.preservesPitch=false;
+                headers:{
+                    "Content-Type":"application/json"
+                },
 
-audio.playbackRate=0.88;
+                body:JSON.stringify({
+                    text:text
+                })
+            });
 
-audio.load();
+        const type =
+            response.headers.get(
+                "content-type"
+            );
 
-await audio.play();
+        if(
+            !type ||
+            !type.includes("audio")
+        ){
+
+            addTrace(
+                "TTS Error",
+                "Audio response alınamadı."
+            );
+
+            return;
+        }
+
+        const blob =
+            await response.blob();
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const audio =
+            document.getElementById(
+                "ttsAudio"
+            );
+
+        audio.pause();
+
+        audio.src = url;
+
+        audio.load();
+
+        audio.playbackRate = 0.96;
+
+        await audio.play();
+
+        addTrace(
+            "Archive Voice",
+            "Constitutional voice playback active."
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        addTrace(
+            "Voice Error",
+            String(err)
+        );
+    }
 }
+
+
+/* =========================================
+   SSE STREAMING
+========================================= */
 
 async function cinematicReason(prompt){
 
-const output=document.getElementById("answerOutput");
+    addTrace(
+        "Input Layer",
+        "Prompt constitutional cognition pipeline içine alındı."
+    );
 
-output.innerHTML='<span class="live-cursor">█</span>';
+    addTrace(
+        "HOPEtensor Routing",
+        "Distributed reasoning federation initialized."
+    );
 
-const response=await fetch("/stream",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-prompt:prompt
-})
-});
+    addTrace(
+        "Vicdan Layer",
+        "Ethical verification active."
+    );
 
-const reader=response.body.getReader();
+    addTrace(
+        "Observer Node",
+        "Reflection telemetry hazırlanıyor."
+    );
 
-const decoder=new TextDecoder();
+    const output =
+        document.getElementById(
+            "answerOutput"
+        );
 
-let fullText="";
+    output.innerHTML =
+        '<span class="live-cursor">█</span>';
 
-while(true){
+    const response =
+        await fetch("/stream",{
 
-const {done,value}=await reader.read();
+            method:"POST",
 
-if(done) break;
+            headers:{
+                "Content-Type":"application/json"
+            },
 
-const chunk=decoder.decode(value);
+            body:JSON.stringify({
 
-const lines=chunk.split("\\n");
+                prompt:prompt,
 
-for(const line of lines){
+                reasoning_mode:
+                    document.getElementById(
+                        "reasoningMode"
+                    )?.value || "constitutional"
+            })
+        });
 
-if(!line.startsWith("data:")) continue;
+    const reader =
+        response.body.getReader();
 
-const payload=line.replace("data:","").trim();
+    const decoder =
+        new TextDecoder();
 
-if(payload==="[DONE]"){
+    let fullText = "";
 
-await speakAnswer(fullText);
+    while(true){
 
-return;
+        const {
+            done,
+            value
+        } = await reader.read();
+
+        if(done) break;
+
+        const chunk =
+            decoder.decode(value);
+
+        const lines =
+            chunk.split("\n");
+
+        for(const line of lines){
+
+            if(
+                !line.startsWith("data:")
+            ) continue;
+
+            const payload =
+                line.replace(
+                    "data:",
+                    ""
+                ).trim();
+
+            if(
+                payload === "[DONE]"
+            ){
+
+                output.innerText =
+                    fullText;
+
+                addTrace(
+                    "Delivery Layer",
+                    "Streaming completed successfully."
+                );
+
+                await speakAnswer(
+                    fullText
+                );
+
+                return fullText;
+            }
+
+            try{
+
+                const parsed =
+                    JSON.parse(payload);
+
+                if(parsed.token){
+
+                    fullText +=
+                        parsed.token;
+
+                    output.innerHTML =
+
+                        fullText +
+
+                        '<span class="live-cursor">█</span>';
+                }
+
+            }catch(err){
+
+                console.error(err);
+            }
+        }
+    }
+
+    return fullText;
 }
 
-try{
 
-const parsed=JSON.parse(payload);
+/* =========================================
+   RUN
+========================================= */
 
-if(parsed.token){
+async function runCognition(){
 
-fullText+=parsed.token;
+    const input =
+        document.getElementById(
+            "promptInput"
+        );
 
-output.innerHTML=
-fullText +
-'<span class="live-cursor">█</span>';
+    if(!input) return;
+
+    const prompt =
+        input.value.trim();
+
+    if(!prompt) return;
+
+    if(TRACE){
+        TRACE.innerHTML = "";
+    }
+
+    addTrace(
+        "Constitutional Cognition",
+        "Pipeline initialized."
+    );
+
+    await cinematicReason(prompt);
 }
 
-}catch(e){}
-}
-}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+const askButton =
+    document.getElementById(
+        "askButton"
+    );
+
+if(askButton){
+
+    askButton.onclick =
+        runCognition;
 }
 
-document.getElementById("askButton").onclick=async()=>{
 
-TRACE.innerHTML="";
+/* =========================================
+   ARCHIVE PLAYBACK
+========================================= */
 
-addTrace(
-"Constitutional Cognition",
-"Pipeline initialized."
+const replayButton =
+    document.getElementById(
+        "replayVoiceBtn"
+    );
+
+if(replayButton){
+
+    replayButton.onclick =
+        ()=>{
+
+            const audio =
+                new Audio(
+                    "/static/archive_voice.mp3"
+                );
+
+            audio.playbackRate = 1;
+
+            audio.play();
+
+            addTrace(
+                "Archive Voice",
+                "Historical archive playback active."
+            );
+        };
+}
+
+
+/* =========================================
+   AUTO TRACE
+========================================= */
+
+window.addEventListener(
+
+    "load",
+
+    ()=>{
+
+        addTrace(
+            "HOPEtensor",
+            "Constitutional cognition engine online."
+        );
+
+        addTrace(
+            "Vicdan Layer",
+            "Ethical alignment initialized."
+        );
+
+        addTrace(
+            "Observer Node",
+            "Reflection telemetry ready."
+        );
+    }
 );
-
-const prompt=document.getElementById("promptInput").value;
-
-await cinematicReason(prompt);
-};
-
-document.getElementById("replayVoiceBtn").onclick=()=>{
-
-const audio=new Audio("/static/archive_voice.mp3");
-
-audio.preservesPitch=false;
-
-audio.playbackRate=0.88;
-
-audio.play();
-
-addTrace(
-"Archive Voice",
-"Historical archive playback active."
-);
-};
