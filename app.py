@@ -1,6 +1,6 @@
 # app.py
+# FINAL WORKING VERSION
 # ATATÜRK DIGITAL TWIN / HOPEVERSE
-# FINAL WORKING VERSION + PREMIUM TTS
 
 import os
 import json
@@ -31,7 +31,7 @@ except:
 
 app = FastAPI(
     title="ATATÜRK DIGITAL TWIN / HOPEVERSE",
-    version="4.0.0"
+    version="4.1.0"
 )
 
 app.mount(
@@ -40,31 +40,23 @@ app.mount(
     name="static"
 )
 
-templates = Jinja2Templates(
-    directory="templates"
-)
+templates = Jinja2Templates(directory="templates")
 
 
 # =========================================================
 # OPENAI
 # =========================================================
 
-OPENAI_API_KEY =
-    os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 client = None
 
 if OPENAI_API_KEY and OpenAI:
 
     try:
-
-        client =
-            OpenAI(
-                api_key=OPENAI_API_KEY
-            )
+        client = OpenAI(api_key=OPENAI_API_KEY)
 
     except:
-
         client = None
 
 
@@ -90,10 +82,7 @@ class TTSPayload(BaseModel):
 # ROOT
 # =========================================================
 
-@app.get(
-    "/",
-    response_class=HTMLResponse
-)
+@app.get("/", response_class=HTMLResponse)
 
 async def home(request: Request):
 
@@ -159,7 +148,6 @@ Core doctrine:
 Always answer in Turkish.
 
 Maintain:
-
 - civic dignity
 - scientific thinking
 - constitutional ethics
@@ -221,10 +209,7 @@ Point out risks clearly.
 # FALLBACK
 # =========================================================
 
-def fallback_answer(
-    prompt: str,
-    mode: str
-):
+def fallback_answer(prompt: str, mode: str):
 
     return f"""
 
@@ -255,11 +240,9 @@ Peace in the universe and HOPEverse.
 
 async def reason(payload: ReasonPayload):
 
-    prompt =
-        payload.prompt.strip()
+    prompt = payload.prompt.strip()
 
-    mode =
-        payload.reasoning_mode
+    mode = payload.reasoning_mode
 
     if not prompt:
 
@@ -287,38 +270,38 @@ async def reason(payload: ReasonPayload):
 
     try:
 
-        completion =
-            client.chat.completions.create(
+        completion = client.chat.completions.create(
 
-                model="gpt-4.1-mini",
+            model="gpt-4.1-mini",
 
-                messages=[
+            messages=[
 
-                    {
-                        "role":"system",
+                {
+                    "role":"system",
 
-                        "content":
-                            build_system_prompt(
-                                mode
-                            )
-                    },
+                    "content":
+                        build_system_prompt(
+                            mode
+                        )
+                },
 
-                    {
-                        "role":"user",
+                {
+                    "role":"user",
 
-                        "content":
-                            prompt
-                    }
-                ],
+                    "content":
+                        prompt
+                }
+            ],
 
-                temperature=0.7
-            )
+            temperature=0.7
+        )
 
-        answer =
+        answer = (
             completion
             .choices[0]
             .message
             .content
+        )
 
         return JSONResponse({
 
@@ -353,15 +336,11 @@ async def reason(payload: ReasonPayload):
 
 @app.post("/stream")
 
-async def stream(
-    payload: ReasonPayload
-):
+async def stream(payload: ReasonPayload):
 
-    prompt =
-        payload.prompt.strip()
+    prompt = payload.prompt.strip()
 
-    mode =
-        payload.reasoning_mode
+    mode = payload.reasoning_mode
 
     async def token_stream():
 
@@ -369,23 +348,22 @@ async def stream(
 
         if not client:
 
-            text =
-                fallback_answer(
-                    prompt,
-                    mode
-                )
+            text = fallback_answer(
+                prompt,
+                mode
+            )
 
             for ch in text:
 
                 yield (
                     f"data: "
                     f"{json.dumps({'token': ch})}"
-                    f"\\n\\n"
+                    f"\n\n"
                 )
 
                 await asyncio.sleep(.01)
 
-            yield "data: [DONE]\\n\\n"
+            yield "data: [DONE]\n\n"
 
             return
 
@@ -393,44 +371,44 @@ async def stream(
 
         try:
 
-            completion =
-                client.chat.completions.create(
+            completion = client.chat.completions.create(
 
-                    model="gpt-4.1-mini",
+                model="gpt-4.1-mini",
 
-                    messages=[
+                messages=[
 
-                        {
-                            "role":"system",
+                    {
+                        "role":"system",
 
-                            "content":
-                                build_system_prompt(
-                                    mode
-                                )
-                        },
+                        "content":
+                            build_system_prompt(
+                                mode
+                            )
+                    },
 
-                        {
-                            "role":"user",
+                    {
+                        "role":"user",
 
-                            "content":
-                                prompt
-                        }
-                    ],
+                        "content":
+                            prompt
+                    }
+                ],
 
-                    stream=True,
+                stream=True,
 
-                    temperature=.7
-                )
+                temperature=.7
+            )
 
             for chunk in completion:
 
                 try:
 
-                    delta =
+                    delta = (
                         chunk
                         .choices[0]
                         .delta
                         .content
+                    )
 
                     if delta:
 
@@ -440,35 +418,33 @@ async def stream(
 
                             f"{json.dumps({'token': delta})}"
 
-                            f"\\n\\n"
+                            f"\n\n"
                         )
 
                 except:
                     pass
 
-            yield "data: [DONE]\\n\\n"
+            yield "data: [DONE]\n\n"
 
         except Exception as e:
 
-            text =
-                f"Streaming error: {str(e)}"
+            text = f"Streaming error: {str(e)}"
 
             for ch in text:
 
                 yield (
                     f"data: "
                     f"{json.dumps({'token': ch})}"
-                    f"\\n\\n"
+                    f"\n\n"
                 )
 
                 await asyncio.sleep(.01)
 
-            yield "data: [DONE]\\n\\n"
+            yield "data: [DONE]\n\n"
 
     return StreamingResponse(
         token_stream(),
-        media_type=
-            "text/event-stream"
+        media_type="text/event-stream"
     )
 
 
@@ -478,9 +454,7 @@ async def stream(
 
 @app.post("/tts")
 
-async def tts(
-    payload: TTSPayload
-):
+async def tts(payload: TTSPayload):
 
     if not client:
 
@@ -492,15 +466,14 @@ async def tts(
 
     try:
 
-        speech =
-            client.audio.speech.create(
+        speech = client.audio.speech.create(
 
-                model="gpt-4o-mini-tts",
+            model="gpt-4o-mini-tts",
 
-                voice=payload.voice,
+            voice=payload.voice,
 
-                input=payload.text
-            )
+            input=payload.text
+        )
 
         return Response(
 
@@ -524,9 +497,7 @@ async def tts(
 
 @app.post("/reflection")
 
-async def reflection(
-    payload: ReasonPayload
-):
+async def reflection(payload: ReasonPayload):
 
     return JSONResponse({
 
