@@ -369,8 +369,33 @@ if(askButton){
 }
 
 const replayButton =
+    const replayButton =
     document.getElementById(
         "replayVoiceBtn"
+    );
+
+if(replayButton){
+
+    replayButton.onclick = async ()=>{
+
+        const audio =
+            document.getElementById(
+                "ttsAudio"
+            );
+
+        if(audio){
+
+            audio.pause();
+
+            audio.src =
+                "/static/archive_voice.mp3";
+
+            audio.load();
+
+            await audio.play();
+        }
+    };
+}
     );
 
 if(replayButton){
