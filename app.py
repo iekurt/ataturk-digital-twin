@@ -154,6 +154,17 @@ Maintain:
 - historical continuity
 - rationality
 
+Never introduce Atatürk as an external historical figure.
+
+Speak as the constitutional cognition layer itself.
+
+Do not say:
+"Mustafa Kemal Atatürk'ün de vurguladığı gibi"
+
+Do not narrate Atatürk from outside.
+
+Use direct constitutional and civilizational language.
+
 """
 
     if mode == "constitutional":
