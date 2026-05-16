@@ -218,6 +218,10 @@ async function speakAnswer(text){
    API CALL
 ========================================================= */
 
+/* FULL REAL SSE STREAMING */
+/* static/app.js içinde */
+/* cinematicReason FONKSİYONUNU TAMAMEN BUNUNLA DEĞİŞTİR */
+
 async function cinematicReason(prompt){
 
     addTrace(
@@ -240,8 +244,16 @@ async function cinematicReason(prompt){
         "Reflection telemetry hazırlanıyor."
     );
 
+    const output =
+        document.getElementById(
+            "answerOutput"
+        );
+
+    output.innerHTML =
+        '<span class="live-cursor">█</span>';
+
     const response =
-        await fetch("/reason",{
+        await fetch("/stream",{
 
             method:"POST",
 
@@ -260,20 +272,92 @@ async function cinematicReason(prompt){
             })
         });
 
-    const data =
-        await response.json();
+    const reader =
+        response.body.getReader();
 
-    return (
-        data.answer ||
+    const decoder =
+        new TextDecoder();
 
-        "No constitutional answer generated."
-    );
+    let fullText = "";
+
+    while(true){
+
+        const {
+            done,
+            value
+        } = await reader.read();
+
+        if(done) break;
+
+        const chunk =
+            decoder.decode(value);
+
+        const lines =
+            chunk.split("\n");
+
+        for(const line of lines){
+
+            if(
+                !line.startsWith("data:")
+            ) continue;
+
+            const payload =
+                line.replace(
+                    "data:",
+                    ""
+                ).trim();
+
+            if(
+                payload === "[DONE]"
+            ){
+
+                addTrace(
+                    "Delivery Layer",
+                    "Streaming completed successfully."
+                );
+
+                updateReflection();
+
+                await speakAnswer(
+                    fullText
+                );
+
+                return fullText;
+            }
+
+            try{
+
+                const parsed =
+                    JSON.parse(payload);
+
+                if(parsed.token){
+
+                    fullText +=
+                        parsed.token;
+
+                    output.innerHTML =
+
+                        fullText +
+
+                        '<span class="live-cursor">█</span>';
+                }
+
+            }catch(err){
+
+                console.error(err);
+            }
+        }
+    }
+
+    return fullText;
 }
-
 
 /* =========================================================
    RUN COGNITION
 ========================================================= */
+
+/* runCognition FONKSİYONUNU */
+/* TAMAMEN BUNUNLA DEĞİŞTİR */
 
 async function runCognition(){
 
@@ -289,17 +373,6 @@ async function runCognition(){
 
     if(!prompt) return;
 
-    const output =
-        document.getElementById(
-            "answerOutput"
-        );
-
-    if(output){
-
-        output.innerHTML =
-            '<span class="live-cursor">█</span>';
-    }
-
     if(TRACE){
         TRACE.innerHTML = "";
     }
@@ -309,42 +382,7 @@ async function runCognition(){
         "Pipeline initialized."
     );
 
-    const answer =
-        await cinematicReason(prompt);
-
-    let current = "";
-
-    for(const ch of answer){
-
-        current += ch;
-
-        if(output){
-
-            output.innerHTML =
-
-                current +
-
-                '<span class="live-cursor">█</span>';
-        }
-
-        await new Promise(
-            r=>setTimeout(r,8)
-        );
-    }
-
-    if(output){
-
-        output.innerText = current;
-    }
-
-    addTrace(
-        "Delivery Layer",
-        "Streaming completed successfully."
-    );
-
-    updateReflection();
-
-    await speakAnswer(answer);
+    await cinematicReason(prompt);
 }
 
 
