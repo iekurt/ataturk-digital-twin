@@ -1,4 +1,5 @@
-/* HOPEVERSE CINEMATIC UI */
+/* FULL WORKING static/style.css */
+/* ATATÜRK DIGITAL TWIN / HOPEVERSE */
 
 *{
     margin:0;
@@ -11,10 +12,14 @@ html{
 }
 
 body{
+
     background:
-        radial-gradient(circle at top left,
+        radial-gradient(
+            circle at top left,
             rgba(255,190,70,.10),
-            transparent 24%),
+            transparent 24%
+        ),
+
         linear-gradient(
             180deg,
             #07111f 0%,
@@ -31,15 +36,21 @@ body{
     overflow-x:hidden;
 }
 
+
 /* TOPBAR */
 
 .topbar{
+
     position:sticky;
+
     top:0;
+
     z-index:999;
 
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 
     padding:22px 40px;
@@ -54,47 +65,69 @@ body{
 }
 
 .brand-title{
+
     font-size:24px;
+
     font-weight:900;
+
     letter-spacing:.12em;
+
     color:#ffc94d;
 }
 
 .brand-subtitle{
+
     font-size:13px;
+
     margin-top:6px;
+
     letter-spacing:.16em;
+
     color:#dbe4ff;
 }
 
 .navbar{
+
     display:flex;
+
     gap:28px;
+
     flex-wrap:wrap;
 }
 
 .navbar a{
+
     color:#dce5ff;
+
     text-decoration:none;
+
     font-size:16px;
+
     font-weight:700;
+
     transition:.2s ease;
 }
 
 .navbar a:hover{
+
     color:#ffc94d;
+
     transform:translateY(-2px);
 }
+
 
 /* HERO */
 
 .hero-section{
+
     padding:
         70px 50px;
 }
 
 .hero-grid{
+
     display:grid;
+
     grid-template-columns:
         1.1fr .9fr;
 
@@ -104,26 +137,41 @@ body{
 }
 
 .hero-title{
+
     font-size:92px;
+
     line-height:.95;
+
     font-weight:900;
+
     margin:18px 0;
 }
 
 .hero-badge{
+
     color:#ffc94d;
+
     letter-spacing:.22em;
+
     font-size:14px;
+
     font-weight:900;
 }
 
 .hero-subtitle{
+
     font-size:24px;
+
     line-height:1.8;
+
     color:#d8e0ff;
 }
 
+
+/* DOCTRINE */
+
 .doctrine-card{
+
     margin-top:34px;
 
     background:
@@ -141,28 +189,41 @@ body{
 }
 
 .doctrine-label{
+
     color:#ffc94d;
+
     font-size:14px;
+
     letter-spacing:.2em;
+
     margin-bottom:18px;
+
     font-weight:900;
 }
 
 .hope-doctrine{
+
     display:flex;
+
     flex-direction:column;
+
     gap:14px;
 }
 
 .hope-doctrine span{
+
     font-size:52px;
+
     line-height:1.02;
+
     font-weight:900;
 }
+
 
 /* ATATURK */
 
 .ataturk-frame{
+
     overflow:hidden;
 
     border-radius:32px;
@@ -175,16 +236,20 @@ body{
 }
 
 .ataturk-frame img{
+
     width:100%;
+
     height:720px;
 
     object-fit:cover;
+
     object-position:center top;
 
     display:block;
 }
 
 .portrait-caption{
+
     margin-top:22px;
 
     background:
@@ -199,18 +264,25 @@ body{
 }
 
 .portrait-caption h3{
+
     color:#ffc94d;
+
     font-size:42px;
+
     margin-bottom:14px;
 }
 
 .portrait-caption p{
+
     font-size:20px;
+
     line-height:1.8;
+
     color:#d8e1ff;
 }
 
 .crafted-by{
+
     margin-top:18px;
 
     color:#b7c8f6;
@@ -222,23 +294,30 @@ body{
     font-size:13px;
 }
 
+
 /* SECTION */
 
 .section{
+
     padding:
         55px 50px;
 }
 
 .section-title{
+
     font-size:46px;
+
     margin-bottom:28px;
+
     font-weight:900;
 }
+
 
 /* GRID */
 
 .dashboard-grid,
 .reflection-grid{
+
     display:grid;
 
     grid-template-columns:
@@ -247,11 +326,13 @@ body{
     gap:22px;
 }
 
+
 /* CARD */
 
 .metric-card,
 .reflection-card,
 .demo-panel{
+
     background:
         rgba(18,28,44,.78);
 
@@ -268,6 +349,7 @@ body{
 
 .metric-label,
 .reflection-label{
+
     color:#ffc94d;
 
     letter-spacing:.16em;
@@ -279,15 +361,21 @@ body{
 
 .metric-value,
 .reflection-value{
+
     font-size:38px;
+
     font-weight:900;
 }
+
 
 /* TRACE */
 
 .trace-panel{
+
     display:flex;
+
     flex-direction:column;
+
     gap:20px;
 
     background:
@@ -302,6 +390,7 @@ body{
 }
 
 .trace-item{
+
     border-left:
         3px solid #ffc94d;
 
@@ -309,27 +398,39 @@ body{
 }
 
 .trace-title{
+
     font-size:22px;
+
     font-weight:900;
+
     margin-bottom:8px;
 }
 
 .trace-detail{
+
     font-size:17px;
+
     line-height:1.8;
+
     color:#d6dfff;
 }
+
 
 /* DEMO */
 
 .demo-grid{
+
     display:grid;
+
     grid-template-columns:1fr 1fr;
+
     gap:24px;
 }
 
 .input-label{
+
     display:block;
+
     margin-bottom:12px;
 
     color:#ffc94d;
@@ -341,6 +442,7 @@ body{
 
 textarea,
 select{
+
     width:100%;
 
     background:
@@ -362,18 +464,24 @@ select{
 }
 
 textarea{
+
     min-height:180px;
 }
 
 .button-row,
 .preset-prompts{
+
     display:flex;
+
     gap:12px;
+
     flex-wrap:wrap;
 }
 
 button{
+
     background:#ffc94d;
+
     color:#07111f;
 
     border:none;
@@ -391,10 +499,15 @@ button{
 }
 
 button:hover{
+
     transform:translateY(-2px);
 }
 
+
+/* OUTPUT */
+
 .answer-output{
+
     min-height:340px;
 
     white-space:pre-wrap;
@@ -402,52 +515,11 @@ button:hover{
     line-height:1.9;
 
     color:#f4f7ff;
+
+    font-size:18px;
 }
 
-/* AUDIO */
 
-audio{
-    width:calc(100% - 100px);
-
-    margin:
-        30px 50px 50px 50px;
-}
-
-/* MOBILE */
-
-@media(max-width:980px){
-
-    .hero-grid,
-    .demo-grid{
-        grid-template-columns:1fr;
-    }
-
-    .hero-title{
-        font-size:58px;
-    }
-
-    .hope-doctrine span{
-        font-size:34px;
-    }
-
-    .section,
-    .hero-section{
-        padding-left:22px;
-        padding-right:22px;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:18px;
-    }
-
-    audio{
-        width:calc(100% - 44px);
-
-        margin-left:22px;
-        margin-right:22px;
-    }
 /* LIVE CURSOR */
 
 .live-cursor{
@@ -470,5 +542,64 @@ audio{
 
     100%{
         opacity:1;
+    }
+}
+
+
+/* AUDIO */
+
+audio{
+
+    width:calc(100% - 100px);
+
+    margin:
+        30px 50px 50px 50px;
+}
+
+
+/* MOBILE */
+
+@media(max-width:980px){
+
+    .hero-grid,
+    .demo-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-title{
+
+        font-size:58px;
+    }
+
+    .hope-doctrine span{
+
+        font-size:34px;
+    }
+
+    .section,
+    .hero-section{
+
+        padding-left:22px;
+
+        padding-right:22px;
+    }
+
+    .topbar{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:18px;
+    }
+
+    audio{
+
+        width:calc(100% - 44px);
+
+        margin-left:22px;
+
+        margin-right:22px;
     }
 }

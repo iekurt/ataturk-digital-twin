@@ -3,6 +3,7 @@
 
 "use strict";
 
+
 /* =========================================================
    PRESET PROMPTS
 ========================================================= */
@@ -132,11 +133,9 @@ async function speakAnswer(text){
 
     try{
 
-        const voice = "onyx" ;
-
         addTrace(
             "Archive Voice",
-            `Premium TTS rendering (${voice})`
+            "Premium TTS rendering (onyx)"
         );
 
         const response =
@@ -152,11 +151,9 @@ async function speakAnswer(text){
 
                     text:text,
 
-                    voice:voice
+                    voice:"onyx"
                 })
             });
-
-        // RESPONSE TYPE CHECK
 
         const type =
             response.headers.get(
@@ -167,10 +164,6 @@ async function speakAnswer(text){
             !type ||
             !type.includes("audio")
         ){
-
-            console.error(
-                "TTS ERROR"
-            );
 
             addTrace(
                 "TTS Error",
@@ -199,21 +192,19 @@ async function speakAnswer(text){
 
             audio.load();
 
+            audio.playbackRate = 0.92;
+
             await audio.play();
 
             addTrace(
                 "Archive Voice",
                 "Playback started."
             );
-            audio.playbackRate = 1.1;
         }
 
     }catch(err){
 
-        console.error(
-            "VOICE ERROR",
-            err
-        );
+        console.error(err);
 
         addTrace(
             "Voice Error",
@@ -304,7 +295,9 @@ async function runCognition(){
         );
 
     if(output){
-        output.innerHTML = '<span class="live-cursor">█</span>';
+
+        output.innerHTML =
+            '<span class="live-cursor">█</span>';
     }
 
     if(TRACE){
@@ -326,12 +319,22 @@ async function runCognition(){
         current += ch;
 
         if(output){
-            output.innerText = current;
+
+            output.innerHTML =
+
+                current +
+
+                '<span class="live-cursor">█</span>';
         }
 
         await new Promise(
             r=>setTimeout(r,8)
         );
+    }
+
+    if(output){
+
+        output.innerText = current;
     }
 
     addTrace(
@@ -341,15 +344,7 @@ async function runCognition(){
 
     updateReflection();
 
-    const audio =
-    document.getElementById(
-        "ttsAudio"
-    );
-
-audio.src =
-    "/static/archive_voice.mp3";
-
-audio.play();
+    await speakAnswer(answer);
 }
 
 
@@ -368,34 +363,12 @@ if(askButton){
         runCognition;
 }
 
+
+/* ARCHIVE VOICE */
+
 const replayButton =
-    const replayButton =
     document.getElementById(
         "replayVoiceBtn"
-    );
-
-if(replayButton){
-
-    replayButton.onclick = async ()=>{
-
-        const audio =
-            document.getElementById(
-                "ttsAudio"
-            );
-
-        if(audio){
-
-            audio.pause();
-
-            audio.src =
-                "/static/archive_voice.mp3";
-
-            audio.load();
-
-            await audio.play();
-        }
-    };
-}
     );
 
 if(replayButton){
@@ -403,14 +376,28 @@ if(replayButton){
     replayButton.onclick =
         async ()=>{
 
-            const txt =
+            const audio =
                 document.getElementById(
-                    "answerOutput"
-                )?.innerText;
+                    "ttsAudio"
+                );
 
-            if(txt){
+            if(audio){
 
-                await speakAnswer(txt);
+                audio.pause();
+
+                audio.src =
+                    "/static/archive_voice.mp3";
+
+                audio.load();
+
+                audio.playbackRate = 0.92;
+
+                await audio.play();
+
+                addTrace(
+                    "Archive Voice",
+                    "Historical archive playback active."
+                );
             }
         };
 }
