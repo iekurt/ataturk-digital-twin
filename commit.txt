@@ -1,0 +1,5 @@
+
+
+git add .
+git commit -m "Ataturk-digital-twin-UI4.7.1"
+git push
