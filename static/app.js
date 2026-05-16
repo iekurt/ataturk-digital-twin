@@ -132,10 +132,7 @@ async function speakAnswer(text){
 
     try{
 
-        const voice =
-            document.getElementById(
-                "voiceSelector"
-            )?.value || "nova";
+        const voice = "onyx" ;
 
         addTrace(
             "Archive Voice",
