@@ -1,645 +1,1297 @@
+<!-- =========================================
+     templates/index.html
+     FULL FINAL LONG AVATAR VERSION
+     NO SECTION REMOVED
+========================================= -->
+
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Atatürk Digital Twin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/style.css" />
 
-  <style>
-    :root{
-      --gold:#d8a94f;
-      --gold-soft:#f3cc7a;
-      --bg:#050505;
-      --panel:rgba(255,255,255,.04);
-      --panel-border:rgba(216,169,79,.20);
-      --text:#ece4d8;
-      --muted:#b8ab91;
-      --green:#4cff88;
-      --blue:#8bbcff;
-    }
+    <meta charset="UTF-8" />
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      background:
-        radial-gradient(circle at top, rgba(216,169,79,.08), transparent 30%),
-        radial-gradient(circle at 80% 20%, rgba(139,188,255,.05), transparent 28%),
-        #050505;
-      color:var(--text);
-      font-family:Inter,Arial,sans-serif;
-    }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
 
-    .wrap{width:min(1400px,92%);margin:auto;padding:40px 0 80px}
+    <title>
+        ATATÜRK DIGITAL TWIN / HOPEVERSE
+    </title>
 
-    .hero-grid{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:42px;
-      align-items:center;
-    }
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    />
 
-    @media(max-width:980px){.hero-grid{grid-template-columns:1fr}}
+    <style>
 
-    .hero-badge,.truth-label{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      border:1px solid var(--panel-border);
-      border-radius:999px;
-      padding:10px 16px;
-      font-size:13px;
-      color:var(--gold-soft);
-      margin-bottom:18px;
-      background:rgba(0,0,0,.24);
-      font-weight:800;
-      letter-spacing:.035em;
-    }
+        /* =====================================
+           AVATAR CINEMATIC LAYER
+        ===================================== */
 
-    .truth-label{margin-top:24px}
+        .avatar-broadcast-layer{
 
-    .hero-dot,.status-dot{
-      width:10px;height:10px;border-radius:50%;
-      background:var(--green);
-      box-shadow:0 0 12px var(--green);
-    }
+            position:relative;
 
-    .signature{
-      margin-top:14px;
-      color:#b8ab91;
-      font-size:14px;
-      letter-spacing:.08em;
-      font-weight:700;
-    }
+            width:100%;
 
-    .doctrine{
-      margin-top:24px;
-      margin-bottom:28px;
-      border-left:3px solid var(--gold);
-      padding-left:20px;
-    }
+            max-width:620px;
 
-    .doctrine-title{
-      color:var(--gold-soft);
-      font-size:13px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      margin-bottom:12px;
-      font-weight:900;
-    }
+            margin:auto;
+        }
 
-    .doctrine-line{
-      font-size:22px;
-      line-height:1.7;
-      color:var(--text);
-      font-weight:700;
-    }
+        .avatar-glow{
 
-    .doctrine-line:last-child{color:var(--gold-soft)}
+            position:absolute;
 
-    .mega-title{
-      font-size:clamp(52px,8vw,92px);
-      line-height:.92;
-      margin:0;
-      letter-spacing:-.04em;
-    }
+            inset:-8%;
 
-    .mega-sub{
-      margin-top:22px;
-      font-size:20px;
-      line-height:1.65;
-      color:var(--muted);
-      max-width:760px;
-    }
+            background:
+                radial-gradient(
 
-    .buttons{
-      margin-top:34px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:14px;
-    }
+                    circle,
 
-    .buttons a,button{
-      cursor:pointer;
-      border:none;
-      border-radius:16px;
-      padding:14px 20px;
-      background:linear-gradient(135deg,#d8a94f,#9e6e1d);
-      color:black;
-      font-weight:800;
-      text-decoration:none;
-      transition:.25s;
-      font-size:15px;
-    }
+                    rgba(255,255,255,.16),
 
-    .buttons a:hover,button:hover{
-      transform:translateY(-2px);
-      box-shadow:0 10px 30px rgba(216,169,79,.22);
-    }
+                    transparent 70%
+                );
 
-    .secondary{
-      background:rgba(255,255,255,.08)!important;
-      color:white!important;
-      border:1px solid rgba(255,255,255,.10)!important;
-    }
+            filter:blur(40px);
 
-    .avatar-card,.dashboard-panel,.engine-panel{
-      border:1px solid var(--panel-border);
-      border-radius:32px;
-      padding:26px;
-      background:
-        radial-gradient(circle at top, rgba(216,169,79,.12), transparent 40%),
-        rgba(255,255,255,.03);
-      box-shadow:0 40px 120px rgba(0,0,0,.44);
-    }
+            pointer-events:none;
 
-    .avatar-frame{
-      position:relative;
-      height:520px;
-      overflow:hidden;
-      border-radius:28px;
-      border:1px solid rgba(216,169,79,.18);
-      background:
-        radial-gradient(circle at center, rgba(216,169,79,.12), transparent 40%),
-        rgba(255,255,255,.03);
-    }
+            z-index:1;
 
-    .avatar-photo{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter:contrast(1.05) brightness(.92) sepia(.12);
-    }
+            animation:
+                avatarGlow 4s ease-in-out infinite;
+        }
 
-    .holo-ring{
-      position:absolute;
-      inset:40px;
-      border:1px dashed rgba(216,169,79,.24);
-      border-radius:50%;
-      animation:spin 24s linear infinite;
-      pointer-events:none;
-    }
+        @keyframes avatarGlow{
 
-    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+            0%{
+                opacity:.25;
+                transform:scale(1);
+            }
 
-    .avatar-speech{
-      margin-top:18px;
-      border:1px solid rgba(216,169,79,.18);
-      border-radius:18px;
-      padding:18px;
-      background:rgba(0,0,0,.24);
-      line-height:1.6;
-      color:var(--text);
-      min-height:92px;
-    }
+            50%{
+                opacity:.55;
+                transform:scale(1.04);
+            }
 
-    .section{margin-top:90px}
-    .section h2{font-size:42px;margin-bottom:18px}
-    .section p{color:var(--muted);line-height:1.7;max-width:960px}
+            100%{
+                opacity:.25;
+                transform:scale(1);
+            }
+        }
 
-    .dashboard-grid,.grid,.reform-map,.contributors,.roadmap{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
-      margin-top:28px;
-    }
+        .ataturk-frame{
 
-    .metric,.card,.reform-node,.contributor,.roadmap-step{
-      border:1px solid rgba(216,169,79,.18);
-      border-radius:22px;
-      padding:20px;
-      background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
-    }
+            position:relative;
 
-    .metric span,.mini-label{
-      display:block;
-      color:var(--muted);
-      font-size:12px;
-      letter-spacing:.09em;
-      margin-bottom:10px;
-      text-transform:uppercase;
-    }
+            z-index:2;
 
-    .metric strong{color:var(--gold-soft);font-size:26px}
+            overflow:hidden;
+        }
 
-    .card strong,.reform-node strong,.contributor strong,.roadmap-step strong{
-      color:var(--gold-soft);
-      font-size:20px;
-      display:block;
-      margin-bottom:12px;
-    }
+        .ataturk-frame img{
 
-    .node-status{display:grid;gap:12px;margin-top:24px}
+            transition:
+                transform .35s ease,
+                filter .35s ease,
+                opacity .35s ease;
 
-    .node-row{
-      display:grid;
-      grid-template-columns:28px 1fr 130px;
-      gap:12px;
-      align-items:center;
-      padding:14px 16px;
-      border:1px solid rgba(216,169,79,.16);
-      border-radius:16px;
-      background:rgba(255,255,255,.035);
-    }
+            animation:
+                avatarIdle 5s ease-in-out infinite;
+        }
 
-    .node-row strong{color:var(--text)}
-    .node-row span{color:var(--muted);font-size:13px}
+        @keyframes avatarIdle{
 
-    .timeline{
-      margin-top:34px;
-      border-left:2px solid rgba(216,169,79,.22);
-      padding-left:24px;
-    }
+            0%{
+                transform:scale(1);
+            }
 
-    .timeline-item{margin-bottom:34px;position:relative}
+            50%{
+                transform:scale(1.012);
+            }
 
-    .timeline-item::before{
-      content:"";
-      position:absolute;
-      left:-31px;
-      top:4px;
-      width:14px;
-      height:14px;
-      border-radius:50%;
-      background:var(--gold);
-      box-shadow:0 0 14px rgba(216,169,79,.6);
-    }
+            100%{
+                transform:scale(1);
+            }
+        }
 
-    .timeline-item h3{margin:0;color:var(--gold-soft)}
-    .timeline-item span{color:var(--muted);line-height:1.6;display:block;margin-top:8px}
+        .avatar-speaking img{
 
-    .flow{
-      margin-top:24px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      align-items:center;
-    }
+            animation:
+                avatarSpeaking .32s ease-in-out infinite !important;
 
-    .flow div{
-      border:1px solid var(--panel-border);
-      border-radius:16px;
-      padding:14px 18px;
-      background:rgba(255,255,255,.04);
-    }
+            filter:
 
-    .api-box{
-      margin-top:28px;
-      border:1px solid rgba(216,169,79,.22);
-      border-radius:24px;
-      overflow:hidden;
-      background:rgba(0,0,0,.32);
-    }
+                grayscale(100%)
 
-    .api-row{
-      display:grid;
-      grid-template-columns:130px 1fr;
-      border-bottom:1px solid rgba(216,169,79,.12);
-    }
+                contrast(1.15)
 
-    .api-row:last-child{border-bottom:none}
-    .api-method{padding:16px;color:black;font-weight:900;background:var(--gold)}
-    .api-path{padding:16px;color:var(--text);font-family:Consolas,monospace}
+                brightness(1.04);
+        }
 
-    .engine-topbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:22px;
-      margin-bottom:22px;
-    }
+        @keyframes avatarSpeaking{
 
-    .response-shell{
-      border:1px solid rgba(216,169,79,.18);
-      border-radius:24px;
-      overflow:hidden;
-      background:
-        radial-gradient(circle at top,rgba(216,169,79,.06),transparent 40%),
-        rgba(0,0,0,.26);
-    }
+            0%{
+                transform:scale(1);
+            }
 
-    .stream-topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:14px 18px;
-      border-bottom:1px solid rgba(216,169,79,.12);
-      background:rgba(255,255,255,.02);
-    }
+            50%{
+                transform:scale(1.02);
+            }
 
-    .stream-indicator{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color:var(--gold-soft);
-      font-size:12px;
-      letter-spacing:.08em;
-      font-weight:800;
-    }
+            100%{
+                transform:scale(1);
+            }
+        }
 
-    .pulse-dot{
-      width:10px;height:10px;border-radius:50%;
-      background:#4cff88;
-      box-shadow:0 0 18px #4cff88;
-      animation:pulse 1.4s infinite;
-    }
+        .avatar-thinking img{
 
-    @keyframes pulse{
-      0%{transform:scale(1);opacity:1}
-      50%{transform:scale(1.45);opacity:.45}
-      100%{transform:scale(1);opacity:1}
-    }
+            filter:
 
-    .thinking-state{
-      color:#b8ab91;
-      font-size:12px;
-      letter-spacing:.06em;
-    }
+                grayscale(100%)
 
-    .response-box{
-      padding:28px;
-      min-height:260px;
-      line-height:1.9;
-      white-space:pre-wrap;
-      position:relative;
-      font-size:17px;
-      color:var(--text);
-    }
+                contrast(1.25)
 
-    .stream-cursor{
-      display:inline-block;
-      width:12px;
-      height:22px;
-      background:var(--gold);
-      margin-left:6px;
-      animation:cursorBlink 1s infinite;
-      vertical-align:middle;
-    }
+                brightness(.7);
+        }
 
-    @keyframes cursorBlink{
-      0%{opacity:1}
-      50%{opacity:0}
-      100%{opacity:1}
-    }
+        .avatar-state-panel{
 
-    input,select{
-      width:100%;
-      margin-top:8px;
-      margin-bottom:18px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:#111!important;
-      color:white!important;
-      padding:16px;
-      font-size:16px;
-    }
+            margin-top:20px;
 
-    select option{background:#111!important;color:#fff!important}
+            background:
+                rgba(255,255,255,.04);
 
-    footer{
-      margin-top:90px;
-      padding-bottom:60px;
-      color:var(--muted);
-      text-align:center;
-      font-size:14px;
-      letter-spacing:.08em;
-    }
+            border:
+                1px solid rgba(255,255,255,.08);
 
-    #loader.hidden{display:none}
-  </style>
+            border-radius:16px;
+
+            padding:14px 18px;
+
+            text-align:center;
+
+            backdrop-filter:blur(10px);
+        }
+
+        .avatar-state-label{
+
+            font-size:12px;
+
+            letter-spacing:2px;
+
+            opacity:.6;
+
+            margin-bottom:6px;
+        }
+
+        .avatar-state-value{
+
+            font-size:18px;
+
+            font-weight:700;
+
+            letter-spacing:1px;
+        }
+
+        /* =====================================
+           CRT BROADCAST OVERLAY
+        ===================================== */
+
+        body::before{
+
+            content:"";
+
+            position:fixed;
+
+            inset:0;
+
+            background:
+                repeating-linear-gradient(
+
+                    to bottom,
+
+                    rgba(255,255,255,.02) 0px,
+
+                    rgba(255,255,255,.02) 1px,
+
+                    transparent 2px,
+
+                    transparent 4px
+                );
+
+            pointer-events:none;
+
+            z-index:9999;
+
+            opacity:.15;
+        }
+
+        /* =====================================
+           LIVE CURSOR
+        ===================================== */
+
+        .live-cursor{
+
+            display:inline-block;
+
+            animation:
+                cursorHeartbeat 1s infinite;
+
+            color:white;
+        }
+
+        @keyframes cursorHeartbeat{
+
+            0%{
+                opacity:.25;
+            }
+
+            50%{
+                opacity:1;
+            }
+
+            100%{
+                opacity:.25;
+            }
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<main class="wrap">
 
-  <section class="hero-grid">
-    <div>
-      <div class="hero-badge">
-        <div class="hero-dot"></div>
-        HOPEverse Civilization Interface · v2.7 Full Canon
-      </div>
+<!-- =========================================
+     TOPBAR
+========================================= -->
 
-      <div class="signature">
-        Crafted by Erhan · HOPEverse Civilization Canon
-      </div>
+<header class="topbar">
 
-      <div class="doctrine">
-        <div class="doctrine-title">Central Doctrine</div>
-        <div class="doctrine-line">Peace at home.</div>
-        <div class="doctrine-line">Peace in the world.</div>
-        <div class="doctrine-line">Peace in the universe and HOPEverse.</div>
-      </div>
+    <div class="brand">
 
-      <h1 class="mega-title">Atatürk<br/>Digital Twin</h1>
-
-      <p class="mega-sub">
-        Cumhuriyet aklı, anayasal bilinç, Vicdan katmanı,
-        arşiv zekâsı ve HOPEtensor reasoning mimarisiyle çalışan
-        canlı civilization intelligence platformu.
-      </p>
-
-      <div class="truth-label">HISTORICAL ARCHIVE ≠ AI GENERATED RESPONSE</div>
-
-      <div class="buttons">
-        <a href="#dashboard">Dashboard</a>
-        <a class="secondary" href="#architecture">Architecture</a>
-        <a class="secondary" href="#reforms">Reform Map</a>
-        <a class="secondary" href="#timeline">Timeline</a>
-        <a class="secondary" href="#roadmap">Roadmap</a>
-        <a class="secondary" href="#demo">Launch Demo</a>
-      </div>
-    </div>
-
-    <div class="avatar-card">
-      <div class="avatar-frame">
-        <div class="holo-ring"></div>
-        <img class="avatar-photo" src="/static/ataturk-avatar.jpg" alt="Atatürk" />
-      </div>
-
-      <div class="avatar-speech" id="avatarSpeech">
-        Hazırım. Sorunuzu Cumhuriyet aklı, bilim, egemenlik ve vicdan süzgecinden geçireceğim.
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="dashboard">
-    <h2>Live Platform Dashboard</h2>
-    <p>Constitutional intelligence platform operational status.</p>
-
-    <div class="dashboard-panel">
-      <div class="dashboard-grid">
-        <div class="metric"><span>Engine</span><strong>Online</strong></div>
-        <div class="metric"><span>Reasoning</span><strong>Streaming</strong></div>
-        <div class="metric"><span>Vicdan Layer</span><strong>Active</strong></div>
-        <div class="metric"><span>Archive Mode</span><strong>Ready</strong></div>
-      </div>
-
-      <div class="node-status">
-        <div class="node-row"><div class="status-dot"></div><strong>Coordinator Node</strong><span>Prototype Ready</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Vicdan Node</strong><span>Active</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Reasoning Node</strong><span>Live LLM</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Archive Node</strong><span>Operational</span></div>
-        <div class="node-row"><div class="status-dot"></div><strong>Observer Node</strong><span>Next Build</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="architecture">
-    <h2>HOPEtensor Constitutional Architecture</h2>
-    <p>Sistem klasik chatbot değildir. Çok katmanlı civilization cognition mimarisi olarak tasarlanmıştır.</p>
-
-    <div class="grid">
-      <div class="card"><strong>Vicdan Node</strong>İnsan onuru, etik sınırlar ve anayasal risk analizi yapar.</div>
-      <div class="card"><strong>Reasoning Node</strong>Canlı LLM cognition ve stratejik cevap üretimi sağlar.</div>
-      <div class="card"><strong>Verification Node</strong>Halüsinasyon, çelişki ve manipülasyon kontrolü yapar.</div>
-      <div class="card"><strong>Archive Node</strong>Tarihî içerik, Nutuk, reformlar ve arşiv bağlamını yönetir.</div>
-    </div>
-  </section>
-
-  <section class="section" id="reforms">
-    <h2>Civilization Reform Map</h2>
-    <p>Cumhuriyet devrimleri, modern devlet, bilimsel toplum ve yurttaş egemenliği için medeniyet modülleridir.</p>
-
-    <div class="reform-map">
-      <div class="reform-node"><strong>Education</strong>Tevhid-i Tedrisat, bilimsel eğitim, ortak yurttaşlık bilinci.</div>
-      <div class="reform-node"><strong>Law</strong>Modern hukuk, eşit yurttaşlık, laik yargı ve kurumsal düzen.</div>
-      <div class="reform-node"><strong>Science</strong>Akıl, deney, teknik ilerleme ve çağdaş bilgi üretimi.</div>
-      <div class="reform-node"><strong>Women’s Rights</strong>Siyasal temsil, eğitim, hukuk önünde eşitlik ve toplumsal katılım.</div>
-      <div class="reform-node"><strong>Language</strong>Ulusal bilinç, okuryazarlık ve düşünce erişilebilirliği.</div>
-      <div class="reform-node"><strong>Economy</strong>Üretim, bağımsızlık, kurumsal kapasite ve kalkınma disiplini.</div>
-    </div>
-  </section>
-
-  <section class="section" id="timeline">
-    <h2>Civilization Timeline</h2>
-
-    <div class="timeline">
-      <div class="timeline-item"><h3>1919 · National Resistance</h3><span>Ulusal egemenlik fikrinin yeniden inşası ve bağımsızlık organizasyonu.</span></div>
-      <div class="timeline-item"><h3>1920 · Grand National Assembly</h3><span>Egemenliğin saraydan millete geçişi.</span></div>
-      <div class="timeline-item"><h3>1923 · Republic</h3><span>Modern anayasal devlet mimarisinin kuruluşu.</span></div>
-      <div class="timeline-item"><h3>1924–1937 · Civilization Reforms</h3><span>Eğitim, hukuk, bilim, kadın hakları, ekonomi ve laik devlet reformları.</span></div>
-      <div class="timeline-item"><h3>2030+ · Constitutional AI Era</h3><span>Dijital vicdan, anayasal yapay zekâ ve civilization intelligence sistemleri.</span></div>
-    </div>
-  </section>
-
-  <section class="section" id="statecraft">
-    <h2>Statecraft Simulation</h2>
-    <p>Sistem gelecekte anayasal kriz simülasyonu, stratejik devlet aklı ve civilization-scale governance modelleri için kullanılabilir.</p>
-
-    <div class="flow">
-      <div>Economic Crisis</div>
-      <span>→</span>
-      <div>Ethical Review</div>
-      <span>→</span>
-      <div>Constitutional Analysis</div>
-      <span>→</span>
-      <div>Strategic Response</div>
-      <span>→</span>
-      <div>Public Stability</div>
-    </div>
-  </section>
-
-  <section class="section" id="roadmap">
-    <h2>Execution Roadmap</h2>
-    <p>Bu roadmap, MVP’nin platforma dönüşmesi için sıradaki build aşamalarını gösterir.</p>
-
-    <div class="roadmap">
-      <div class="roadmap-step"><strong>Archive Intelligence</strong>Nutuk, konuşmalar, tarihsel belgeler ve reform veritabanı.</div>
-      <div class="roadmap-step"><strong>Verification Layer</strong>Kaynak kontrolü, hallucination scoring ve observer audit.</div>
-      <div class="roadmap-step"><strong>HOPEtensor Nodes</strong>Reasoning, Vicdan, Archive ve Strategy node ayrıştırması.</div>
-      <div class="roadmap-step"><strong>Public Contributor Launch</strong>Geliştirici, tarihçi, eğitimci ve etik reviewer onboarding.</div>
-    </div>
-  </section>
-
-  <section class="section" id="api">
-    <h2>Atatürk Digital Twin API</h2>
-    <p>Bu MVP dış sistemlere bağlanabilecek bir constitutional intelligence API çekirdeğidir.</p>
-
-    <div class="api-box">
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/stream · canlı streaming constitutional cognition</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/demo · tam yanıtlı reasoning endpoint</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/vicdan · etik ön kontrol ve risk skoru</div></div>
-      <div class="api-row"><div class="api-method">POST</div><div class="api-path">/tts · AI narrator voice generation</div></div>
-      <div class="api-row"><div class="api-method">GET</div><div class="api-path">/timeline · tarihsel civilization context</div></div>
-    </div>
-  </section>
-
-  <section class="section" id="contributors">
-    <h2>Contributor Gateway</h2>
-    <p>Bu proje geliştirici, tarihçi, eğitimci, etik denetçi ve altyapı katkıcıları için açık bir civilization build alanıdır.</p>
-
-    <div class="contributors">
-      <div class="contributor"><strong>Developers</strong>API, frontend, streaming, memory, routing ve HOPEtensor node entegrasyonu.</div>
-      <div class="contributor"><strong>Historians</strong>Nutuk, arşivler, konuşmalar, reformlar ve kaynaklı tarihsel bağlam.</div>
-      <div class="contributor"><strong>Educators</strong>Cumhuriyet eğitimi, civic intelligence ve gençlik modülleri.</div>
-      <div class="contributor"><strong>Ethics Reviewers</strong>Vicdan layer, güvenlik, manipülasyon önleme ve anayasal guardrails.</div>
-    </div>
-  </section>
-
-  <section class="section" id="demo">
-    <h2>Live Constitutional Cognition Demo</h2>
-    <p>Sorunuzu yazın. Sistem canlı reasoning ile cevap üretsin.</p>
-
-    <label>Question</label>
-    <input id="q" value="Yapay zekâ çağında anayasal bilinç neden gereklidir?" />
-
-    <label>Reasoning Mode</label>
-    <select id="mode">
-      <option value="constitutional">Constitutional Cognition</option>
-      <option value="atatürk_principles">Atatürk Principles</option>
-      <option value="republican_statecraft">Republican Statecraft</option>
-      <option value="education">Education & Enlightenment</option>
-      <option value="ai_governance">AI Governance</option>
-      <option value="civilization">Civilization Strategy</option>
-      <option value="crisis_response">Crisis Response</option>
-      <option value="youth_address">Address to Youth</option>
-      <option value="archive_context">Historical Archive Context</option>
-      <option value="hopeverse">HOPEverse / HOPEtensor Strategy</option>
-    </select>
-
-    <div class="buttons">
-      <button onclick="ask()">Run Live Engine</button>
-      <button class="secondary" onclick="speakCurrentResponse()">Speak AI Response</button>
-      <button class="secondary" onclick="playArchivalVoice()">Play Archive Voice</button>
-      <button class="secondary" onclick="stopSpeaking()">Stop Voice</button>
-      <button class="secondary" onclick="checkVicdan()">Vicdan Check</button>
-    </div>
-
-    <div class="engine-panel">
-      <div class="engine-topbar">
-        <div><span class="mini-label">ENGINE STATUS</span><strong id="engineStatus">Idle</strong></div>
-        <div><span class="mini-label">MODE</span><strong id="modeBadge">constitutional</strong></div>
-        <div><span class="mini-label">VICDAN SCORE</span><strong id="vicdanScore">—</strong></div>
-      </div>
-
-      <div id="loader" class="hidden">Constitutional cognition pipeline running...</div>
-
-      <div class="response-shell">
-        <div class="stream-topbar">
-          <div class="stream-indicator">
-            <div class="pulse-dot"></div>
-            LIVE CONSTITUTIONAL STREAM
-          </div>
-          <div class="thinking-state" id="thinkingState">Awaiting cognition...</div>
+        <div class="brand-title">
+            ATATÜRK DIGITAL TWIN
         </div>
 
-        <div class="response-box" id="responseBox">
-          Live response will appear here.
+        <div class="brand-subtitle">
+            HOPEVERSE / HOPETENSOR / VICDAN LAYER
         </div>
-      </div>
+
     </div>
-  </section>
 
-  <footer>
-    Crafted by Erhan · HOPEverse Civilization Canon ·
-    Atatürk Digital Twin · Constitutional Intelligence Platform · v2.7
-  </footer>
 
-</main>
+    <nav class="navbar">
+
+        <a href="#dashboard">
+            Dashboard
+        </a>
+
+        <a href="#architecture">
+            Architecture
+        </a>
+
+        <a href="#reform">
+            Reform Map
+        </a>
+
+        <a href="#timeline">
+            Timeline
+        </a>
+
+        <a href="#roadmap">
+            Roadmap
+        </a>
+
+        <a href="#api">
+            API
+        </a>
+
+        <a href="#contributor">
+            Contributor Gateway
+        </a>
+
+        <a href="#demo">
+            Live Demo
+        </a>
+
+        <a href="#reflection">
+            Reflection
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================================
+     HERO
+========================================= -->
+
+<section class="hero-section">
+
+    <div class="hero-grid">
+
+
+        <!-- LEFT -->
+
+        <div class="hero-left">
+
+            <div class="hero-badge">
+                CONSTITUTIONAL COGNITION ENGINE
+            </div>
+
+            <h1 class="hero-title">
+                HOPEtensor<br />
+                Constitutional AI
+            </h1>
+
+            <p class="hero-subtitle">
+
+                Constitutional cognition interface powered by
+                distributed reasoning,
+                reform memory,
+                constitutional ethics,
+                reflection telemetry,
+                Observer Node,
+                Vicdan Layer
+                and HOPEtensor federation architecture.
+
+            </p>
+
+
+            <!-- DOCTRINE -->
+
+            <div class="doctrine-card">
+
+                <div class="doctrine-label">
+                    CENTRAL DOCTRINE
+                </div>
+
+                <div class="hope-doctrine">
+
+                    <span>
+                        Peace at home.
+                    </span>
+
+                    <span>
+                        Peace in the world.
+                    </span>
+
+                    <span>
+                        Peace in the universe and HOPEverse.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- LONG DESCRIPTION -->
+
+            <div class="portrait-caption">
+
+                <h3>
+                    Constitutional Cognition Layer
+                </h3>
+
+                <p>
+
+                    ATATÜRK DIGITAL TWIN is designed as a
+                    civilization-scale constitutional cognition system.
+
+                    The architecture combines
+                    distributed reasoning,
+                    civic dignity,
+                    reform memory,
+                    ethical verification,
+                    reflection telemetry,
+                    constitutional continuity
+                    and future governance logic.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RIGHT -->
+
+        <div class="hero-right">
+
+            <div
+                class="avatar-broadcast-layer"
+                id="avatarLayer"
+            >
+
+                <div class="avatar-glow"></div>
+
+                <div class="ataturk-frame">
+
+                    <img
+                        id="avatarImage"
+                        src="/static/img/ataturk.jpg"
+                        alt="Mustafa Kemal Atatürk"
+                    />
+
+                </div>
+
+            </div>
+
+            <div class="avatar-state-panel">
+
+                <div class="avatar-state-label">
+                    CONSTITUTIONAL STATE
+                </div>
+
+                <div
+                    class="avatar-state-value"
+                    id="avatarState"
+                >
+                    IDLE
+                </div>
+
+            </div>
+
+            <div class="portrait-caption">
+
+                <h3>
+                    Mustafa Kemal Atatürk
+                </h3>
+
+                <p>
+
+                    Constitutional cognition layer integrating
+                    reform memory,
+                    scientific thinking,
+                    civic sovereignty,
+                    distributed reasoning
+                    and ethical alignment.
+
+                </p>
+
+                <div class="crafted-by">
+                    Crafted by Erhan
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     DASHBOARD
+========================================= -->
+
+<section
+    class="section"
+    id="dashboard"
+>
+
+    <div class="section-title">
+        Dashboard
+    </div>
+
+    <div class="dashboard-grid">
+
+        <div class="metric-card">
+            <div class="metric-label">
+                System Health
+            </div>
+            <div class="metric-value">
+                ONLINE
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                Vicdan Layer
+            </div>
+            <div class="metric-value">
+                ACTIVE
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                HOPEtensor Federation
+            </div>
+            <div class="metric-value">
+                CONNECTED
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                Streaming SSE
+            </div>
+            <div class="metric-value">
+                LIVE
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                Observer Node
+            </div>
+            <div class="metric-value">
+                ACTIVE
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                Reflection Layer
+            </div>
+            <div class="metric-value">
+                READY
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     ARCHITECTURE
+========================================= -->
+
+<section
+    class="section"
+    id="architecture"
+>
+
+    <div class="section-title">
+        Architecture
+    </div>
+
+    <div class="trace-panel">
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Input Layer
+            </div>
+            <div class="trace-detail">
+                Prompt ingestion,
+                constitutional parsing,
+                contextual routing
+                and cognition initialization.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                HOPEtensor Routing
+            </div>
+            <div class="trace-detail">
+                Distributed reasoning federation
+                coordinating multiple cognition pathways.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Vicdan Layer
+            </div>
+            <div class="trace-detail">
+                Ethical verification,
+                constitutional alignment,
+                civic dignity protection
+                and hallucination resistance.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Observer Audit Node
+            </div>
+            <div class="trace-detail">
+                Reflection scoring,
+                cognition telemetry,
+                confidence analysis
+                and structural consistency evaluation.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Reflection Layer
+            </div>
+            <div class="trace-detail">
+                Self-evaluation,
+                constitutional continuity
+                and reasoning integrity assessment.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     REFORM MAP
+========================================= -->
+
+<section
+    class="section"
+    id="reform"
+>
+
+    <div class="section-title">
+        Reform Map
+    </div>
+
+    <div class="reflection-grid">
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Education Reform
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Scientific Modernization
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Language Reform
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Civic Sovereignty
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Secular Governance
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Women's Rights
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     TIMELINE
+========================================= -->
+
+<section
+    class="section"
+    id="timeline"
+>
+
+    <div class="section-title">
+        Timeline
+    </div>
+
+    <div class="trace-panel">
+
+        <div class="trace-item">
+            <div class="trace-title">
+                1919
+            </div>
+            <div class="trace-detail">
+                National struggle initialization.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                1923
+            </div>
+            <div class="trace-detail">
+                Republic foundation and constitutional transition.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                1938
+            </div>
+            <div class="trace-detail">
+                Institutional reform legacy.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                2026
+            </div>
+            <div class="trace-detail">
+                Constitutional cognition deployment.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     ROADMAP
+========================================= -->
+
+<section
+    class="section"
+    id="roadmap"
+>
+
+    <div class="section-title">
+        Roadmap
+    </div>
+
+    <div class="trace-panel">
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Phase 1 — Constitutional Core
+            </div>
+            <div class="trace-detail">
+                Streaming cognition,
+                reflection telemetry,
+                premium TTS,
+                constitutional prompting,
+                observer audit systems
+                and cinematic cognition delivery.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Phase 2 — HOPEtensor Federation
+            </div>
+            <div class="trace-detail">
+                Distributed reasoning nodes,
+                constitutional verification,
+                Vicdan Layer federation,
+                civic audit systems,
+                hallucination resistance
+                and multi-vector cognition routing.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Phase 3 — HOPEverse
+            </div>
+            <div class="trace-detail">
+                Civilization-scale ethical coordination layer,
+                digital constitutional memory,
+                decentralized governance
+                and planetary cognition infrastructure.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     API
+========================================= -->
+
+<section
+    class="section"
+    id="api"
+>
+
+    <div class="section-title">
+        API
+    </div>
+
+    <div class="trace-panel">
+
+        <div class="trace-item">
+            <div class="trace-title">
+                /reason
+            </div>
+            <div class="trace-detail">
+                Constitutional reasoning endpoint.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                /stream
+            </div>
+            <div class="trace-detail">
+                SSE cognition streaming pipeline.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                /tts
+            </div>
+            <div class="trace-detail">
+                Premium constitutional voice synthesis.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                /reflection
+            </div>
+            <div class="trace-detail">
+                Observer telemetry and scoring layer.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     CONTRIBUTOR
+========================================= -->
+
+<section
+    class="section"
+    id="contributor"
+>
+
+    <div class="section-title">
+        Contributor Gateway
+    </div>
+
+    <div class="trace-panel">
+
+        <div class="trace-item">
+            <div class="trace-title">
+                Constitutional AI Research
+            </div>
+            <div class="trace-detail">
+                Ethical cognition,
+                civic reasoning
+                and constitutional memory systems.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                HOPEtensor Infrastructure
+            </div>
+            <div class="trace-detail">
+                Distributed cognition federation,
+                routing systems
+                and observer networks.
+            </div>
+        </div>
+
+        <div class="trace-item">
+            <div class="trace-title">
+                FastAPI + OpenAI Stack
+            </div>
+            <div class="trace-detail">
+                Streaming SSE,
+                premium TTS,
+                deployment architecture
+                and cinematic interfaces.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     LIVE DEMO
+========================================= -->
+
+<section
+    class="section"
+    id="demo"
+>
+
+    <div class="section-title">
+        Live Demo
+    </div>
+
+    <div class="button-row">
+
+        <button
+            onclick="document.getElementById('promptInput').value='Cumhuriyet reformlarının temel mantığı nedir?'"
+        >
+            Cumhuriyet
+        </button>
+
+        <button
+            onclick="document.getElementById('promptInput').value='Laiklik neden önemlidir?'"
+        >
+            Laiklik
+        </button>
+
+        <button
+            onclick="document.getElementById('promptInput').value='Bilim neden medeniyetin temelidir?'"
+        >
+            Bilim
+        </button>
+
+        <button
+            onclick="document.getElementById('promptInput').value='HOPEtensor mimarisi nasıl çalışır?'"
+        >
+            HOPEtensor
+        </button>
+
+    </div>
+
+    <div class="demo-grid">
+
+        <!-- LEFT -->
+
+        <div class="demo-panel">
+
+            <label class="input-label">
+                Reasoning Mode
+            </label>
+
+            <select id="reasoningMode">
+
+                <option value="constitutional">
+                    Constitutional
+                </option>
+
+                <option value="historical">
+                    Historical
+                </option>
+
+                <option value="visionary">
+                    Visionary
+                </option>
+
+                <option value="technical">
+                    Technical
+                </option>
+
+                <option value="critical">
+                    Critical
+                </option>
+
+            </select>
+
+            <label class="input-label">
+                Prompt
+            </label>
+
+            <textarea
+                id="promptInput"
+                placeholder="Bir soru sor..."
+            ></textarea>
+
+            <div class="button-row">
+
+                <button id="askButton">
+                    Run Cognition
+                </button>
+
+                <button id="replayVoiceBtn">
+                    Play Archive Voice
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+
+        <div class="demo-panel">
+
+            <div class="trace-title">
+                Cognition Output
+            </div>
+
+            <div
+                class="answer-output"
+                id="answerOutput"
+            ></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     TRACE
+========================================= -->
+
+<section
+    class="section"
+    id="trace"
+>
+
+    <div class="section-title">
+        Cognition Trace
+    </div>
+
+    <div
+        class="trace-panel"
+        id="cognitionTrace"
+    ></div>
+
+</section>
+
+
+
+<!-- =========================================
+     REFLECTION
+========================================= -->
+
+<section
+    class="section"
+    id="reflection"
+>
+
+    <div class="section-title">
+        Reflection Layer
+    </div>
+
+    <div class="reflection-grid">
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Reflection Score
+            </div>
+            <div
+                class="reflection-value"
+                id="reflectionScore"
+            >
+                92
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Constitutional Alignment
+            </div>
+            <div
+                class="reflection-value"
+                id="constitutionalAlignment"
+            >
+                95%
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Historical Alignment
+            </div>
+            <div
+                class="reflection-value"
+                id="historicalAlignment"
+            >
+                91%
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Ethical Alignment
+            </div>
+            <div
+                class="reflection-value"
+                id="ethicalAlignment"
+            >
+                96%
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Hallucination Risk
+            </div>
+            <div
+                class="reflection-value"
+                id="hallucinationRisk"
+            >
+                8%
+            </div>
+        </div>
+
+        <div class="reflection-card">
+            <div class="reflection-label">
+                Confidence Score
+            </div>
+            <div
+                class="reflection-value"
+                id="confidenceScore"
+            >
+                93%
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     AUDIO
+========================================= -->
+
+<audio
+    id="ttsAudio"
+    controls
+></audio>
+
+
+
+<!-- =========================================
+     JS
+========================================= -->
 
 <script src="/static/app.js"></script>
+
+<script>
+
+    /* =====================================
+       AVATAR STATE MACHINE
+    ===================================== */
+
+    const avatarLayer =
+        document.getElementById(
+            "avatarLayer"
+        );
+
+    const avatarState =
+        document.getElementById(
+            "avatarState"
+        );
+
+    const ttsAudio =
+        document.getElementById(
+            "ttsAudio"
+        );
+
+    function setAvatarState(state){
+
+        avatarState.innerText =
+            state.toUpperCase();
+
+        avatarLayer.classList.remove(
+            "avatar-speaking"
+        );
+
+        avatarLayer.classList.remove(
+            "avatar-thinking"
+        );
+
+        if(state === "thinking"){
+
+            avatarLayer.classList.add(
+                "avatar-thinking"
+            );
+        }
+
+        else if(state === "speaking"){
+
+            avatarLayer.classList.add(
+                "avatar-speaking"
+            );
+        }
+    }
+
+    /* =====================================
+       THINKING MODE
+    ===================================== */
+
+    const askButton =
+        document.getElementById(
+            "askButton"
+        );
+
+    if(askButton){
+
+        askButton.addEventListener(
+
+            "click",
+
+            ()=>{
+
+                setAvatarState(
+                    "thinking"
+                );
+            }
+        );
+    }
+
+    /* =====================================
+       AUDIO PLAY
+    ===================================== */
+
+    ttsAudio.addEventListener(
+
+        "play",
+
+        ()=>{
+
+            setAvatarState(
+                "speaking"
+            );
+        }
+    );
+
+    /* =====================================
+       AUDIO END
+    ===================================== */
+
+    ttsAudio.addEventListener(
+
+        "ended",
+
+        ()=>{
+
+            setAvatarState(
+                "idle"
+            );
+        }
+    );
+
+</script>
 
 </body>
 </html>

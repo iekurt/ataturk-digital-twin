@@ -1,7 +1,7 @@
 <!-- =========================================
      templates/index.html
-     FULL FINAL CINEMATIC BROADCAST VERSION
-     COMPLETE SINGLE FILE
+     FULL CINEMATIC CENTER AVATAR VERSION
+     SINGLE COMPLETE FILE
 ========================================= -->
 
 <!DOCTYPE html>
@@ -17,7 +17,7 @@
 />
 
 <title>
-    ATATÜRK DIGITAL TWIN / HOPEVERSE
+    ATATÜRK DIGITAL TWIN
 </title>
 
 <link
@@ -28,414 +28,221 @@
 <style>
 
 /* =========================================
-   BROADCAST OVERLAY
+   GLOBAL
 ========================================= */
 
-.broadcast-overlay{
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:999999;
+body{
 
     background:
         radial-gradient(
-
             circle at center,
-
-            #111111 0%,
-
-            #050505 60%,
-
+            #06111f 0%,
+            #03070f 60%,
             #000000 100%
         );
 
-    display:none;
+    overflow-x:hidden;
+}
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero-section{
+
+    position:relative;
+
+    min-height:92vh;
+
+    padding:
+        40px
+        40px
+        80px
+        40px;
+
+    overflow:hidden;
+}
+
+/* =====================================
+   CENTER AVATAR
+===================================== */
+
+.center-avatar-system{
+
+    position:absolute;
+
+    left:50%;
+
+    top:48%;
+
+    transform:
+        translate(-50%,-50%);
+
+    width:780px;
+
+    height:780px;
+
+    display:flex;
 
     align-items:center;
 
     justify-content:center;
 
-    overflow:hidden;
-}
+    pointer-events:none;
 
-.broadcast-overlay.active{
-
-    display:flex;
+    z-index:1;
 }
 
 /* =====================================
-   CRT
+   ORBITS
 ===================================== */
 
-.broadcast-overlay::before{
+.orbit-ring{
 
-    content:"";
+    position:absolute;
+
+    border-radius:50%;
+
+    border:
+        1px solid
+        rgba(255,210,107,.12);
+
+    animation:
+        orbitRotate 20s linear infinite;
+}
+
+.ring-1{
+
+    width:720px;
+    height:720px;
+}
+
+.ring-2{
+
+    width:640px;
+    height:640px;
+
+    animation-direction:reverse;
+
+    animation-duration:28s;
+}
+
+.ring-3{
+
+    width:560px;
+    height:560px;
+
+    animation-duration:16s;
+}
+
+@keyframes orbitRotate{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+/* =====================================
+   NETWORK
+===================================== */
+
+.network-lines{
 
     position:absolute;
 
     inset:0;
 
-    background:
-        repeating-linear-gradient(
+    background-image:
 
-            to bottom,
-
-            rgba(255,255,255,.02) 0px,
-
-            rgba(255,255,255,.02) 1px,
-
-            transparent 2px,
-
-            transparent 4px
+        radial-gradient(
+            rgba(255,210,107,.45) 1px,
+            transparent 1px
         );
 
-    opacity:.16;
+    background-size:
+        80px 80px;
 
-    pointer-events:none;
+    opacity:.22;
+
+    filter:blur(.4px);
 }
 
 /* =====================================
-   CENTER
+   GLOW
 ===================================== */
 
-.broadcast-center{
+.avatar-core-glow{
 
-    position:relative;
+    position:absolute;
 
-    z-index:5;
+    width:520px;
+    height:520px;
 
-    width:90%;
+    border-radius:50%;
 
-    max-width:1200px;
+    background:
+        radial-gradient(
 
-    display:flex;
+            circle,
 
-    flex-direction:column;
+            rgba(255,210,107,.18),
 
-    align-items:center;
+            rgba(255,210,107,.06),
 
-    justify-content:center;
+            transparent 72%
+        );
 
-    text-align:center;
+    filter:blur(35px);
+
+    animation:
+        glowPulse 5s ease-in-out infinite;
 }
 
-/* =====================================
-   STATE
-===================================== */
+@keyframes glowPulse{
 
-.broadcast-state{
+    0%{
+        transform:scale(1);
+        opacity:.35;
+    }
 
-    margin-bottom:30px;
-}
+    50%{
+        transform:scale(1.06);
+        opacity:.7;
+    }
 
-.broadcast-state-label{
-
-    font-size:12px;
-
-    letter-spacing:4px;
-
-    opacity:.55;
-
-    margin-bottom:10px;
-}
-
-.broadcast-state-value{
-
-    font-size:36px;
-
-    font-weight:800;
-
-    letter-spacing:6px;
-
-    color:#f6d26b;
+    100%{
+        transform:scale(1);
+        opacity:.35;
+    }
 }
 
 /* =====================================
    AVATAR
 ===================================== */
 
-.broadcast-avatar-wrapper{
+.main-avatar{
 
     position:relative;
 
-    width:420px;
+    width:520px;
 
-    height:420px;
+    z-index:5;
 
-    margin-bottom:40px;
-}
+    filter:
 
-.broadcast-avatar-glow{
+        grayscale(100%)
 
-    position:absolute;
+        contrast(1.14)
 
-    inset:-10%;
+        brightness(.96)
 
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-
-            circle,
-
-            rgba(255,255,255,.18),
-
-            transparent 70%
+        drop-shadow(
+            0 0 40px rgba(255,210,107,.18)
         );
-
-    filter:blur(50px);
-
-    animation:
-        broadcastGlow 3s ease-in-out infinite;
-}
-
-@keyframes broadcastGlow{
-
-    0%{
-        opacity:.25;
-        transform:scale(1);
-    }
-
-    50%{
-        opacity:.6;
-        transform:scale(1.06);
-    }
-
-    100%{
-        opacity:.25;
-        transform:scale(1);
-    }
-}
-
-#broadcastAvatar{
-
-    position:relative;
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
-    border-radius:50%;
-
-    filter:
-
-        grayscale(100%)
-
-        contrast(1.15)
-
-        brightness(.92);
-
-    box-shadow:
-
-        0 0 60px rgba(255,255,255,.08),
-
-        0 0 180px rgba(255,255,255,.04);
-
-    animation:
-        broadcastIdle 5s ease-in-out infinite;
-}
-
-@keyframes broadcastIdle{
-
-    0%{
-        transform:scale(1);
-    }
-
-    50%{
-        transform:scale(1.015);
-    }
-
-    100%{
-        transform:scale(1);
-    }
-}
-
-/* =====================================
-   SPEAKING
-===================================== */
-
-.broadcast-speaking #broadcastAvatar{
-
-    animation:
-        broadcastSpeaking .32s ease-in-out infinite;
-
-    filter:
-
-        grayscale(100%)
-
-        contrast(1.2)
-
-        brightness(1.02);
-}
-
-@keyframes broadcastSpeaking{
-
-    0%{
-        transform:scale(1);
-    }
-
-    50%{
-        transform:scale(1.03);
-    }
-
-    100%{
-        transform:scale(1);
-    }
-}
-
-/* =====================================
-   THINKING
-===================================== */
-
-.broadcast-thinking #broadcastAvatar{
-
-    filter:
-
-        grayscale(100%)
-
-        contrast(1.25)
-
-        brightness(.72);
-}
-
-/* =====================================
-   OUTPUT
-===================================== */
-
-.broadcast-output{
-
-    width:100%;
-
-    max-width:980px;
-
-    min-height:180px;
-
-    font-size:34px;
-
-    line-height:1.8;
-
-    letter-spacing:.5px;
-
-    color:white;
-
-    margin-bottom:40px;
-
-    text-shadow:
-        0 0 10px rgba(255,255,255,.08);
-}
-
-/* =====================================
-   TELEMETRY
-===================================== */
-
-.broadcast-telemetry{
-
-    display:flex;
-
-    gap:18px;
-
-    flex-wrap:wrap;
-
-    justify-content:center;
-}
-
-.telemetry-item{
-
-    background:
-        rgba(255,255,255,.05);
-
-    border:
-        1px solid rgba(255,255,255,.08);
-
-    padding:10px 16px;
-
-    border-radius:14px;
-
-    font-size:13px;
-
-    letter-spacing:1px;
-
-    backdrop-filter:blur(10px);
-}
-
-/* =====================================
-   AVATAR HERO
-===================================== */
-
-.avatar-broadcast-layer{
-
-    position:relative;
-
-    width:100%;
-
-    max-width:620px;
-
-    margin:auto;
-}
-
-.avatar-glow{
-
-    position:absolute;
-
-    inset:-8%;
-
-    background:
-        radial-gradient(
-
-            circle,
-
-            rgba(255,255,255,.16),
-
-            transparent 70%
-        );
-
-    filter:blur(40px);
-
-    pointer-events:none;
-
-    z-index:1;
-
-    animation:
-        avatarGlow 4s ease-in-out infinite;
-}
-
-@keyframes avatarGlow{
-
-    0%{
-        opacity:.25;
-        transform:scale(1);
-    }
-
-    50%{
-        opacity:.55;
-        transform:scale(1.04);
-    }
-
-    100%{
-        opacity:.25;
-        transform:scale(1);
-    }
-}
-
-.ataturk-frame{
-
-    position:relative;
-
-    z-index:2;
-
-    overflow:hidden;
-}
-
-.ataturk-frame img{
-
-    transition:
-        transform .35s ease,
-        filter .35s ease,
-        opacity .35s ease;
 
     animation:
         avatarIdle 5s ease-in-out infinite;
@@ -456,18 +263,45 @@
     }
 }
 
-.avatar-speaking img{
+/* =====================================
+   THINKING
+===================================== */
 
-    animation:
-        avatarSpeaking .32s ease-in-out infinite !important;
+.avatar-thinking .main-avatar{
 
     filter:
 
         grayscale(100%)
 
-        contrast(1.15)
+        contrast(1.25)
 
-        brightness(1.04);
+        brightness(.72)
+
+        drop-shadow(
+            0 0 50px rgba(255,210,107,.24)
+        );
+}
+
+/* =====================================
+   SPEAKING
+===================================== */
+
+.avatar-speaking .main-avatar{
+
+    animation:
+        avatarSpeaking .34s ease-in-out infinite;
+
+    filter:
+
+        grayscale(100%)
+
+        contrast(1.2)
+
+        brightness(1.05)
+
+        drop-shadow(
+            0 0 60px rgba(255,210,107,.32)
+        );
 }
 
 @keyframes avatarSpeaking{
@@ -477,7 +311,7 @@
     }
 
     50%{
-        transform:scale(1.02);
+        transform:scale(1.025);
     }
 
     100%{
@@ -485,54 +319,202 @@
     }
 }
 
-.avatar-thinking img{
+/* =====================================
+   LEFT PANEL
+===================================== */
 
-    filter:
+.hero-left{
 
-        grayscale(100%)
+    position:relative;
 
-        contrast(1.25)
+    z-index:10;
 
-        brightness(.7);
+    width:32%;
 }
 
-.avatar-state-panel{
+/* =====================================
+   RIGHT PANEL
+===================================== */
 
-    margin-top:20px;
+.hero-right{
+
+    position:absolute;
+
+    right:40px;
+
+    top:160px;
+
+    z-index:10;
+
+    width:320px;
+}
+
+/* =====================================
+   STATE CARD
+===================================== */
+
+.state-card{
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:70px;
+
+    transform:translateX(-50%);
+
+    z-index:20;
+
+    width:320px;
 
     background:
-        rgba(255,255,255,.04);
+        rgba(0,0,0,.58);
 
     border:
-        1px solid rgba(255,255,255,.08);
+        1px solid rgba(255,210,107,.22);
 
-    border-radius:16px;
+    border-radius:20px;
 
-    padding:14px 18px;
+    backdrop-filter:blur(16px);
 
-    text-align:center;
-
-    backdrop-filter:blur(10px);
+    padding:20px;
 }
 
-.avatar-state-label{
+.state-title{
 
     font-size:12px;
 
-    letter-spacing:2px;
+    letter-spacing:3px;
 
-    opacity:.6;
+    opacity:.7;
 
-    margin-bottom:6px;
+    text-align:center;
+
+    margin-bottom:14px;
 }
 
-.avatar-state-value{
+.state-value{
 
-    font-size:18px;
+    font-size:52px;
 
-    font-weight:700;
+    font-weight:800;
 
-    letter-spacing:1px;
+    color:#44ff6a;
+
+    text-align:center;
+}
+
+/* =====================================
+   ECG
+===================================== */
+
+.ecg{
+
+    width:100%;
+    height:36px;
+
+    margin-top:10px;
+}
+
+.ecg path{
+
+    fill:none;
+
+    stroke:#44ff6a;
+
+    stroke-width:2;
+
+    stroke-linecap:round;
+
+    stroke-linejoin:round;
+
+    filter:
+        drop-shadow(
+            0 0 8px rgba(68,255,106,.5)
+        );
+
+    stroke-dasharray:400;
+
+    stroke-dashoffset:400;
+
+    animation:
+        ecgMove 3s linear infinite;
+}
+
+@keyframes ecgMove{
+
+    to{
+        stroke-dashoffset:0;
+    }
+}
+
+/* =====================================
+   CRT
+===================================== */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+        repeating-linear-gradient(
+
+            to bottom,
+
+            rgba(255,255,255,.018) 0px,
+
+            rgba(255,255,255,.018) 1px,
+
+            transparent 2px,
+
+            transparent 4px
+        );
+
+    pointer-events:none;
+
+    z-index:99999;
+}
+
+/* =====================================
+   DEMO OUTPUT
+===================================== */
+
+.answer-output{
+
+    min-height:280px;
+
+    font-size:28px;
+
+    line-height:1.9;
+}
+
+/* =====================================
+   CURSOR
+===================================== */
+
+.live-cursor{
+
+    animation:
+        cursorPulse 1s infinite;
+}
+
+@keyframes cursorPulse{
+
+    0%{
+        opacity:.2;
+    }
+
+    50%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:.2;
+    }
 }
 
 </style>
@@ -543,7 +525,7 @@
 
 
 <!-- =========================================
-     ORIGINAL FULL PAGE CONTENT
+     TOPBAR
 ========================================= -->
 
 <header class="topbar">
@@ -562,15 +544,41 @@
 
     <nav class="navbar">
 
-        <a href="#dashboard">Dashboard</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#reform">Reform Map</a>
-        <a href="#timeline">Timeline</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#api">API</a>
-        <a href="#contributor">Contributor Gateway</a>
-        <a href="#demo">Live Demo</a>
-        <a href="#reflection">Reflection</a>
+        <a href="#dashboard">
+            Dashboard
+        </a>
+
+        <a href="#architecture">
+            Architecture
+        </a>
+
+        <a href="#reform">
+            Reform Map
+        </a>
+
+        <a href="#timeline">
+            Timeline
+        </a>
+
+        <a href="#roadmap">
+            Roadmap
+        </a>
+
+        <a href="#api">
+            API
+        </a>
+
+        <a href="#contributor">
+            Contributor Gateway
+        </a>
+
+        <a href="#demo">
+            Live Demo
+        </a>
+
+        <a href="#reflection">
+            Reflection
+        </a>
 
     </nav>
 
@@ -584,101 +592,227 @@
 
 <section class="hero-section">
 
-    <div class="hero-grid">
+
+    <!-- =====================================
+         CENTER AVATAR SYSTEM
+    ====================================== -->
+
+    <div
+        class="center-avatar-system"
+        id="avatarSystem"
+    >
+
+        <div class="network-lines"></div>
+
+        <div class="orbit-ring ring-1"></div>
+
+        <div class="orbit-ring ring-2"></div>
+
+        <div class="orbit-ring ring-3"></div>
+
+        <div class="avatar-core-glow"></div>
+
+        <img
+            src="/static/img/ataturk.png"
+            class="main-avatar"
+            id="mainAvatar"
+        />
+
+    </div>
 
 
-        <!-- LEFT -->
+    <!-- =====================================
+         LEFT
+    ====================================== -->
 
-        <div class="hero-left">
+    <div class="hero-left">
 
-            <div class="hero-badge">
-                CONSTITUTIONAL COGNITION ENGINE
+        <div class="hero-badge">
+            CONSTITUTIONAL COGNITION ENGINE
+        </div>
+
+        <h1 class="hero-title">
+
+            HOPEtensor<br>
+            Constitutional AI
+
+        </h1>
+
+        <p class="hero-subtitle">
+
+            Constitutional cognition interface powered by
+            distributed reasoning,
+            reform memory,
+            constitutional ethics,
+            reflection telemetry,
+            Observer Node,
+            Vicdan Layer
+            and HOPEtensor federation architecture.
+
+        </p>
+
+        <div class="doctrine-card">
+
+            <div class="doctrine-label">
+                CENTRAL DOCTRINE
             </div>
 
-            <h1 class="hero-title">
-                HOPEtensor<br />
-                Constitutional AI
-            </h1>
+            <div class="hope-doctrine">
 
-            <p class="hero-subtitle">
+                <span>
+                    Peace at home.
+                </span>
 
-                Constitutional cognition interface powered by
-                distributed reasoning,
-                reform memory,
-                constitutional ethics,
-                reflection telemetry,
-                Observer Node,
-                Vicdan Layer
-                and HOPEtensor federation architecture.
+                <span>
+                    Peace in the world.
+                </span>
 
-            </p>
-
-            <div class="doctrine-card">
-
-                <div class="doctrine-label">
-                    CENTRAL DOCTRINE
-                </div>
-
-                <div class="hope-doctrine">
-
-                    <span>
-                        Peace at home.
-                    </span>
-
-                    <span>
-                        Peace in the world.
-                    </span>
-
-                    <span>
-                        Peace in the universe and HOPEverse.
-                    </span>
-
-                </div>
+                <span>
+                    Peace in the universe and HOPEverse.
+                </span>
 
             </div>
 
         </div>
 
+        <div class="portrait-caption">
+
+            <h3>
+                Constitutional Cognition Layer
+            </h3>
+
+            <p>
+
+                ATATÜRK DIGITAL TWIN is designed as a
+                civilization-scale constitutional cognition system.
+
+            </p>
+
+        </div>
+
+    </div>
 
 
-        <!-- RIGHT -->
 
-        <div class="hero-right">
+    <!-- =====================================
+         RIGHT
+    ====================================== -->
 
-            <div
-                class="avatar-broadcast-layer"
-                id="avatarLayer"
-            >
+    <div class="hero-right">
 
-                <div class="avatar-glow"></div>
+        <div class="portrait-caption">
 
-                <div class="ataturk-frame">
+            <h3>
+                Mustafa Kemal Atatürk
+            </h3>
 
-                    <img
-                        id="avatarImage"
-                        src="/static/img/ataturk.jpg"
-                        alt="Mustafa Kemal Atatürk"
-                    />
+            <p>
 
-                </div>
+                Constitutional cognition layer
+                integrating reform memory,
+                scientific thinking,
+                civic sovereignty,
+                distributed reasoning
+                and ethical alignment.
 
+            </p>
+
+            <div class="crafted-by">
+                Crafted by Erhan
             </div>
 
-            <div class="avatar-state-panel">
+        </div>
 
-                <div class="avatar-state-label">
-                    CONSTITUTIONAL STATE
-                </div>
+    </div>
 
-                <div
-                    class="avatar-state-value"
-                    id="avatarState"
-                >
-                    IDLE
-                </div>
 
+
+    <!-- =====================================
+         STATE CARD
+    ====================================== -->
+
+    <div class="state-card">
+
+        <div class="state-title">
+            CONSTITUTIONAL STATE
+        </div>
+
+        <div
+            class="state-value"
+            id="avatarState"
+        >
+            IDLE
+        </div>
+
+        <svg
+            class="ecg"
+            viewBox="0 0 300 40"
+        >
+
+            <path d="
+                M0 20
+                L40 20
+                L55 18
+                L65 5
+                L75 32
+                L90 18
+                L110 20
+                L300 20
+            " />
+
+        </svg>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     DASHBOARD
+========================================= -->
+
+<section
+    class="section"
+    id="dashboard"
+>
+
+    <div class="dashboard-grid">
+
+        <div class="metric-card">
+            <div class="metric-label">
+                SYSTEM HEALTH
             </div>
+            <div class="metric-value">
+                ONLINE
+            </div>
+        </div>
 
+        <div class="metric-card">
+            <div class="metric-label">
+                VICDAN LAYER
+            </div>
+            <div class="metric-value">
+                ACTIVE
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                HOPETENSOR FEDERATION
+            </div>
+            <div class="metric-value">
+                CONNECTED
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">
+                STREAMING SSE
+            </div>
+            <div class="metric-value">
+                LIVE
+            </div>
         </div>
 
     </div>
@@ -697,21 +831,33 @@
 >
 
     <div class="section-title">
-        Live Demo
+        LIVE DEMO
     </div>
 
     <div class="button-row">
 
-        <button id="askButton">
-            Run Cognition
+        <button
+            onclick="document.getElementById('promptInput').value='Cumhuriyet reformlarının temel mantığı nedir?'"
+        >
+            Cumhuriyet
         </button>
 
-        <button id="replayVoiceBtn">
-            Play Archive Voice
+        <button
+            onclick="document.getElementById('promptInput').value='Laiklik neden önemlidir?'"
+        >
+            Laiklik
         </button>
 
-        <button id="broadcastToggle">
-            Broadcast Mode
+        <button
+            onclick="document.getElementById('promptInput').value='Bilim neden medeniyetin temelidir?'"
+        >
+            Bilim
+        </button>
+
+        <button
+            onclick="document.getElementById('promptInput').value='HOPEtensor mimarisi nasıl çalışır?'"
+        >
+            HOPEtensor
         </button>
 
     </div>
@@ -724,6 +870,18 @@
                 id="promptInput"
                 placeholder="Bir soru sor..."
             ></textarea>
+
+            <div class="button-row">
+
+                <button id="askButton">
+                    RUN COGNITION
+                </button>
+
+                <button id="replayVoiceBtn">
+                    PLAY ARCHIVE VOICE
+                </button>
+
+            </div>
 
         </div>
 
@@ -752,30 +910,13 @@
 >
 
     <div class="section-title">
-        Cognition Trace
+        TRACE
     </div>
 
     <div
         class="trace-panel"
         id="cognitionTrace"
     ></div>
-
-</section>
-
-
-
-<!-- =========================================
-     REFLECTION
-========================================= -->
-
-<section
-    class="section"
-    id="reflection"
->
-
-    <div class="section-title">
-        Reflection Layer
-    </div>
 
 </section>
 
@@ -793,77 +934,6 @@
 
 
 <!-- =========================================
-     BROADCAST OVERLAY
-========================================= -->
-
-<div
-    id="broadcastMode"
-    class="broadcast-overlay"
->
-
-    <div class="broadcast-center">
-
-        <div class="broadcast-state">
-
-            <div class="broadcast-state-label">
-                CONSTITUTIONAL STATE
-            </div>
-
-            <div
-                class="broadcast-state-value"
-                id="broadcastState"
-            >
-                IDLE
-            </div>
-
-        </div>
-
-        <div
-            class="broadcast-avatar-wrapper"
-            id="broadcastAvatarWrapper"
-        >
-
-            <div class="broadcast-avatar-glow"></div>
-
-            <img
-                id="broadcastAvatar"
-                src="/static/img/ataturk.jpg"
-            />
-
-        </div>
-
-        <div
-            class="broadcast-output"
-            id="broadcastOutput"
-        ></div>
-
-        <div class="broadcast-telemetry">
-
-            <div class="telemetry-item">
-                HOPEtensor Federation Active
-            </div>
-
-            <div class="telemetry-item">
-                Vicdan Layer Online
-            </div>
-
-            <div class="telemetry-item">
-                Constitutional Reflection Enabled
-            </div>
-
-            <div class="telemetry-item">
-                Observer Node Tracking
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =========================================
      APP JS
 ========================================= -->
 
@@ -872,18 +942,14 @@
 
 
 <!-- =========================================
-     STATE MACHINE
+     AVATAR STATE MACHINE
 ========================================= -->
 
 <script>
 
-/* =====================================
-   ELEMENTS
-===================================== */
-
-const avatarLayer =
+const avatarSystem =
     document.getElementById(
-        "avatarLayer"
+        "avatarSystem"
     );
 
 const avatarState =
@@ -896,112 +962,33 @@ const ttsAudio =
         "ttsAudio"
     );
 
-const broadcastOverlay =
-    document.getElementById(
-        "broadcastMode"
-    );
-
-const broadcastButton =
-    document.getElementById(
-        "broadcastToggle"
-    );
-
-const broadcastOutput =
-    document.getElementById(
-        "broadcastOutput"
-    );
-
-const broadcastState =
-    document.getElementById(
-        "broadcastState"
-    );
-
-const broadcastWrapper =
-    document.getElementById(
-        "broadcastAvatarWrapper"
-    );
-
-/* =====================================
-   TOGGLE
-===================================== */
-
-if(broadcastButton){
-
-    broadcastButton.onclick = ()=>{
-
-        broadcastOverlay.classList.toggle(
-            "active"
-        );
-    };
-}
-
-/* =====================================
-   NORMAL AVATAR
-===================================== */
-
 function setAvatarState(state){
 
     avatarState.innerText =
         state.toUpperCase();
 
-    avatarLayer.classList.remove(
-        "avatar-speaking"
+    avatarSystem.classList.remove(
+        "avatar-thinking"
     );
 
-    avatarLayer.classList.remove(
-        "avatar-thinking"
+    avatarSystem.classList.remove(
+        "avatar-speaking"
     );
 
     if(state === "thinking"){
 
-        avatarLayer.classList.add(
+        avatarSystem.classList.add(
             "avatar-thinking"
         );
     }
 
-    else if(state === "speaking"){
+    if(state === "speaking"){
 
-        avatarLayer.classList.add(
+        avatarSystem.classList.add(
             "avatar-speaking"
         );
     }
 }
-
-/* =====================================
-   BROADCAST AVATAR
-===================================== */
-
-function setBroadcastState(state){
-
-    broadcastState.innerText =
-        state.toUpperCase();
-
-    broadcastWrapper.classList.remove(
-        "broadcast-speaking"
-    );
-
-    broadcastWrapper.classList.remove(
-        "broadcast-thinking"
-    );
-
-    if(state === "speaking"){
-
-        broadcastWrapper.classList.add(
-            "broadcast-speaking"
-        );
-    }
-
-    if(state === "thinking"){
-
-        broadcastWrapper.classList.add(
-            "broadcast-thinking"
-        );
-    }
-}
-
-/* =====================================
-   THINKING
-===================================== */
 
 const askBtn =
     document.getElementById(
@@ -1019,17 +1006,9 @@ if(askBtn){
             setAvatarState(
                 "thinking"
             );
-
-            setBroadcastState(
-                "thinking"
-            );
         }
     );
 }
-
-/* =====================================
-   AUDIO START
-===================================== */
 
 ttsAudio.addEventListener(
 
@@ -1040,16 +1019,8 @@ ttsAudio.addEventListener(
         setAvatarState(
             "speaking"
         );
-
-        setBroadcastState(
-            "speaking"
-        );
     }
 );
-
-/* =====================================
-   AUDIO END
-===================================== */
 
 ttsAudio.addEventListener(
 
@@ -1060,39 +1031,6 @@ ttsAudio.addEventListener(
         setAvatarState(
             "idle"
         );
-
-        setBroadcastState(
-            "idle"
-        );
-    }
-);
-
-/* =====================================
-   MIRROR OUTPUT
-===================================== */
-
-const observer =
-    new MutationObserver(()=>{
-
-        const normalOutput =
-            document.getElementById(
-                "answerOutput"
-            );
-
-        broadcastOutput.innerHTML =
-            normalOutput.innerHTML;
-    });
-
-observer.observe(
-
-    document.getElementById(
-        "answerOutput"
-    ),
-
-    {
-        childList:true,
-        subtree:true,
-        characterData:true
     }
 );
 
