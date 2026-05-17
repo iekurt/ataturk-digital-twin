@@ -1,7 +1,7 @@
 /* =========================================
    static/app.js
    FULL LONG CINEMATIC VERSION
-   FINAL CLEAN ARCHIVE BUILD
+   FINAL CLEAN READABLE BUILD
 ========================================= */
 
 "use strict";
@@ -206,8 +206,6 @@ function applyArchiveVoiceEffect(audio){
             return curve;
         }
 
-        /* SOFTER DISTORTION */
-
         distortion.curve =
             makeDistortionCurve(24);
 
@@ -279,8 +277,10 @@ function applyArchiveVoiceEffect(audio){
         const noiseGain =
             audioCtx.createGain();
 
+        /* MASSIVELY REDUCED */
+
         noiseGain.gain.value =
-            0.0025;
+            0.00015;
 
         const bufferSize =
             2 * audioCtx.sampleRate;
@@ -352,17 +352,17 @@ function applyArchiveVoiceEffect(audio){
             audioCtx.destination
         );
 
-        /* LIGHT NOISE */
+        /* HISS DISABLED */
 
-        whiteNoise.connect(
-            noiseGain
-        );
+        // whiteNoise.connect(
+        //     noiseGain
+        // );
 
-        noiseGain.connect(
-            audioCtx.destination
-        );
+        // noiseGain.connect(
+        //     audioCtx.destination
+        // );
 
-        whiteNoise.start(0);
+        // whiteNoise.start(0);
 
     }catch(err){
 
@@ -518,7 +518,21 @@ async function cinematicTypewriter(output){
         const nextWord =
             wordQueue.shift();
 
-        renderText += nextWord;
+        /* FIX SPACING */
+
+        if(
+            renderText.length > 0 &&
+            !renderText.endsWith(" ") &&
+            !nextWord.startsWith(" ") &&
+            ![".",",",";",":","!","?"].includes(
+                nextWord.trim()
+            )
+        ){
+
+            renderText += " ";
+        }
+
+        renderText += nextWord.trim();
 
         output.innerHTML =
 
