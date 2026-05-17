@@ -1,7 +1,7 @@
 /* =========================================
    static/app.js
    FULL LONG CINEMATIC VERSION
-   FINAL ARCHIVE CINEMATIC BUILD
+   FINAL WORD-CINEMATIC BUILD
 ========================================= */
 
 "use strict";
@@ -396,10 +396,6 @@ async function speakAnswer(text){
 
         audio.load();
 
-        /* =====================================
-           SLOWER
-        ===================================== */
-
         audio.playbackRate = 0.86;
 
         activeAudio = audio;
@@ -454,12 +450,12 @@ async function speakAnswer(text){
 
 
 /* =========================================
-   TRUE CINEMATIC TYPEWRITER
+   TRUE WORD CINEMATIC TYPEWRITER
 ========================================= */
 
 let renderText = "";
 
-let charQueue = [];
+let wordQueue = [];
 
 let typingActive = false;
 
@@ -469,12 +465,12 @@ async function cinematicTypewriter(output){
 
     typingActive = true;
 
-    while(charQueue.length > 0){
+    while(wordQueue.length > 0){
 
-        const nextChar =
-            charQueue.shift();
+        const nextWord =
+            wordQueue.shift();
 
-        renderText += nextChar;
+        renderText += nextWord;
 
         output.innerHTML =
 
@@ -482,29 +478,26 @@ async function cinematicTypewriter(output){
 
             '<span class="live-cursor breathing-cursor">█</span>';
 
-        /* =====================================
-           TRUE CINEMATIC SPEED
-        ===================================== */
+        let delay = 85;
 
-        let delay = 135;
-
-        /* PAUSE ON PUNCTUATION */
+        /* PAUSE LOGIC */
 
         if(
-            nextChar === "." ||
-            nextChar === "," ||
-            nextChar === ":" ||
-            nextChar === ";"
+            nextWord.includes(".") ||
+            nextWord.includes("!") ||
+            nextWord.includes("?")
         ){
 
             delay = 260;
         }
 
-        if(
-            nextChar === "\n"
+        else if(
+            nextWord.includes(",") ||
+            nextWord.includes(";") ||
+            nextWord.includes(":")
         ){
 
-            delay = 340;
+            delay = 170;
         }
 
         await new Promise(r =>
@@ -551,7 +544,7 @@ async function cinematicReason(prompt){
 
     renderText = "";
 
-    charQueue = [];
+    wordQueue = [];
 
     typingActive = false;
 
@@ -617,7 +610,7 @@ async function cinematicReason(prompt){
                 payload === "[DONE]"
             ){
 
-                while(charQueue.length > 0){
+                while(wordQueue.length > 0){
 
                     await new Promise(r =>
                         setTimeout(r, 120)
@@ -652,11 +645,16 @@ async function cinematicReason(prompt){
                     fullText +=
                         parsed.token;
 
+                    const words =
+                        parsed.token.match(
+                            /\S+\s*/g
+                        ) || [];
+
                     for(
-                        const ch of parsed.token
+                        const word of words
                     ){
 
-                        charQueue.push(ch);
+                        wordQueue.push(word);
                     }
 
                     cinematicTypewriter(
