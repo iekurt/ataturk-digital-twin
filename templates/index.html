@@ -1,7 +1,7 @@
 <!-- =========================================
      templates/index.html
-     FULL FINAL LONG AVATAR VERSION
-     NO SECTION REMOVED
+     FULL FINAL CINEMATIC BROADCAST VERSION
+     COMPLETE SINGLE FILE
 ========================================= -->
 
 <!DOCTYPE html>
@@ -9,260 +9,533 @@
 
 <head>
 
-    <meta charset="UTF-8" />
+<meta charset="UTF-8" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    />
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+/>
 
-    <title>
-        ATATÜRK DIGITAL TWIN / HOPEVERSE
-    </title>
+<title>
+    ATATÜRK DIGITAL TWIN / HOPEVERSE
+</title>
 
-    <link
-        rel="stylesheet"
-        href="/static/style.css"
-    />
+<link
+    rel="stylesheet"
+    href="/static/style.css"
+/>
 
-    <style>
+<style>
 
-        /* =====================================
-           AVATAR CINEMATIC LAYER
-        ===================================== */
+/* =========================================
+   BROADCAST OVERLAY
+========================================= */
 
-        .avatar-broadcast-layer{
+.broadcast-overlay{
 
-            position:relative;
+    position:fixed;
 
-            width:100%;
+    inset:0;
 
-            max-width:620px;
+    z-index:999999;
 
-            margin:auto;
-        }
+    background:
+        radial-gradient(
 
-        .avatar-glow{
+            circle at center,
 
-            position:absolute;
+            #111111 0%,
 
-            inset:-8%;
+            #050505 60%,
 
-            background:
-                radial-gradient(
+            #000000 100%
+        );
 
-                    circle,
+    display:none;
 
-                    rgba(255,255,255,.16),
+    align-items:center;
 
-                    transparent 70%
-                );
+    justify-content:center;
 
-            filter:blur(40px);
+    overflow:hidden;
+}
 
-            pointer-events:none;
+.broadcast-overlay.active{
 
-            z-index:1;
+    display:flex;
+}
 
-            animation:
-                avatarGlow 4s ease-in-out infinite;
-        }
+/* =====================================
+   CRT
+===================================== */
 
-        @keyframes avatarGlow{
+.broadcast-overlay::before{
 
-            0%{
-                opacity:.25;
-                transform:scale(1);
-            }
+    content:"";
 
-            50%{
-                opacity:.55;
-                transform:scale(1.04);
-            }
+    position:absolute;
 
-            100%{
-                opacity:.25;
-                transform:scale(1);
-            }
-        }
+    inset:0;
 
-        .ataturk-frame{
+    background:
+        repeating-linear-gradient(
 
-            position:relative;
+            to bottom,
 
-            z-index:2;
+            rgba(255,255,255,.02) 0px,
 
-            overflow:hidden;
-        }
+            rgba(255,255,255,.02) 1px,
 
-        .ataturk-frame img{
+            transparent 2px,
 
-            transition:
-                transform .35s ease,
-                filter .35s ease,
-                opacity .35s ease;
+            transparent 4px
+        );
 
-            animation:
-                avatarIdle 5s ease-in-out infinite;
-        }
+    opacity:.16;
 
-        @keyframes avatarIdle{
+    pointer-events:none;
+}
 
-            0%{
-                transform:scale(1);
-            }
+/* =====================================
+   CENTER
+===================================== */
 
-            50%{
-                transform:scale(1.012);
-            }
+.broadcast-center{
 
-            100%{
-                transform:scale(1);
-            }
-        }
+    position:relative;
 
-        .avatar-speaking img{
+    z-index:5;
 
-            animation:
-                avatarSpeaking .32s ease-in-out infinite !important;
+    width:90%;
 
-            filter:
+    max-width:1200px;
 
-                grayscale(100%)
+    display:flex;
 
-                contrast(1.15)
+    flex-direction:column;
 
-                brightness(1.04);
-        }
+    align-items:center;
 
-        @keyframes avatarSpeaking{
+    justify-content:center;
 
-            0%{
-                transform:scale(1);
-            }
+    text-align:center;
+}
 
-            50%{
-                transform:scale(1.02);
-            }
+/* =====================================
+   STATE
+===================================== */
 
-            100%{
-                transform:scale(1);
-            }
-        }
+.broadcast-state{
 
-        .avatar-thinking img{
+    margin-bottom:30px;
+}
 
-            filter:
+.broadcast-state-label{
 
-                grayscale(100%)
+    font-size:12px;
 
-                contrast(1.25)
+    letter-spacing:4px;
 
-                brightness(.7);
-        }
+    opacity:.55;
 
-        .avatar-state-panel{
+    margin-bottom:10px;
+}
 
-            margin-top:20px;
+.broadcast-state-value{
 
-            background:
-                rgba(255,255,255,.04);
+    font-size:36px;
 
-            border:
-                1px solid rgba(255,255,255,.08);
+    font-weight:800;
 
-            border-radius:16px;
+    letter-spacing:6px;
 
-            padding:14px 18px;
+    color:#f6d26b;
+}
 
-            text-align:center;
+/* =====================================
+   AVATAR
+===================================== */
 
-            backdrop-filter:blur(10px);
-        }
+.broadcast-avatar-wrapper{
 
-        .avatar-state-label{
+    position:relative;
 
-            font-size:12px;
+    width:420px;
 
-            letter-spacing:2px;
+    height:420px;
 
-            opacity:.6;
+    margin-bottom:40px;
+}
 
-            margin-bottom:6px;
-        }
+.broadcast-avatar-glow{
 
-        .avatar-state-value{
+    position:absolute;
 
-            font-size:18px;
+    inset:-10%;
 
-            font-weight:700;
+    border-radius:50%;
 
-            letter-spacing:1px;
-        }
+    background:
+        radial-gradient(
 
-        /* =====================================
-           CRT BROADCAST OVERLAY
-        ===================================== */
+            circle,
 
-        body::before{
+            rgba(255,255,255,.18),
 
-            content:"";
+            transparent 70%
+        );
 
-            position:fixed;
+    filter:blur(50px);
 
-            inset:0;
+    animation:
+        broadcastGlow 3s ease-in-out infinite;
+}
 
-            background:
-                repeating-linear-gradient(
+@keyframes broadcastGlow{
 
-                    to bottom,
+    0%{
+        opacity:.25;
+        transform:scale(1);
+    }
 
-                    rgba(255,255,255,.02) 0px,
+    50%{
+        opacity:.6;
+        transform:scale(1.06);
+    }
 
-                    rgba(255,255,255,.02) 1px,
+    100%{
+        opacity:.25;
+        transform:scale(1);
+    }
+}
 
-                    transparent 2px,
+#broadcastAvatar{
 
-                    transparent 4px
-                );
+    position:relative;
 
-            pointer-events:none;
+    width:100%;
 
-            z-index:9999;
+    height:100%;
 
-            opacity:.15;
-        }
+    object-fit:cover;
 
-        /* =====================================
-           LIVE CURSOR
-        ===================================== */
+    border-radius:50%;
 
-        .live-cursor{
+    filter:
 
-            display:inline-block;
+        grayscale(100%)
 
-            animation:
-                cursorHeartbeat 1s infinite;
+        contrast(1.15)
 
-            color:white;
-        }
+        brightness(.92);
 
-        @keyframes cursorHeartbeat{
+    box-shadow:
 
-            0%{
-                opacity:.25;
-            }
+        0 0 60px rgba(255,255,255,.08),
 
-            50%{
-                opacity:1;
-            }
+        0 0 180px rgba(255,255,255,.04);
 
-            100%{
-                opacity:.25;
-            }
-        }
+    animation:
+        broadcastIdle 5s ease-in-out infinite;
+}
 
-    </style>
+@keyframes broadcastIdle{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.015);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+/* =====================================
+   SPEAKING
+===================================== */
+
+.broadcast-speaking #broadcastAvatar{
+
+    animation:
+        broadcastSpeaking .32s ease-in-out infinite;
+
+    filter:
+
+        grayscale(100%)
+
+        contrast(1.2)
+
+        brightness(1.02);
+}
+
+@keyframes broadcastSpeaking{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.03);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+/* =====================================
+   THINKING
+===================================== */
+
+.broadcast-thinking #broadcastAvatar{
+
+    filter:
+
+        grayscale(100%)
+
+        contrast(1.25)
+
+        brightness(.72);
+}
+
+/* =====================================
+   OUTPUT
+===================================== */
+
+.broadcast-output{
+
+    width:100%;
+
+    max-width:980px;
+
+    min-height:180px;
+
+    font-size:34px;
+
+    line-height:1.8;
+
+    letter-spacing:.5px;
+
+    color:white;
+
+    margin-bottom:40px;
+
+    text-shadow:
+        0 0 10px rgba(255,255,255,.08);
+}
+
+/* =====================================
+   TELEMETRY
+===================================== */
+
+.broadcast-telemetry{
+
+    display:flex;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+}
+
+.telemetry-item{
+
+    background:
+        rgba(255,255,255,.05);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    padding:10px 16px;
+
+    border-radius:14px;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    backdrop-filter:blur(10px);
+}
+
+/* =====================================
+   AVATAR HERO
+===================================== */
+
+.avatar-broadcast-layer{
+
+    position:relative;
+
+    width:100%;
+
+    max-width:620px;
+
+    margin:auto;
+}
+
+.avatar-glow{
+
+    position:absolute;
+
+    inset:-8%;
+
+    background:
+        radial-gradient(
+
+            circle,
+
+            rgba(255,255,255,.16),
+
+            transparent 70%
+        );
+
+    filter:blur(40px);
+
+    pointer-events:none;
+
+    z-index:1;
+
+    animation:
+        avatarGlow 4s ease-in-out infinite;
+}
+
+@keyframes avatarGlow{
+
+    0%{
+        opacity:.25;
+        transform:scale(1);
+    }
+
+    50%{
+        opacity:.55;
+        transform:scale(1.04);
+    }
+
+    100%{
+        opacity:.25;
+        transform:scale(1);
+    }
+}
+
+.ataturk-frame{
+
+    position:relative;
+
+    z-index:2;
+
+    overflow:hidden;
+}
+
+.ataturk-frame img{
+
+    transition:
+        transform .35s ease,
+        filter .35s ease,
+        opacity .35s ease;
+
+    animation:
+        avatarIdle 5s ease-in-out infinite;
+}
+
+@keyframes avatarIdle{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.012);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+.avatar-speaking img{
+
+    animation:
+        avatarSpeaking .32s ease-in-out infinite !important;
+
+    filter:
+
+        grayscale(100%)
+
+        contrast(1.15)
+
+        brightness(1.04);
+}
+
+@keyframes avatarSpeaking{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.02);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+.avatar-thinking img{
+
+    filter:
+
+        grayscale(100%)
+
+        contrast(1.25)
+
+        brightness(.7);
+}
+
+.avatar-state-panel{
+
+    margin-top:20px;
+
+    background:
+        rgba(255,255,255,.04);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    border-radius:16px;
+
+    padding:14px 18px;
+
+    text-align:center;
+
+    backdrop-filter:blur(10px);
+}
+
+.avatar-state-label{
+
+    font-size:12px;
+
+    letter-spacing:2px;
+
+    opacity:.6;
+
+    margin-bottom:6px;
+}
+
+.avatar-state-value{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+}
+
+</style>
 
 </head>
 
@@ -270,7 +543,7 @@
 
 
 <!-- =========================================
-     TOPBAR
+     ORIGINAL FULL PAGE CONTENT
 ========================================= -->
 
 <header class="topbar">
@@ -287,44 +560,17 @@
 
     </div>
 
-
     <nav class="navbar">
 
-        <a href="#dashboard">
-            Dashboard
-        </a>
-
-        <a href="#architecture">
-            Architecture
-        </a>
-
-        <a href="#reform">
-            Reform Map
-        </a>
-
-        <a href="#timeline">
-            Timeline
-        </a>
-
-        <a href="#roadmap">
-            Roadmap
-        </a>
-
-        <a href="#api">
-            API
-        </a>
-
-        <a href="#contributor">
-            Contributor Gateway
-        </a>
-
-        <a href="#demo">
-            Live Demo
-        </a>
-
-        <a href="#reflection">
-            Reflection
-        </a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#reform">Reform Map</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#api">API</a>
+        <a href="#contributor">Contributor Gateway</a>
+        <a href="#demo">Live Demo</a>
+        <a href="#reflection">Reflection</a>
 
     </nav>
 
@@ -367,9 +613,6 @@
 
             </p>
 
-
-            <!-- DOCTRINE -->
-
             <div class="doctrine-card">
 
                 <div class="doctrine-label">
@@ -391,33 +634,6 @@
                     </span>
 
                 </div>
-
-            </div>
-
-
-            <!-- LONG DESCRIPTION -->
-
-            <div class="portrait-caption">
-
-                <h3>
-                    Constitutional Cognition Layer
-                </h3>
-
-                <p>
-
-                    ATATÜRK DIGITAL TWIN is designed as a
-                    civilization-scale constitutional cognition system.
-
-                    The architecture combines
-                    distributed reasoning,
-                    civic dignity,
-                    reform memory,
-                    ethical verification,
-                    reflection telemetry,
-                    constitutional continuity
-                    and future governance logic.
-
-                </p>
 
             </div>
 
@@ -463,469 +679,6 @@
 
             </div>
 
-            <div class="portrait-caption">
-
-                <h3>
-                    Mustafa Kemal Atatürk
-                </h3>
-
-                <p>
-
-                    Constitutional cognition layer integrating
-                    reform memory,
-                    scientific thinking,
-                    civic sovereignty,
-                    distributed reasoning
-                    and ethical alignment.
-
-                </p>
-
-                <div class="crafted-by">
-                    Crafted by Erhan
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     DASHBOARD
-========================================= -->
-
-<section
-    class="section"
-    id="dashboard"
->
-
-    <div class="section-title">
-        Dashboard
-    </div>
-
-    <div class="dashboard-grid">
-
-        <div class="metric-card">
-            <div class="metric-label">
-                System Health
-            </div>
-            <div class="metric-value">
-                ONLINE
-            </div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-label">
-                Vicdan Layer
-            </div>
-            <div class="metric-value">
-                ACTIVE
-            </div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-label">
-                HOPEtensor Federation
-            </div>
-            <div class="metric-value">
-                CONNECTED
-            </div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-label">
-                Streaming SSE
-            </div>
-            <div class="metric-value">
-                LIVE
-            </div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-label">
-                Observer Node
-            </div>
-            <div class="metric-value">
-                ACTIVE
-            </div>
-        </div>
-
-        <div class="metric-card">
-            <div class="metric-label">
-                Reflection Layer
-            </div>
-            <div class="metric-value">
-                READY
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     ARCHITECTURE
-========================================= -->
-
-<section
-    class="section"
-    id="architecture"
->
-
-    <div class="section-title">
-        Architecture
-    </div>
-
-    <div class="trace-panel">
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Input Layer
-            </div>
-            <div class="trace-detail">
-                Prompt ingestion,
-                constitutional parsing,
-                contextual routing
-                and cognition initialization.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                HOPEtensor Routing
-            </div>
-            <div class="trace-detail">
-                Distributed reasoning federation
-                coordinating multiple cognition pathways.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Vicdan Layer
-            </div>
-            <div class="trace-detail">
-                Ethical verification,
-                constitutional alignment,
-                civic dignity protection
-                and hallucination resistance.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Observer Audit Node
-            </div>
-            <div class="trace-detail">
-                Reflection scoring,
-                cognition telemetry,
-                confidence analysis
-                and structural consistency evaluation.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Reflection Layer
-            </div>
-            <div class="trace-detail">
-                Self-evaluation,
-                constitutional continuity
-                and reasoning integrity assessment.
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     REFORM MAP
-========================================= -->
-
-<section
-    class="section"
-    id="reform"
->
-
-    <div class="section-title">
-        Reform Map
-    </div>
-
-    <div class="reflection-grid">
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Education Reform
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Scientific Modernization
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Language Reform
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Civic Sovereignty
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Secular Governance
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Women's Rights
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     TIMELINE
-========================================= -->
-
-<section
-    class="section"
-    id="timeline"
->
-
-    <div class="section-title">
-        Timeline
-    </div>
-
-    <div class="trace-panel">
-
-        <div class="trace-item">
-            <div class="trace-title">
-                1919
-            </div>
-            <div class="trace-detail">
-                National struggle initialization.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                1923
-            </div>
-            <div class="trace-detail">
-                Republic foundation and constitutional transition.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                1938
-            </div>
-            <div class="trace-detail">
-                Institutional reform legacy.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                2026
-            </div>
-            <div class="trace-detail">
-                Constitutional cognition deployment.
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     ROADMAP
-========================================= -->
-
-<section
-    class="section"
-    id="roadmap"
->
-
-    <div class="section-title">
-        Roadmap
-    </div>
-
-    <div class="trace-panel">
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Phase 1 — Constitutional Core
-            </div>
-            <div class="trace-detail">
-                Streaming cognition,
-                reflection telemetry,
-                premium TTS,
-                constitutional prompting,
-                observer audit systems
-                and cinematic cognition delivery.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Phase 2 — HOPEtensor Federation
-            </div>
-            <div class="trace-detail">
-                Distributed reasoning nodes,
-                constitutional verification,
-                Vicdan Layer federation,
-                civic audit systems,
-                hallucination resistance
-                and multi-vector cognition routing.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Phase 3 — HOPEverse
-            </div>
-            <div class="trace-detail">
-                Civilization-scale ethical coordination layer,
-                digital constitutional memory,
-                decentralized governance
-                and planetary cognition infrastructure.
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     API
-========================================= -->
-
-<section
-    class="section"
-    id="api"
->
-
-    <div class="section-title">
-        API
-    </div>
-
-    <div class="trace-panel">
-
-        <div class="trace-item">
-            <div class="trace-title">
-                /reason
-            </div>
-            <div class="trace-detail">
-                Constitutional reasoning endpoint.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                /stream
-            </div>
-            <div class="trace-detail">
-                SSE cognition streaming pipeline.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                /tts
-            </div>
-            <div class="trace-detail">
-                Premium constitutional voice synthesis.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                /reflection
-            </div>
-            <div class="trace-detail">
-                Observer telemetry and scoring layer.
-            </div>
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================
-     CONTRIBUTOR
-========================================= -->
-
-<section
-    class="section"
-    id="contributor"
->
-
-    <div class="section-title">
-        Contributor Gateway
-    </div>
-
-    <div class="trace-panel">
-
-        <div class="trace-item">
-            <div class="trace-title">
-                Constitutional AI Research
-            </div>
-            <div class="trace-detail">
-                Ethical cognition,
-                civic reasoning
-                and constitutional memory systems.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                HOPEtensor Infrastructure
-            </div>
-            <div class="trace-detail">
-                Distributed cognition federation,
-                routing systems
-                and observer networks.
-            </div>
-        </div>
-
-        <div class="trace-item">
-            <div class="trace-title">
-                FastAPI + OpenAI Stack
-            </div>
-            <div class="trace-detail">
-                Streaming SSE,
-                premium TTS,
-                deployment architecture
-                and cinematic interfaces.
-            </div>
         </div>
 
     </div>
@@ -949,97 +702,32 @@
 
     <div class="button-row">
 
-        <button
-            onclick="document.getElementById('promptInput').value='Cumhuriyet reformlarının temel mantığı nedir?'"
-        >
-            Cumhuriyet
+        <button id="askButton">
+            Run Cognition
         </button>
 
-        <button
-            onclick="document.getElementById('promptInput').value='Laiklik neden önemlidir?'"
-        >
-            Laiklik
+        <button id="replayVoiceBtn">
+            Play Archive Voice
         </button>
 
-        <button
-            onclick="document.getElementById('promptInput').value='Bilim neden medeniyetin temelidir?'"
-        >
-            Bilim
-        </button>
-
-        <button
-            onclick="document.getElementById('promptInput').value='HOPEtensor mimarisi nasıl çalışır?'"
-        >
-            HOPEtensor
+        <button id="broadcastToggle">
+            Broadcast Mode
         </button>
 
     </div>
 
     <div class="demo-grid">
 
-        <!-- LEFT -->
-
         <div class="demo-panel">
-
-            <label class="input-label">
-                Reasoning Mode
-            </label>
-
-            <select id="reasoningMode">
-
-                <option value="constitutional">
-                    Constitutional
-                </option>
-
-                <option value="historical">
-                    Historical
-                </option>
-
-                <option value="visionary">
-                    Visionary
-                </option>
-
-                <option value="technical">
-                    Technical
-                </option>
-
-                <option value="critical">
-                    Critical
-                </option>
-
-            </select>
-
-            <label class="input-label">
-                Prompt
-            </label>
 
             <textarea
                 id="promptInput"
                 placeholder="Bir soru sor..."
             ></textarea>
 
-            <div class="button-row">
-
-                <button id="askButton">
-                    Run Cognition
-                </button>
-
-                <button id="replayVoiceBtn">
-                    Play Archive Voice
-                </button>
-
-            </div>
-
         </div>
 
-
-        <!-- RIGHT -->
-
         <div class="demo-panel">
-
-            <div class="trace-title">
-                Cognition Output
-            </div>
 
             <div
                 class="answer-output"
@@ -1089,82 +777,6 @@
         Reflection Layer
     </div>
 
-    <div class="reflection-grid">
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Reflection Score
-            </div>
-            <div
-                class="reflection-value"
-                id="reflectionScore"
-            >
-                92
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Constitutional Alignment
-            </div>
-            <div
-                class="reflection-value"
-                id="constitutionalAlignment"
-            >
-                95%
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Historical Alignment
-            </div>
-            <div
-                class="reflection-value"
-                id="historicalAlignment"
-            >
-                91%
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Ethical Alignment
-            </div>
-            <div
-                class="reflection-value"
-                id="ethicalAlignment"
-            >
-                96%
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Hallucination Risk
-            </div>
-            <div
-                class="reflection-value"
-                id="hallucinationRisk"
-            >
-                8%
-            </div>
-        </div>
-
-        <div class="reflection-card">
-            <div class="reflection-label">
-                Confidence Score
-            </div>
-            <div
-                class="reflection-value"
-                id="confidenceScore"
-            >
-                93%
-            </div>
-        </div>
-
-    </div>
-
 </section>
 
 
@@ -1181,115 +793,308 @@
 
 
 <!-- =========================================
-     JS
+     BROADCAST OVERLAY
+========================================= -->
+
+<div
+    id="broadcastMode"
+    class="broadcast-overlay"
+>
+
+    <div class="broadcast-center">
+
+        <div class="broadcast-state">
+
+            <div class="broadcast-state-label">
+                CONSTITUTIONAL STATE
+            </div>
+
+            <div
+                class="broadcast-state-value"
+                id="broadcastState"
+            >
+                IDLE
+            </div>
+
+        </div>
+
+        <div
+            class="broadcast-avatar-wrapper"
+            id="broadcastAvatarWrapper"
+        >
+
+            <div class="broadcast-avatar-glow"></div>
+
+            <img
+                id="broadcastAvatar"
+                src="/static/img/ataturk.jpg"
+            />
+
+        </div>
+
+        <div
+            class="broadcast-output"
+            id="broadcastOutput"
+        ></div>
+
+        <div class="broadcast-telemetry">
+
+            <div class="telemetry-item">
+                HOPEtensor Federation Active
+            </div>
+
+            <div class="telemetry-item">
+                Vicdan Layer Online
+            </div>
+
+            <div class="telemetry-item">
+                Constitutional Reflection Enabled
+            </div>
+
+            <div class="telemetry-item">
+                Observer Node Tracking
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     APP JS
 ========================================= -->
 
 <script src="/static/app.js"></script>
 
+
+
+<!-- =========================================
+     STATE MACHINE
+========================================= -->
+
 <script>
 
-    /* =====================================
-       AVATAR STATE MACHINE
-    ===================================== */
+/* =====================================
+   ELEMENTS
+===================================== */
 
-    const avatarLayer =
-        document.getElementById(
-            "avatarLayer"
+const avatarLayer =
+    document.getElementById(
+        "avatarLayer"
+    );
+
+const avatarState =
+    document.getElementById(
+        "avatarState"
+    );
+
+const ttsAudio =
+    document.getElementById(
+        "ttsAudio"
+    );
+
+const broadcastOverlay =
+    document.getElementById(
+        "broadcastMode"
+    );
+
+const broadcastButton =
+    document.getElementById(
+        "broadcastToggle"
+    );
+
+const broadcastOutput =
+    document.getElementById(
+        "broadcastOutput"
+    );
+
+const broadcastState =
+    document.getElementById(
+        "broadcastState"
+    );
+
+const broadcastWrapper =
+    document.getElementById(
+        "broadcastAvatarWrapper"
+    );
+
+/* =====================================
+   TOGGLE
+===================================== */
+
+if(broadcastButton){
+
+    broadcastButton.onclick = ()=>{
+
+        broadcastOverlay.classList.toggle(
+            "active"
         );
+    };
+}
 
-    const avatarState =
-        document.getElementById(
-            "avatarState"
-        );
+/* =====================================
+   NORMAL AVATAR
+===================================== */
 
-    const ttsAudio =
-        document.getElementById(
-            "ttsAudio"
-        );
+function setAvatarState(state){
 
-    function setAvatarState(state){
+    avatarState.innerText =
+        state.toUpperCase();
 
-        avatarState.innerText =
-            state.toUpperCase();
+    avatarLayer.classList.remove(
+        "avatar-speaking"
+    );
 
-        avatarLayer.classList.remove(
-            "avatar-speaking"
-        );
+    avatarLayer.classList.remove(
+        "avatar-thinking"
+    );
 
-        avatarLayer.classList.remove(
+    if(state === "thinking"){
+
+        avatarLayer.classList.add(
             "avatar-thinking"
         );
-
-        if(state === "thinking"){
-
-            avatarLayer.classList.add(
-                "avatar-thinking"
-            );
-        }
-
-        else if(state === "speaking"){
-
-            avatarLayer.classList.add(
-                "avatar-speaking"
-            );
-        }
     }
 
-    /* =====================================
-       THINKING MODE
-    ===================================== */
+    else if(state === "speaking"){
 
-    const askButton =
-        document.getElementById(
-            "askButton"
+        avatarLayer.classList.add(
+            "avatar-speaking"
         );
+    }
+}
 
-    if(askButton){
+/* =====================================
+   BROADCAST AVATAR
+===================================== */
 
-        askButton.addEventListener(
+function setBroadcastState(state){
 
-            "click",
+    broadcastState.innerText =
+        state.toUpperCase();
 
-            ()=>{
+    broadcastWrapper.classList.remove(
+        "broadcast-speaking"
+    );
 
-                setAvatarState(
-                    "thinking"
-                );
-            }
+    broadcastWrapper.classList.remove(
+        "broadcast-thinking"
+    );
+
+    if(state === "speaking"){
+
+        broadcastWrapper.classList.add(
+            "broadcast-speaking"
         );
     }
 
-    /* =====================================
-       AUDIO PLAY
-    ===================================== */
+    if(state === "thinking"){
 
-    ttsAudio.addEventListener(
+        broadcastWrapper.classList.add(
+            "broadcast-thinking"
+        );
+    }
+}
 
-        "play",
+/* =====================================
+   THINKING
+===================================== */
+
+const askBtn =
+    document.getElementById(
+        "askButton"
+    );
+
+if(askBtn){
+
+    askBtn.addEventListener(
+
+        "click",
 
         ()=>{
 
             setAvatarState(
-                "speaking"
+                "thinking"
+            );
+
+            setBroadcastState(
+                "thinking"
             );
         }
     );
+}
 
-    /* =====================================
-       AUDIO END
-    ===================================== */
+/* =====================================
+   AUDIO START
+===================================== */
 
-    ttsAudio.addEventListener(
+ttsAudio.addEventListener(
 
-        "ended",
+    "play",
 
-        ()=>{
+    ()=>{
 
-            setAvatarState(
-                "idle"
+        setAvatarState(
+            "speaking"
+        );
+
+        setBroadcastState(
+            "speaking"
+        );
+    }
+);
+
+/* =====================================
+   AUDIO END
+===================================== */
+
+ttsAudio.addEventListener(
+
+    "ended",
+
+    ()=>{
+
+        setAvatarState(
+            "idle"
+        );
+
+        setBroadcastState(
+            "idle"
+        );
+    }
+);
+
+/* =====================================
+   MIRROR OUTPUT
+===================================== */
+
+const observer =
+    new MutationObserver(()=>{
+
+        const normalOutput =
+            document.getElementById(
+                "answerOutput"
             );
-        }
-    );
+
+        broadcastOutput.innerHTML =
+            normalOutput.innerHTML;
+    });
+
+observer.observe(
+
+    document.getElementById(
+        "answerOutput"
+    ),
+
+    {
+        childList:true,
+        subtree:true,
+        characterData:true
+    }
+);
 
 </script>
 
