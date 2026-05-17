@@ -1,6 +1,7 @@
 <!-- =========================================
      templates/index.html
-     FULL FINAL LONG VERSION
+     FULL FINAL LONG AVATAR VERSION
+     NO SECTION REMOVED
 ========================================= -->
 
 <!DOCTYPE html>
@@ -23,6 +24,245 @@
         rel="stylesheet"
         href="/static/style.css"
     />
+
+    <style>
+
+        /* =====================================
+           AVATAR CINEMATIC LAYER
+        ===================================== */
+
+        .avatar-broadcast-layer{
+
+            position:relative;
+
+            width:100%;
+
+            max-width:620px;
+
+            margin:auto;
+        }
+
+        .avatar-glow{
+
+            position:absolute;
+
+            inset:-8%;
+
+            background:
+                radial-gradient(
+
+                    circle,
+
+                    rgba(255,255,255,.16),
+
+                    transparent 70%
+                );
+
+            filter:blur(40px);
+
+            pointer-events:none;
+
+            z-index:1;
+
+            animation:
+                avatarGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow{
+
+            0%{
+                opacity:.25;
+                transform:scale(1);
+            }
+
+            50%{
+                opacity:.55;
+                transform:scale(1.04);
+            }
+
+            100%{
+                opacity:.25;
+                transform:scale(1);
+            }
+        }
+
+        .ataturk-frame{
+
+            position:relative;
+
+            z-index:2;
+
+            overflow:hidden;
+        }
+
+        .ataturk-frame img{
+
+            transition:
+                transform .35s ease,
+                filter .35s ease,
+                opacity .35s ease;
+
+            animation:
+                avatarIdle 5s ease-in-out infinite;
+        }
+
+        @keyframes avatarIdle{
+
+            0%{
+                transform:scale(1);
+            }
+
+            50%{
+                transform:scale(1.012);
+            }
+
+            100%{
+                transform:scale(1);
+            }
+        }
+
+        .avatar-speaking img{
+
+            animation:
+                avatarSpeaking .32s ease-in-out infinite !important;
+
+            filter:
+
+                grayscale(100%)
+
+                contrast(1.15)
+
+                brightness(1.04);
+        }
+
+        @keyframes avatarSpeaking{
+
+            0%{
+                transform:scale(1);
+            }
+
+            50%{
+                transform:scale(1.02);
+            }
+
+            100%{
+                transform:scale(1);
+            }
+        }
+
+        .avatar-thinking img{
+
+            filter:
+
+                grayscale(100%)
+
+                contrast(1.25)
+
+                brightness(.7);
+        }
+
+        .avatar-state-panel{
+
+            margin-top:20px;
+
+            background:
+                rgba(255,255,255,.04);
+
+            border:
+                1px solid rgba(255,255,255,.08);
+
+            border-radius:16px;
+
+            padding:14px 18px;
+
+            text-align:center;
+
+            backdrop-filter:blur(10px);
+        }
+
+        .avatar-state-label{
+
+            font-size:12px;
+
+            letter-spacing:2px;
+
+            opacity:.6;
+
+            margin-bottom:6px;
+        }
+
+        .avatar-state-value{
+
+            font-size:18px;
+
+            font-weight:700;
+
+            letter-spacing:1px;
+        }
+
+        /* =====================================
+           CRT BROADCAST OVERLAY
+        ===================================== */
+
+        body::before{
+
+            content:"";
+
+            position:fixed;
+
+            inset:0;
+
+            background:
+                repeating-linear-gradient(
+
+                    to bottom,
+
+                    rgba(255,255,255,.02) 0px,
+
+                    rgba(255,255,255,.02) 1px,
+
+                    transparent 2px,
+
+                    transparent 4px
+                );
+
+            pointer-events:none;
+
+            z-index:9999;
+
+            opacity:.15;
+        }
+
+        /* =====================================
+           LIVE CURSOR
+        ===================================== */
+
+        .live-cursor{
+
+            display:inline-block;
+
+            animation:
+                cursorHeartbeat 1s infinite;
+
+            color:white;
+        }
+
+        @keyframes cursorHeartbeat{
+
+            0%{
+                opacity:.25;
+            }
+
+            50%{
+                opacity:1;
+            }
+
+            100%{
+                opacity:.25;
+            }
+        }
+
+    </style>
 
 </head>
 
@@ -189,12 +429,37 @@
 
         <div class="hero-right">
 
-            <div class="ataturk-frame">
+            <div
+                class="avatar-broadcast-layer"
+                id="avatarLayer"
+            >
 
-                <img
-                    src="/static/img/ataturk.jpg"
-                    alt="Mustafa Kemal Atatürk"
-                />
+                <div class="avatar-glow"></div>
+
+                <div class="ataturk-frame">
+
+                    <img
+                        id="avatarImage"
+                        src="/static/img/ataturk.jpg"
+                        alt="Mustafa Kemal Atatürk"
+                    />
+
+                </div>
+
+            </div>
+
+            <div class="avatar-state-panel">
+
+                <div class="avatar-state-label">
+                    CONSTITUTIONAL STATE
+                </div>
+
+                <div
+                    class="avatar-state-value"
+                    id="avatarState"
+                >
+                    IDLE
+                </div>
 
             </div>
 
@@ -245,80 +510,57 @@
     <div class="dashboard-grid">
 
         <div class="metric-card">
-
             <div class="metric-label">
                 System Health
             </div>
-
             <div class="metric-value">
                 ONLINE
             </div>
-
         </div>
 
-
         <div class="metric-card">
-
             <div class="metric-label">
                 Vicdan Layer
             </div>
-
             <div class="metric-value">
                 ACTIVE
             </div>
-
         </div>
 
-
         <div class="metric-card">
-
             <div class="metric-label">
                 HOPEtensor Federation
             </div>
-
             <div class="metric-value">
                 CONNECTED
             </div>
-
         </div>
 
-
         <div class="metric-card">
-
             <div class="metric-label">
                 Streaming SSE
             </div>
-
             <div class="metric-value">
                 LIVE
             </div>
-
         </div>
 
-
         <div class="metric-card">
-
             <div class="metric-label">
                 Observer Node
             </div>
-
             <div class="metric-value">
                 ACTIVE
             </div>
-
         </div>
 
-
         <div class="metric-card">
-
             <div class="metric-label">
                 Reflection Layer
             </div>
-
             <div class="metric-value">
                 READY
             </div>
-
         </div>
 
     </div>
@@ -343,89 +585,60 @@
     <div class="trace-panel">
 
         <div class="trace-item">
-
             <div class="trace-title">
                 Input Layer
             </div>
-
             <div class="trace-detail">
-
                 Prompt ingestion,
                 constitutional parsing,
                 contextual routing
                 and cognition initialization.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 HOPEtensor Routing
             </div>
-
             <div class="trace-detail">
-
                 Distributed reasoning federation
                 coordinating multiple cognition pathways.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 Vicdan Layer
             </div>
-
             <div class="trace-detail">
-
                 Ethical verification,
                 constitutional alignment,
                 civic dignity protection
                 and hallucination resistance.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 Observer Audit Node
             </div>
-
             <div class="trace-detail">
-
                 Reflection scoring,
                 cognition telemetry,
                 confidence analysis
                 and structural consistency evaluation.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 Reflection Layer
             </div>
-
             <div class="trace-detail">
-
                 Self-evaluation,
                 constitutional continuity
                 and reasoning integrity assessment.
-
             </div>
-
         </div>
 
     </div>
@@ -507,54 +720,39 @@
     <div class="trace-panel">
 
         <div class="trace-item">
-
             <div class="trace-title">
                 1919
             </div>
-
             <div class="trace-detail">
                 National struggle initialization.
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 1923
             </div>
-
             <div class="trace-detail">
                 Republic foundation and constitutional transition.
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 1938
             </div>
-
             <div class="trace-detail">
                 Institutional reform legacy.
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 2026
             </div>
-
             <div class="trace-detail">
                 Constitutional cognition deployment.
             </div>
-
         </div>
 
     </div>
@@ -579,60 +777,43 @@
     <div class="trace-panel">
 
         <div class="trace-item">
-
             <div class="trace-title">
                 Phase 1 — Constitutional Core
             </div>
-
             <div class="trace-detail">
-
                 Streaming cognition,
                 reflection telemetry,
                 premium TTS,
                 constitutional prompting,
                 observer audit systems
                 and cinematic cognition delivery.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 Phase 2 — HOPEtensor Federation
             </div>
-
             <div class="trace-detail">
-
                 Distributed reasoning nodes,
                 constitutional verification,
                 Vicdan Layer federation,
                 civic audit systems,
                 hallucination resistance
                 and multi-vector cognition routing.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 Phase 3 — HOPEverse
             </div>
-
             <div class="trace-detail">
-
                 Civilization-scale ethical coordination layer,
                 digital constitutional memory,
                 decentralized governance
                 and planetary cognition infrastructure.
-
             </div>
-
         </div>
 
     </div>
@@ -657,54 +838,39 @@
     <div class="trace-panel">
 
         <div class="trace-item">
-
             <div class="trace-title">
                 /reason
             </div>
-
             <div class="trace-detail">
                 Constitutional reasoning endpoint.
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 /stream
             </div>
-
             <div class="trace-detail">
                 SSE cognition streaming pipeline.
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 /tts
             </div>
-
             <div class="trace-detail">
                 Premium constitutional voice synthesis.
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 /reflection
             </div>
-
             <div class="trace-detail">
                 Observer telemetry and scoring layer.
             </div>
-
         </div>
 
     </div>
@@ -729,54 +895,37 @@
     <div class="trace-panel">
 
         <div class="trace-item">
-
             <div class="trace-title">
                 Constitutional AI Research
             </div>
-
             <div class="trace-detail">
-
                 Ethical cognition,
                 civic reasoning
                 and constitutional memory systems.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 HOPEtensor Infrastructure
             </div>
-
             <div class="trace-detail">
-
                 Distributed cognition federation,
                 routing systems
                 and observer networks.
-
             </div>
-
         </div>
 
-
         <div class="trace-item">
-
             <div class="trace-title">
                 FastAPI + OpenAI Stack
             </div>
-
             <div class="trace-detail">
-
                 Streaming SSE,
                 premium TTS,
                 deployment architecture
                 and cinematic interfaces.
-
             </div>
-
         </div>
 
     </div>
@@ -797,7 +946,6 @@
     <div class="section-title">
         Live Demo
     </div>
-
 
     <div class="button-row">
 
@@ -827,9 +975,7 @@
 
     </div>
 
-
     <div class="demo-grid">
-
 
         <!-- LEFT -->
 
@@ -863,7 +1009,6 @@
 
             </select>
 
-
             <label class="input-label">
                 Prompt
             </label>
@@ -872,7 +1017,6 @@
                 id="promptInput"
                 placeholder="Bir soru sor..."
             ></textarea>
-
 
             <div class="button-row">
 
@@ -887,7 +1031,6 @@
             </div>
 
         </div>
-
 
 
         <!-- RIGHT -->
@@ -949,98 +1092,75 @@
     <div class="reflection-grid">
 
         <div class="reflection-card">
-
             <div class="reflection-label">
                 Reflection Score
             </div>
-
             <div
                 class="reflection-value"
                 id="reflectionScore"
             >
                 92
             </div>
-
         </div>
 
-
         <div class="reflection-card">
-
             <div class="reflection-label">
                 Constitutional Alignment
             </div>
-
             <div
                 class="reflection-value"
                 id="constitutionalAlignment"
             >
                 95%
             </div>
-
         </div>
 
-
         <div class="reflection-card">
-
             <div class="reflection-label">
                 Historical Alignment
             </div>
-
             <div
                 class="reflection-value"
                 id="historicalAlignment"
             >
                 91%
             </div>
-
         </div>
 
-
         <div class="reflection-card">
-
             <div class="reflection-label">
                 Ethical Alignment
             </div>
-
             <div
                 class="reflection-value"
                 id="ethicalAlignment"
             >
                 96%
             </div>
-
         </div>
 
-
         <div class="reflection-card">
-
             <div class="reflection-label">
                 Hallucination Risk
             </div>
-
             <div
                 class="reflection-value"
                 id="hallucinationRisk"
             >
                 8%
             </div>
-
         </div>
 
-
         <div class="reflection-card">
-
             <div class="reflection-label">
                 Confidence Score
             </div>
-
             <div
                 class="reflection-value"
                 id="confidenceScore"
             >
                 93%
             </div>
-
         </div>
 
     </div>
@@ -1065,6 +1185,113 @@
 ========================================= -->
 
 <script src="/static/app.js"></script>
+
+<script>
+
+    /* =====================================
+       AVATAR STATE MACHINE
+    ===================================== */
+
+    const avatarLayer =
+        document.getElementById(
+            "avatarLayer"
+        );
+
+    const avatarState =
+        document.getElementById(
+            "avatarState"
+        );
+
+    const ttsAudio =
+        document.getElementById(
+            "ttsAudio"
+        );
+
+    function setAvatarState(state){
+
+        avatarState.innerText =
+            state.toUpperCase();
+
+        avatarLayer.classList.remove(
+            "avatar-speaking"
+        );
+
+        avatarLayer.classList.remove(
+            "avatar-thinking"
+        );
+
+        if(state === "thinking"){
+
+            avatarLayer.classList.add(
+                "avatar-thinking"
+            );
+        }
+
+        else if(state === "speaking"){
+
+            avatarLayer.classList.add(
+                "avatar-speaking"
+            );
+        }
+    }
+
+    /* =====================================
+       THINKING MODE
+    ===================================== */
+
+    const askButton =
+        document.getElementById(
+            "askButton"
+        );
+
+    if(askButton){
+
+        askButton.addEventListener(
+
+            "click",
+
+            ()=>{
+
+                setAvatarState(
+                    "thinking"
+                );
+            }
+        );
+    }
+
+    /* =====================================
+       AUDIO PLAY
+    ===================================== */
+
+    ttsAudio.addEventListener(
+
+        "play",
+
+        ()=>{
+
+            setAvatarState(
+                "speaking"
+            );
+        }
+    );
+
+    /* =====================================
+       AUDIO END
+    ===================================== */
+
+    ttsAudio.addEventListener(
+
+        "ended",
+
+        ()=>{
+
+            setAvatarState(
+                "idle"
+            );
+        }
+    );
+
+</script>
 
 </body>
 </html>
