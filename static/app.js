@@ -16,8 +16,6 @@ function stopAllAudio(){
 
     try{
 
-        /* HTML5 AUDIO */
-
         if(activeAudio){
 
             activeAudio.pause();
@@ -26,8 +24,6 @@ function stopAllAudio(){
 
             activeAudio = null;
         }
-
-        /* MAIN TTS AUDIO ELEMENT */
 
         const ttsAudio =
             document.getElementById(
@@ -40,8 +36,6 @@ function stopAllAudio(){
 
             ttsAudio.currentTime = 0;
         }
-
-        /* BROWSER SPEECH API SAFETY */
 
         if(
             "speechSynthesis" in window
@@ -110,8 +104,6 @@ async function speakAnswer(text){
 
     try{
 
-        /* KILL OLD AUDIO FIRST */
-
         stopAllAudio();
 
         addTrace(
@@ -172,8 +164,6 @@ async function speakAnswer(text){
 
         audio.playbackRate = 0.96;
 
-        /* REGISTER ACTIVE AUDIO */
-
         activeAudio = audio;
 
         await audio.play();
@@ -182,8 +172,6 @@ async function speakAnswer(text){
             "Archive Voice",
             "Constitutional voice playback active."
         );
-
-        /* CLEANUP WHEN FINISHED */
 
         audio.onended = ()=>{
 
@@ -208,12 +196,48 @@ async function speakAnswer(text){
 
 
 /* =========================================
+   CINEMATIC TYPEWRITER
+========================================= */
+
+let renderText = "";
+
+let tokenQueue = [];
+
+let typingActive = false;
+
+async function cinematicTypewriter(output){
+
+    if(typingActive) return;
+
+    typingActive = true;
+
+    while(tokenQueue.length > 0){
+
+        const next =
+            tokenQueue.shift();
+
+        renderText += next;
+
+        output.innerHTML =
+
+            renderText +
+
+            '<span class="live-cursor breathing-cursor">█</span>';
+
+        await new Promise(r =>
+            setTimeout(r, 22)
+        );
+    }
+
+    typingActive = false;
+}
+
+
+/* =========================================
    SSE STREAMING
 ========================================= */
 
 async function cinematicReason(prompt){
-
-    /* STOP ANY PREVIOUS AUDIO */
 
     stopAllAudio();
 
@@ -242,8 +266,14 @@ async function cinematicReason(prompt){
             "answerOutput"
         );
 
+    renderText = "";
+
+    tokenQueue = [];
+
+    typingActive = false;
+
     output.innerHTML =
-        '<span class="live-cursor">█</span>';
+        '<span class="live-cursor breathing-cursor">█</span>';
 
     const response =
         await fetch("/stream",{
@@ -304,8 +334,18 @@ async function cinematicReason(prompt){
                 payload === "[DONE]"
             ){
 
-                output.innerText =
-                    fullText;
+                while(tokenQueue.length > 0){
+
+                    await new Promise(r =>
+                        setTimeout(r, 50)
+                    );
+                }
+
+                output.innerHTML =
+
+                    renderText +
+
+                    '<span class="live-cursor breathing-cursor">█</span>';
 
                 addTrace(
                     "Delivery Layer",
@@ -329,11 +369,13 @@ async function cinematicReason(prompt){
                     fullText +=
                         parsed.token;
 
-                    output.innerHTML =
+                    tokenQueue.push(
+                        parsed.token
+                    );
 
-                        fullText +
-
-                        '<span class="live-cursor">█</span>';
+                    cinematicTypewriter(
+                        output
+                    );
                 }
 
             }catch(err){
@@ -352,8 +394,6 @@ async function cinematicReason(prompt){
 ========================================= */
 
 async function runCognition(){
-
-    /* HARD STOP EVERYTHING */
 
     stopAllAudio();
 
@@ -412,8 +452,6 @@ if(replayButton){
     replayButton.onclick =
         async ()=>{
 
-            /* KILL EVERYTHING FIRST */
-
             stopAllAudio();
 
             const audio =
@@ -423,8 +461,6 @@ if(replayButton){
 
             audio.playbackRate = 1;
 
-            /* REGISTER ACTIVE AUDIO */
-
             activeAudio = audio;
 
             await audio.play();
@@ -433,8 +469,6 @@ if(replayButton){
                 "Archive Voice",
                 "Historical archive playback active."
             );
-
-            /* CLEANUP */
 
             audio.onended = ()=>{
 
@@ -473,5 +507,68 @@ window.addEventListener(
             "Observer Node",
             "Reflection telemetry ready."
         );
+
+        injectCursorStyles();
     }
 );
+
+
+/* =========================================
+   CURSOR STYLE INJECTION
+========================================= */
+
+function injectCursorStyles(){
+
+    const style =
+        document.createElement("style");
+
+    style.innerHTML = `
+
+        .breathing-cursor{
+
+            display:inline-block;
+
+            animation:
+                heartbeatCursor 1.2s ease-in-out infinite;
+
+            color:#ffffff;
+
+            text-shadow:
+                0 0 8px rgba(255,255,255,0.8),
+                0 0 16px rgba(255,255,255,0.5);
+        }
+
+        @keyframes heartbeatCursor{
+
+            0%{
+                opacity:0.35;
+                transform:scale(1);
+            }
+
+            25%{
+                opacity:1;
+                transform:scale(1.25);
+            }
+
+            40%{
+                opacity:0.5;
+                transform:scale(0.95);
+            }
+
+            60%{
+                opacity:1;
+                transform:scale(1.18);
+            }
+
+            100%{
+                opacity:0.35;
+                transform:scale(1);
+            }
+        }
+
+    `;
+
+    document.head.appendChild(
+        style
+    );
+}
