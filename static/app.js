@@ -1,7 +1,7 @@
 /* =========================================
    static/app.js
    FULL LONG CINEMATIC VERSION
-   FINAL WORD-CINEMATIC BUILD
+   FINAL CLEAN ARCHIVE BUILD
 ========================================= */
 
 "use strict";
@@ -116,7 +116,7 @@ function addTrace(title, detail){
 
 
 /* =========================================
-   ARCHIVE FILTER
+   CLEAN ARCHIVE FILTER
 ========================================= */
 
 function applyArchiveVoiceEffect(audio){
@@ -139,7 +139,7 @@ function applyArchiveVoiceEffect(audio){
             );
 
         /* =====================================
-           BANDPASS
+           MAIN BANDPASS
         ===================================== */
 
         const bandpass =
@@ -149,10 +149,10 @@ function applyArchiveVoiceEffect(audio){
             "bandpass";
 
         bandpass.frequency.value =
-            1100;
+            1250;
 
         bandpass.Q.value =
-            1.4;
+            1.1;
 
         /* =====================================
            DISTORTION
@@ -206,11 +206,13 @@ function applyArchiveVoiceEffect(audio){
             return curve;
         }
 
+        /* SOFTER DISTORTION */
+
         distortion.curve =
-            makeDistortionCurve(55);
+            makeDistortionCurve(24);
 
         distortion.oversample =
-            "4x";
+            "2x";
 
         /* =====================================
            LOWPASS
@@ -223,27 +225,62 @@ function applyArchiveVoiceEffect(audio){
             "lowpass";
 
         lowpass.frequency.value =
-            1650;
+            1450;
 
         /* =====================================
-           COMPRESSED GAIN
+           REMOVE HISS
+        ===================================== */
+
+        const highshelf =
+            audioCtx.createBiquadFilter();
+
+        highshelf.type =
+            "highshelf";
+
+        highshelf.frequency.value =
+            2200;
+
+        highshelf.gain.value =
+            -18;
+
+        /* =====================================
+           RADIO BODY
+        ===================================== */
+
+        const peaking =
+            audioCtx.createBiquadFilter();
+
+        peaking.type =
+            "peaking";
+
+        peaking.frequency.value =
+            700;
+
+        peaking.Q.value =
+            1;
+
+        peaking.gain.value =
+            4;
+
+        /* =====================================
+           OUTPUT GAIN
         ===================================== */
 
         const gain =
             audioCtx.createGain();
 
         gain.gain.value =
-            0.78;
+            0.88;
 
         /* =====================================
-           STATIC NOISE
+           VERY LIGHT NOISE
         ===================================== */
 
         const noiseGain =
             audioCtx.createGain();
 
         noiseGain.gain.value =
-            0.012;
+            0.0025;
 
         const bufferSize =
             2 * audioCtx.sampleRate;
@@ -268,7 +305,8 @@ function applyArchiveVoiceEffect(audio){
         ){
 
             outputNoise[i] =
-                Math.random() * 2 - 1;
+                (Math.random() * 2 - 1)
+                * 0.25;
         }
 
         const whiteNoise =
@@ -299,12 +337,22 @@ function applyArchiveVoiceEffect(audio){
         );
 
         lowpass.connect(
+            highshelf
+        );
+
+        highshelf.connect(
+            peaking
+        );
+
+        peaking.connect(
             gain
         );
 
         gain.connect(
             audioCtx.destination
         );
+
+        /* LIGHT NOISE */
 
         whiteNoise.connect(
             noiseGain
@@ -396,7 +444,7 @@ async function speakAnswer(text){
 
         audio.load();
 
-        audio.playbackRate = 0.86;
+        audio.playbackRate = 0.88;
 
         activeAudio = audio;
 
@@ -450,7 +498,7 @@ async function speakAnswer(text){
 
 
 /* =========================================
-   TRUE WORD CINEMATIC TYPEWRITER
+   WORD CINEMATIC TYPEWRITER
 ========================================= */
 
 let renderText = "";
@@ -478,9 +526,9 @@ async function cinematicTypewriter(output){
 
             '<span class="live-cursor breathing-cursor">█</span>';
 
-        let delay = 85;
+        /* 2X FASTER */
 
-        /* PAUSE LOGIC */
+        let delay = 42;
 
         if(
             nextWord.includes(".") ||
@@ -488,7 +536,7 @@ async function cinematicTypewriter(output){
             nextWord.includes("?")
         ){
 
-            delay = 260;
+            delay = 130;
         }
 
         else if(
@@ -497,7 +545,7 @@ async function cinematicTypewriter(output){
             nextWord.includes(":")
         ){
 
-            delay = 170;
+            delay = 85;
         }
 
         await new Promise(r =>
