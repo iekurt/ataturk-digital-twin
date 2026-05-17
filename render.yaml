@@ -4,10 +4,6 @@ services:
     runtime: python
     plan: free
 
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.7
-
     buildCommand: |
       pip install -r requirements.txt
       apt-get update
