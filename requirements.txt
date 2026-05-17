@@ -1,5 +1,8 @@
 fastapi
 uvicorn
 jinja2
-python-multipart
 openai
+python-multipart
+pydantic
+pydub
+ffmpeg-python
