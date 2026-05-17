@@ -7,6 +7,62 @@
 
 
 /* =========================================
+   GLOBAL AUDIO CONTROL
+========================================= */
+
+let activeAudio = null;
+
+function stopAllAudio(){
+
+    try{
+
+        /* HTML5 AUDIO */
+
+        if(activeAudio){
+
+            activeAudio.pause();
+
+            activeAudio.currentTime = 0;
+
+            activeAudio = null;
+        }
+
+        /* MAIN TTS AUDIO ELEMENT */
+
+        const ttsAudio =
+            document.getElementById(
+                "ttsAudio"
+            );
+
+        if(ttsAudio){
+
+            ttsAudio.pause();
+
+            ttsAudio.currentTime = 0;
+        }
+
+        /* BROWSER SPEECH API SAFETY */
+
+        if(
+            "speechSynthesis" in window
+        ){
+
+            speechSynthesis.cancel();
+        }
+
+        addTrace(
+            "Audio Controller",
+            "All active audio streams terminated."
+        );
+
+    }catch(err){
+
+        console.error(err);
+    }
+}
+
+
+/* =========================================
    TRACE
 ========================================= */
 
@@ -53,6 +109,10 @@ async function speakAnswer(text){
     if(!text) return;
 
     try{
+
+        /* KILL OLD AUDIO FIRST */
+
+        stopAllAudio();
 
         addTrace(
             "Archive Voice",
@@ -104,11 +164,17 @@ async function speakAnswer(text){
 
         audio.pause();
 
+        audio.currentTime = 0;
+
         audio.src = url;
 
         audio.load();
 
         audio.playbackRate = 0.96;
+
+        /* REGISTER ACTIVE AUDIO */
+
+        activeAudio = audio;
 
         await audio.play();
 
@@ -116,6 +182,18 @@ async function speakAnswer(text){
             "Archive Voice",
             "Constitutional voice playback active."
         );
+
+        /* CLEANUP WHEN FINISHED */
+
+        audio.onended = ()=>{
+
+            activeAudio = null;
+
+            addTrace(
+                "Audio Controller",
+                "Playback session completed."
+            );
+        };
 
     }catch(err){
 
@@ -134,6 +212,10 @@ async function speakAnswer(text){
 ========================================= */
 
 async function cinematicReason(prompt){
+
+    /* STOP ANY PREVIOUS AUDIO */
+
+    stopAllAudio();
 
     addTrace(
         "Input Layer",
@@ -271,6 +353,10 @@ async function cinematicReason(prompt){
 
 async function runCognition(){
 
+    /* HARD STOP EVERYTHING */
+
+    stopAllAudio();
+
     const input =
         document.getElementById(
             "promptInput"
@@ -324,7 +410,11 @@ const replayButton =
 if(replayButton){
 
     replayButton.onclick =
-        ()=>{
+        async ()=>{
+
+            /* KILL EVERYTHING FIRST */
+
+            stopAllAudio();
 
             const audio =
                 new Audio(
@@ -333,12 +423,28 @@ if(replayButton){
 
             audio.playbackRate = 1;
 
-            audio.play();
+            /* REGISTER ACTIVE AUDIO */
+
+            activeAudio = audio;
+
+            await audio.play();
 
             addTrace(
                 "Archive Voice",
                 "Historical archive playback active."
             );
+
+            /* CLEANUP */
+
+            audio.onended = ()=>{
+
+                activeAudio = null;
+
+                addTrace(
+                    "Archive Voice",
+                    "Historical playback completed."
+                );
+            };
         };
 }
 
