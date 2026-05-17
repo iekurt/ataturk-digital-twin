@@ -1,7 +1,7 @@
 /* =========================================
    static/app.js
    FULL LONG CINEMATIC VERSION
-   FINAL CLEAN READABLE BUILD
+   FINAL STABLE TOKEN BUILD
 ========================================= */
 
 "use strict";
@@ -271,56 +271,6 @@ function applyArchiveVoiceEffect(audio){
             0.88;
 
         /* =====================================
-           VERY LIGHT NOISE
-        ===================================== */
-
-        const noiseGain =
-            audioCtx.createGain();
-
-        /* MASSIVELY REDUCED */
-
-        noiseGain.gain.value =
-            0.00015;
-
-        const bufferSize =
-            2 * audioCtx.sampleRate;
-
-        const noiseBuffer =
-            audioCtx.createBuffer(
-
-                1,
-
-                bufferSize,
-
-                audioCtx.sampleRate
-            );
-
-        const outputNoise =
-            noiseBuffer.getChannelData(0);
-
-        for(
-            let i = 0;
-            i < bufferSize;
-            i++
-        ){
-
-            outputNoise[i] =
-                (Math.random() * 2 - 1)
-                * 0.25;
-        }
-
-        const whiteNoise =
-            audioCtx.createBufferSource();
-
-        whiteNoise.buffer =
-            noiseBuffer;
-
-        whiteNoise.loop = true;
-
-        activeNoiseSource =
-            whiteNoise;
-
-        /* =====================================
            CONNECT
         ===================================== */
 
@@ -351,18 +301,6 @@ function applyArchiveVoiceEffect(audio){
         gain.connect(
             audioCtx.destination
         );
-
-        /* HISS DISABLED */
-
-        // whiteNoise.connect(
-        //     noiseGain
-        // );
-
-        // noiseGain.connect(
-        //     audioCtx.destination
-        // );
-
-        // whiteNoise.start(0);
 
     }catch(err){
 
@@ -498,6 +436,13 @@ async function speakAnswer(text){
 
 
 /* =========================================
+   TOKEN BUFFER
+========================================= */
+
+let streamBuffer = "";
+
+
+/* =========================================
    WORD CINEMATIC TYPEWRITER
 ========================================= */
 
@@ -518,29 +463,13 @@ async function cinematicTypewriter(output){
         const nextWord =
             wordQueue.shift();
 
-        /* FIX SPACING */
-
-        if(
-            renderText.length > 0 &&
-            !renderText.endsWith(" ") &&
-            !nextWord.startsWith(" ") &&
-            ![".",",",";",":","!","?"].includes(
-                nextWord.trim()
-            )
-        ){
-
-            renderText += " ";
-        }
-
-        renderText += nextWord.trim();
+        renderText += nextWord;
 
         output.innerHTML =
 
             renderText +
 
             '<span class="live-cursor breathing-cursor">█</span>';
-
-        /* 2X FASTER */
 
         let delay = 42;
 
@@ -608,6 +537,8 @@ async function cinematicReason(prompt){
 
     wordQueue = [];
 
+    streamBuffer = "";
+
     typingActive = false;
 
     output.innerHTML =
@@ -672,6 +603,15 @@ async function cinematicReason(prompt){
                 payload === "[DONE]"
             ){
 
+                if(streamBuffer){
+
+                    wordQueue.push(
+                        streamBuffer
+                    );
+
+                    streamBuffer = "";
+                }
+
                 while(wordQueue.length > 0){
 
                     await new Promise(r =>
@@ -707,16 +647,20 @@ async function cinematicReason(prompt){
                     fullText +=
                         parsed.token;
 
-                    const words =
-                        parsed.token.match(
-                            /\S+\s*/g
-                        ) || [];
+                    streamBuffer +=
+                        parsed.token;
 
-                    for(
-                        const word of words
-                    ){
+                    const parts =
+                        streamBuffer.split(" ");
 
-                        wordQueue.push(word);
+                    streamBuffer =
+                        parts.pop() || "";
+
+                    for(const part of parts){
+
+                        wordQueue.push(
+                            part + " "
+                        );
                     }
 
                     cinematicTypewriter(
@@ -823,15 +767,6 @@ if(replayButton){
             audio.onended = ()=>{
 
                 activeAudio = null;
-
-                if(activeNoiseSource){
-
-                    try{
-                        activeNoiseSource.stop();
-                    }catch(e){}
-
-                    activeNoiseSource = null;
-                }
 
                 if(activeAudioContext){
 
