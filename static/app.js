@@ -12,6 +12,8 @@
 
 let activeAudio = null;
 
+let activeAudioContext = null;
+
 function stopAllAudio(){
 
     try{
@@ -35,6 +37,13 @@ function stopAllAudio(){
             ttsAudio.pause();
 
             ttsAudio.currentTime = 0;
+        }
+
+        if(activeAudioContext){
+
+            activeAudioContext.close();
+
+            activeAudioContext = null;
         }
 
         if(
@@ -91,6 +100,152 @@ function addTrace(title, detail){
 
     TRACE.scrollTop =
         TRACE.scrollHeight;
+}
+
+
+/* =========================================
+   ARCHIVE FILTER
+========================================= */
+
+function applyArchiveVoiceEffect(audio){
+
+    try{
+
+        const AudioContextClass =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const audioCtx =
+            new AudioContextClass();
+
+        activeAudioContext =
+            audioCtx;
+
+        const source =
+            audioCtx.createMediaElementSource(
+                audio
+            );
+
+        /* RADIO BANDPASS */
+
+        const bandpass =
+            audioCtx.createBiquadFilter();
+
+        bandpass.type =
+            "bandpass";
+
+        bandpass.frequency.value =
+            1450;
+
+        bandpass.Q.value =
+            0.8;
+
+        /* DISTORTION */
+
+        const distortion =
+            audioCtx.createWaveShaper();
+
+        function makeDistortionCurve(amount){
+
+            const k =
+                typeof amount === "number"
+                    ? amount
+                    : 50;
+
+            const n_samples =
+                44100;
+
+            const curve =
+                new Float32Array(
+                    n_samples
+                );
+
+            const deg =
+                Math.PI / 180;
+
+            for(
+                let i = 0;
+                i < n_samples;
+                ++i
+            ){
+
+                const x =
+                    i * 2 /
+                    n_samples - 1;
+
+                curve[i] =
+
+                    (3 + k) *
+                    x *
+                    20 *
+                    deg /
+
+                    (
+                        Math.PI +
+                        k *
+                        Math.abs(x)
+                    );
+            }
+
+            return curve;
+        }
+
+        distortion.curve =
+            makeDistortionCurve(22);
+
+        distortion.oversample =
+            "4x";
+
+        /* LOWPASS */
+
+        const lowpass =
+            audioCtx.createBiquadFilter();
+
+        lowpass.type =
+            "lowpass";
+
+        lowpass.frequency.value =
+            2500;
+
+        /* COMPRESSED GAIN */
+
+        const gain =
+            audioCtx.createGain();
+
+        gain.gain.value =
+            0.92;
+
+        /* CONNECT */
+
+        source.connect(
+            bandpass
+        );
+
+        bandpass.connect(
+            distortion
+        );
+
+        distortion.connect(
+            lowpass
+        );
+
+        lowpass.connect(
+            gain
+        );
+
+        gain.connect(
+            audioCtx.destination
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        addTrace(
+            "Archive Filter",
+            "Archive filter fallback mode."
+        );
+    }
 }
 
 
@@ -162,20 +317,35 @@ async function speakAnswer(text){
 
         audio.load();
 
-        audio.playbackRate = 0.96;
+        /* SLOWER / HEAVIER */
+
+        audio.playbackRate = 0.92;
 
         activeAudio = audio;
+
+        /* APPLY ARCHIVE EFFECT */
+
+        applyArchiveVoiceEffect(
+            audio
+        );
 
         await audio.play();
 
         addTrace(
             "Archive Voice",
-            "Constitutional voice playback active."
+            "Constitutional archive voice playback active."
         );
 
         audio.onended = ()=>{
 
             activeAudio = null;
+
+            if(activeAudioContext){
+
+                activeAudioContext.close();
+
+                activeAudioContext = null;
+            }
 
             addTrace(
                 "Audio Controller",
@@ -224,8 +394,10 @@ async function cinematicTypewriter(output){
 
             '<span class="live-cursor breathing-cursor">█</span>';
 
+        /* MUCH SLOWER */
+
         await new Promise(r =>
-            setTimeout(r, 22)
+            setTimeout(r, 68)
         );
     }
 
@@ -463,6 +635,10 @@ if(replayButton){
 
             activeAudio = audio;
 
+            applyArchiveVoiceEffect(
+                audio
+            );
+
             await audio.play();
 
             addTrace(
@@ -473,6 +649,13 @@ if(replayButton){
             audio.onended = ()=>{
 
                 activeAudio = null;
+
+                if(activeAudioContext){
+
+                    activeAudioContext.close();
+
+                    activeAudioContext = null;
+                }
 
                 addTrace(
                     "Archive Voice",
