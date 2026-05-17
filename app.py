@@ -6,14 +6,18 @@
 
 import os
 import json
+import uuid
 import asyncio
+import tempfile
+import subprocess
 
 from fastapi import FastAPI, Request
 from fastapi.responses import (
     HTMLResponse,
     StreamingResponse,
     Response,
-    JSONResponse
+    JSONResponse,
+    FileResponse
 )
 
 from fastapi.staticfiles import StaticFiles
@@ -23,6 +27,11 @@ from pydantic import BaseModel
 
 from openai import OpenAI
 
+from pydub import AudioSegment
+from pydub.effects import (
+    compress_dynamic_range
+)
+
 
 # ============================================
 # APP
@@ -30,7 +39,7 @@ from openai import OpenAI
 
 app = FastAPI(
     title="ATATÜRK DIGITAL TWIN / HOPEVERSE",
-    version="7.0.0"
+    version="8.0.0"
 )
 
 app.mount(
@@ -123,7 +132,9 @@ async def health():
 
             "reflection_layer",
 
-            "delivery_layer"
+            "delivery_layer",
+
+            "archive_voice_layer"
         ]
     }
 
@@ -452,7 +463,7 @@ async def stream(
                 )
 
                 await asyncio.sleep(
-                    .01
+                    .03
                 )
 
             yield (
@@ -467,7 +478,159 @@ async def stream(
 
 
 # ============================================
-# PREMIUM TTS
+# ARCHIVE VOICE PIPELINE
+# ============================================
+
+def process_archive_voice(
+    input_mp3: str,
+    output_mp3: str
+):
+
+    # ========================================
+    # LOAD
+    # ========================================
+
+    sound = AudioSegment.from_file(
+        input_mp3
+    )
+
+    # ========================================
+    # MONO
+    # ========================================
+
+    sound = sound.set_channels(1)
+
+    # ========================================
+    # OLD SAMPLE RATE
+    # ========================================
+
+    sound = sound.set_frame_rate(
+        22050
+    )
+
+    # ========================================
+    # DYNAMIC COMPRESSION
+    # ========================================
+
+    sound = compress_dynamic_range(
+
+        sound,
+
+        threshold=-20.0,
+
+        ratio=4.5,
+
+        attack=5,
+
+        release=60
+    )
+
+    # ========================================
+    # RADIO EQ
+    # ========================================
+
+    sound = sound.high_pass_filter(
+        160
+    )
+
+    sound = sound.low_pass_filter(
+        1800
+    )
+
+    # ========================================
+    # OVERDRIVE
+    # ========================================
+
+    sound = sound + 7
+
+    # ========================================
+    # TEMP WAV
+    # ========================================
+
+    temp_wav = (
+        output_mp3
+        .replace(".mp3", ".wav")
+    )
+
+    sound.export(
+        temp_wav,
+        format="wav"
+    )
+
+    # ========================================
+    # FFMPEG MASTERING
+    # ========================================
+
+    ffmpeg_cmd = [
+
+        "ffmpeg",
+
+        "-y",
+
+        "-i",
+        temp_wav,
+
+        "-af",
+
+        ",".join([
+
+            # compression
+            "acompressor=threshold=-14dB:ratio=4:attack=15:release=120",
+
+            # radio body
+            "equalizer=f=350:t=q:w=1:g=5",
+
+            # nasal resonance
+            "equalizer=f=900:t=q:w=1:g=3",
+
+            # remove modern crispness
+            "equalizer=f=4200:t=q:w=1:g=-18",
+
+            # hard radio cutoff
+            "lowpass=f=1700",
+
+            # remove sub lows
+            "highpass=f=180",
+
+            # analog instability
+            "vibrato=f=1.6:d=0.05",
+
+            # room/old archive reflection
+            "aecho=0.8:0.88:18:0.22",
+
+            # slight saturation
+            "volume=0.88"
+        ]),
+
+        "-ar",
+        "22050",
+
+        "-ac",
+        "1",
+
+        "-b:a",
+        "40k",
+
+        output_mp3
+    ]
+
+    subprocess.run(
+        ffmpeg_cmd,
+        check=True
+    )
+
+    # ========================================
+    # CLEANUP
+    # ========================================
+
+    try:
+        os.remove(temp_wav)
+    except:
+        pass
+
+
+# ============================================
+# PREMIUM ARCHIVE TTS
 # ============================================
 
 @app.post("/tts")
@@ -476,28 +639,74 @@ async def tts(
     payload: TTSPayload
 ):
 
+    text = payload.text.strip()
+
+    if not text:
+
+        return JSONResponse({
+
+            "error":
+                "Text boş."
+        })
+
+    temp_id = str(uuid.uuid4())
+
+    raw_mp3 = (
+        f"raw_{temp_id}.mp3"
+    )
+
+    processed_mp3 = (
+        f"archive_{temp_id}.mp3"
+    )
+
     try:
 
+        # ====================================
+        # OPENAI TTS
+        # ====================================
+
         speech = (
+
             client.audio.speech.create(
 
                 model=
                     "gpt-4o-mini-tts",
 
+                # DEEPER MALE
                 voice="onyx",
 
-                input=
-                    payload.text
+                input=text
             )
         )
 
-        return Response(
+        speech.stream_to_file(
+            raw_mp3
+        )
 
-            content=
-                speech.content,
+        # ====================================
+        # ARCHIVE PROCESSING
+        # ====================================
+
+        process_archive_voice(
+
+            raw_mp3,
+
+            processed_mp3
+        )
+
+        # ====================================
+        # RETURN
+        # ====================================
+
+        return FileResponse(
+
+            processed_mp3,
 
             media_type=
-                "audio/mpeg"
+                "audio/mpeg",
+
+            filename=
+                "archive_voice.mp3"
         )
 
     except Exception as e:
@@ -507,6 +716,13 @@ async def tts(
             "error":
                 str(e)
         })
+
+    finally:
+
+        try:
+            os.remove(raw_mp3)
+        except:
+            pass
 
 
 # ============================================
@@ -550,5 +766,6 @@ async def startup_event():
     print("====================================")
     print("ATATÜRK DIGITAL TWIN / HOPEVERSE")
     print("Constitutional cognition online")
+    print("Archive voice mastering active")
     print("====================================")
     print("")

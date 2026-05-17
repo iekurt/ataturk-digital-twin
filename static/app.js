@@ -1,6 +1,7 @@
 /* =========================================
    static/app.js
    FULL LONG CINEMATIC VERSION
+   FINAL ARCHIVE CINEMATIC BUILD
 ========================================= */
 
 "use strict";
@@ -13,6 +14,8 @@
 let activeAudio = null;
 
 let activeAudioContext = null;
+
+let activeNoiseSource = null;
 
 function stopAllAudio(){
 
@@ -37,6 +40,15 @@ function stopAllAudio(){
             ttsAudio.pause();
 
             ttsAudio.currentTime = 0;
+        }
+
+        if(activeNoiseSource){
+
+            try{
+                activeNoiseSource.stop();
+            }catch(e){}
+
+            activeNoiseSource = null;
         }
 
         if(activeAudioContext){
@@ -126,7 +138,9 @@ function applyArchiveVoiceEffect(audio){
                 audio
             );
 
-        /* RADIO BANDPASS */
+        /* =====================================
+           BANDPASS
+        ===================================== */
 
         const bandpass =
             audioCtx.createBiquadFilter();
@@ -135,12 +149,14 @@ function applyArchiveVoiceEffect(audio){
             "bandpass";
 
         bandpass.frequency.value =
-            1450;
+            1100;
 
         bandpass.Q.value =
-            0.8;
+            1.4;
 
-        /* DISTORTION */
+        /* =====================================
+           DISTORTION
+        ===================================== */
 
         const distortion =
             audioCtx.createWaveShaper();
@@ -191,12 +207,14 @@ function applyArchiveVoiceEffect(audio){
         }
 
         distortion.curve =
-            makeDistortionCurve(22);
+            makeDistortionCurve(55);
 
         distortion.oversample =
             "4x";
 
-        /* LOWPASS */
+        /* =====================================
+           LOWPASS
+        ===================================== */
 
         const lowpass =
             audioCtx.createBiquadFilter();
@@ -205,17 +223,68 @@ function applyArchiveVoiceEffect(audio){
             "lowpass";
 
         lowpass.frequency.value =
-            2500;
+            1650;
 
-        /* COMPRESSED GAIN */
+        /* =====================================
+           COMPRESSED GAIN
+        ===================================== */
 
         const gain =
             audioCtx.createGain();
 
         gain.gain.value =
-            0.92;
+            0.78;
 
-        /* CONNECT */
+        /* =====================================
+           STATIC NOISE
+        ===================================== */
+
+        const noiseGain =
+            audioCtx.createGain();
+
+        noiseGain.gain.value =
+            0.012;
+
+        const bufferSize =
+            2 * audioCtx.sampleRate;
+
+        const noiseBuffer =
+            audioCtx.createBuffer(
+
+                1,
+
+                bufferSize,
+
+                audioCtx.sampleRate
+            );
+
+        const outputNoise =
+            noiseBuffer.getChannelData(0);
+
+        for(
+            let i = 0;
+            i < bufferSize;
+            i++
+        ){
+
+            outputNoise[i] =
+                Math.random() * 2 - 1;
+        }
+
+        const whiteNoise =
+            audioCtx.createBufferSource();
+
+        whiteNoise.buffer =
+            noiseBuffer;
+
+        whiteNoise.loop = true;
+
+        activeNoiseSource =
+            whiteNoise;
+
+        /* =====================================
+           CONNECT
+        ===================================== */
 
         source.connect(
             bandpass
@@ -236,6 +305,16 @@ function applyArchiveVoiceEffect(audio){
         gain.connect(
             audioCtx.destination
         );
+
+        whiteNoise.connect(
+            noiseGain
+        );
+
+        noiseGain.connect(
+            audioCtx.destination
+        );
+
+        whiteNoise.start(0);
 
     }catch(err){
 
@@ -317,13 +396,13 @@ async function speakAnswer(text){
 
         audio.load();
 
-        /* SLOWER / HEAVIER */
+        /* =====================================
+           SLOWER
+        ===================================== */
 
-        audio.playbackRate = 0.92;
+        audio.playbackRate = 0.86;
 
         activeAudio = audio;
-
-        /* APPLY ARCHIVE EFFECT */
 
         applyArchiveVoiceEffect(
             audio
@@ -333,12 +412,21 @@ async function speakAnswer(text){
 
         addTrace(
             "Archive Voice",
-            "Constitutional archive voice playback active."
+            "Constitutional archive playback active."
         );
 
         audio.onended = ()=>{
 
             activeAudio = null;
+
+            if(activeNoiseSource){
+
+                try{
+                    activeNoiseSource.stop();
+                }catch(e){}
+
+                activeNoiseSource = null;
+            }
 
             if(activeAudioContext){
 
@@ -366,12 +454,12 @@ async function speakAnswer(text){
 
 
 /* =========================================
-   CINEMATIC TYPEWRITER
+   TRUE CINEMATIC TYPEWRITER
 ========================================= */
 
 let renderText = "";
 
-let tokenQueue = [];
+let charQueue = [];
 
 let typingActive = false;
 
@@ -381,12 +469,12 @@ async function cinematicTypewriter(output){
 
     typingActive = true;
 
-    while(tokenQueue.length > 0){
+    while(charQueue.length > 0){
 
-        const next =
-            tokenQueue.shift();
+        const nextChar =
+            charQueue.shift();
 
-        renderText += next;
+        renderText += nextChar;
 
         output.innerHTML =
 
@@ -394,10 +482,33 @@ async function cinematicTypewriter(output){
 
             '<span class="live-cursor breathing-cursor">█</span>';
 
-        /* MUCH SLOWER */
+        /* =====================================
+           TRUE CINEMATIC SPEED
+        ===================================== */
+
+        let delay = 135;
+
+        /* PAUSE ON PUNCTUATION */
+
+        if(
+            nextChar === "." ||
+            nextChar === "," ||
+            nextChar === ":" ||
+            nextChar === ";"
+        ){
+
+            delay = 260;
+        }
+
+        if(
+            nextChar === "\n"
+        ){
+
+            delay = 340;
+        }
 
         await new Promise(r =>
-            setTimeout(r, 68)
+            setTimeout(r, delay)
         );
     }
 
@@ -440,7 +551,7 @@ async function cinematicReason(prompt){
 
     renderText = "";
 
-    tokenQueue = [];
+    charQueue = [];
 
     typingActive = false;
 
@@ -506,10 +617,10 @@ async function cinematicReason(prompt){
                 payload === "[DONE]"
             ){
 
-                while(tokenQueue.length > 0){
+                while(charQueue.length > 0){
 
                     await new Promise(r =>
-                        setTimeout(r, 50)
+                        setTimeout(r, 120)
                     );
                 }
 
@@ -541,9 +652,12 @@ async function cinematicReason(prompt){
                     fullText +=
                         parsed.token;
 
-                    tokenQueue.push(
-                        parsed.token
-                    );
+                    for(
+                        const ch of parsed.token
+                    ){
+
+                        charQueue.push(ch);
+                    }
 
                     cinematicTypewriter(
                         output
@@ -631,7 +745,7 @@ if(replayButton){
                     "/static/archive_voice.mp3"
                 );
 
-            audio.playbackRate = 1;
+            audio.playbackRate = 0.94;
 
             activeAudio = audio;
 
@@ -649,6 +763,15 @@ if(replayButton){
             audio.onended = ()=>{
 
                 activeAudio = null;
+
+                if(activeNoiseSource){
+
+                    try{
+                        activeNoiseSource.stop();
+                    }catch(e){}
+
+                    activeNoiseSource = null;
+                }
 
                 if(activeAudioContext){
 
@@ -724,27 +847,27 @@ function injectCursorStyles(){
         @keyframes heartbeatCursor{
 
             0%{
-                opacity:0.35;
+                opacity:0.25;
                 transform:scale(1);
             }
 
             25%{
                 opacity:1;
-                transform:scale(1.25);
+                transform:scale(1.35);
             }
 
             40%{
-                opacity:0.5;
-                transform:scale(0.95);
+                opacity:0.45;
+                transform:scale(0.92);
             }
 
             60%{
                 opacity:1;
-                transform:scale(1.18);
+                transform:scale(1.22);
             }
 
             100%{
-                opacity:0.35;
+                opacity:0.25;
                 transform:scale(1);
             }
         }
